@@ -1,0 +1,60 @@
+{
+  "Consul": {
+    "Agent": {
+      "Datacenter": "dc1",
+      "Address": "http://127.0.0.1:8500",
+      "Token": "cd40a34c-8628-ae63-9035-ed661a6e4520",
+      "WaitTime": "00:00:05"
+    },
+    "Application": {
+      "Name": "Ocelot",
+      "Version": "1.0.0",
+      "Namespace": "public",
+      "Group": "default_group",
+      "Metadata": {
+        "EntryKey1": "manifest.json",
+        "ee": ""
+      },
+      "Configuration": {
+        "Path": "Ocelot:1.0.0",
+        "PollingWaitTime": "00:00:05",
+        "IgnoreException": false,
+        "Items": [
+          {
+            "Name": "appsettings.json"
+          },
+          {
+            "Name": "ocelot.json",
+            "Optional": false,
+            "ReloadOnChange": true
+          }
+        ],
+        "Metadata": {
+          "add": "ed661a6e4520",
+          "ee": ""
+        }
+      },
+      "Registration": {
+        "Id": "dddd",
+        "Name": "Ocelot_check",
+        "Address": "http://127.0.0.1:5000",
+        "Tags": [
+          "ocelot"
+        ],
+        "EnableTagOverride": true,
+        "Metadata": {
+          "GenerateServiceRegistrationId": "true",
+          "GenerateServiceRegistrationName": "true"
+        },
+        "HealthCheck": {
+          "Name": "Ocelot_check",
+          "DeregisterCriticalServiceAfter": "00:01:00",
+          "Interval": "00:00:15",
+          //"Health": "/health",
+          "Health": "http://host.docker.internal:5000/health",
+          "Timeout": "00:00:10"
+        }
+      }
+    }
+  }
+}
