@@ -4,5 +4,7 @@ public sealed class ConsulOptions
 {
     public AgentConfig Agent { get; set; } = default!;
 
-    public AppConfig Application { get; set; } = default!;
+    public ConsulConfiguration? Configuration { get; set; }
+
+    public ServiceRegistration? Registration { get; set; }
 }

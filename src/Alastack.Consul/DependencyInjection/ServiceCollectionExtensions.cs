@@ -39,7 +39,7 @@ public static class ServiceCollectionExtensions
         }
 
         services.Configure<ConsulOptions>(configuration.GetSection(key));
-        services.AddHostedService<ConsulRegistrationServie>();
+        services.AddHostedService<ServiceRegistrationServie>();
         return services;
     }
 }

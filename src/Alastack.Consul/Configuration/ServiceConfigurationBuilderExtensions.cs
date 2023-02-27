@@ -41,18 +41,18 @@ namespace Microsoft.Extensions.Configuration
             {
                 throw new ArgumentNullException(nameof(ConsulOptions));
             }
-            if (consulOptions.Application.Configuration?.Sets != null)
+            if (consulOptions.Configuration?.Sets != null)
             {
-                var serviceConfiguration = consulOptions.Application.Configuration;
-                var pathPrefix = $"{consulOptions.Application.Namespace}/{serviceConfiguration.Path}";
-                foreach (var configurationItem in serviceConfiguration.Sets)
+                var configuration = consulOptions.Configuration;
+                var pathPrefix = $"{configuration.PathBase}/{configuration.Namespace}";
+                foreach (var configurationSet in configuration.Sets)
                 {
-                    var pathKey = $"{pathPrefix}/{configurationItem.Name}";
+                    var pathKey = $"{pathPrefix}/{configurationSet.Group}/{configurationSet.Id}";
                     builder.AddConsul(pathKey, options =>
                     {
-                        options.Optional = configurationItem.Optional;
-                        options.ReloadOnChange = configurationItem.ReloadOnChange;
-                        options.PollWaitTime = configurationItem.PollingWaitTime ?? serviceConfiguration.PollingWaitTime;
+                        options.Optional = configurationSet.Optional;
+                        options.ReloadOnChange = configurationSet.ReloadOnChange;
+                        options.PollWaitTime = configurationSet.PollingWaitTime ?? configuration.PollingWaitTime;
                         options.ConsulConfigurationOptions =
                             config =>
                             {
@@ -61,7 +61,7 @@ namespace Microsoft.Extensions.Configuration
                                 config.Datacenter = consulOptions.Agent.Datacenter;
                                 config.WaitTime = consulOptions.Agent.WaitTime;
                             };
-                        options.OnLoadException = exceptionContext => { exceptionContext.Ignore = configurationItem.IgnoreException ?? serviceConfiguration.IgnoreException; };
+                        options.OnLoadException = exceptionContext => { exceptionContext.Ignore = configurationSet.IgnoreException ?? configuration.IgnoreException; };
                     });
                 }
             }

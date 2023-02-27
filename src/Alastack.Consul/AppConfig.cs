@@ -11,7 +11,7 @@ public sealed class AppConfig
 
     public IReadOnlyDictionary<string, string>? Metadata { get; init; }
 
-    public ServiceConfiguration? Configuration { get; init; }
+    public ConsulConfiguration? Configuration { get; init; }
 
     public ServiceRegistration? Registration { get; init; }
 }

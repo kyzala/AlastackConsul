@@ -1,50 +1,38 @@
 ﻿namespace Alastack.Consul;
 public static class ConsulOptionsExtentions
 {
-    public static string BuildConfigurationPath(this AppConfig service)
+    public static string BuildRegistrationName(this ServiceRegistration registration)
     {
-        if (service.Configuration!.Path == null) 
+        if (registration.Name == null) 
         {
-            service.Configuration.Path = $"{service.Namespace}/{service.Name}:{service.Version}";
+            registration.Name = $"{registration.Name}";//:{service.Version}";
         }
-        return service.Configuration.Path;
+        return registration.Name;
     }
 
-    public static string BuildRegistrationName(this AppConfig service)
+    public static string BuildRegistrationId(this ServiceRegistration registration)
     {
-        if (service.Registration!.Name == null) 
-        {
-            service.Registration!.Name = $"{service.Name}";//:{service.Version}";
-        }
-        return service.Registration!.Name;
+        registration.Id ??= $"{registration.Name}:{registration.Version}#{registration!.Address.Host}:{registration!.Address.Port}";
+        return registration.Id;
     }
 
-    public static string BuildRegistrationId(this AppConfig service)
+    public static string BuildHealthCheckName(this ServiceRegistration registration)
     {
-        if (service.Registration!.Id == null) 
+        if (registration!.HealthCheck.Name == null)
         {
-            service.Registration.Id = $"{service.Name}:{service.Version}#{service.Registration!.Address.Host}:{service.Registration!.Address.Port}";
+            var registrationName = registration.BuildRegistrationName();
+            registration.HealthCheck.Name = $"{registrationName}_healthcheck";
         }
-        return service.Registration.Id;
-    }
-
-    public static string BuildHealthCheckName(this AppConfig service)
-    {
-        if (service.Registration!.HealthCheck.Name == null)
-        {
-            var registrationName = service.BuildRegistrationName();
-            service.Registration.HealthCheck.Name = $"{registrationName}_healthcheck";
-        }
-        return service.Registration.HealthCheck.Name;
+        return registration.HealthCheck.Name;
 
     }
 
-    public static string BuildHealthCheckAddress(this AppConfig service) 
+    public static string BuildHealthCheckAddress(this ServiceRegistration registration) 
     {
-        if (Uri.IsWellFormedUriString(service.Registration!.HealthCheck.Health, UriKind.Relative)) 
+        if (Uri.IsWellFormedUriString(registration!.HealthCheck.Health, UriKind.Relative)) 
         {
-            service.Registration.HealthCheck.Health = new Uri(service.Registration.Address, service.Registration.HealthCheck.Health).ToString();
+            registration.HealthCheck.Health = new Uri(registration.Address, registration.HealthCheck.Health).ToString();
         }
-        return service.Registration.HealthCheck.Health;
+        return registration.HealthCheck.Health;
     }
 }

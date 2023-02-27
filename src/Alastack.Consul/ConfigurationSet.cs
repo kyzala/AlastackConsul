@@ -1,9 +1,11 @@
 ﻿namespace Alastack.Consul;
 public sealed class ConfigurationSet
 {
-    public string Name { get; set; } = default!;
+    public string Id { get; set; } = default!;
 
-    public string? Version { get; set; }
+    public string Group { get; set; } = ConsulConfigurationDefaults.Group;
+
+    //public string? Version { get; set; }
 
     public string? Description { get; set; }
 

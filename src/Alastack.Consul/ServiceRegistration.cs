@@ -5,6 +5,8 @@ public sealed class ServiceRegistration
 
     public string? Name { get; set; }
 
+    public string? Version { get; set; }
+
     //public string Host { get; set; }
     //public int Port { get; set; }
     public Uri Address { get; set; } = default!;
