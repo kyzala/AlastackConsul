@@ -41,11 +41,11 @@ namespace Microsoft.Extensions.Configuration
             {
                 throw new ArgumentNullException(nameof(ConsulOptions));
             }
-            if (consulOptions.Application.Configuration?.Items != null)
+            if (consulOptions.Application.Configuration?.Sets != null)
             {
                 var serviceConfiguration = consulOptions.Application.Configuration;
                 var pathPrefix = $"{consulOptions.Application.Namespace}/{serviceConfiguration.Path}";
-                foreach (var configurationItem in serviceConfiguration.Items)
+                foreach (var configurationItem in serviceConfiguration.Sets)
                 {
                     var pathKey = $"{pathPrefix}/{configurationItem.Name}";
                     builder.AddConsul(pathKey, options =>

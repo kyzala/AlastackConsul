@@ -3,7 +3,7 @@ public sealed class ServiceConfiguration
 {
     public string Path { get; set; } = default!;
 
-    public IList<ConfigurationItem>? Items { get; set; }
+    public IList<ConfigurationSet>? Sets { get; set; }
 
     public IDictionary<string, string>? Metadata { get; set; }
 

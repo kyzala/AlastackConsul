@@ -1,5 +1,5 @@
 ﻿namespace Alastack.Consul;
-public sealed class ConfigurationItem
+public sealed class ConfigurationSet
 {
     public string Name { get; set; } = default!;
 
