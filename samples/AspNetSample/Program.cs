@@ -2,13 +2,12 @@ using AspNetSample;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("appsettings.json", true, true);
+builder.Configuration.AddJsonFile("consul.json", true, true);
 builder.Configuration.AddConsulConfiguration();
 
-// Add services to the container.
 builder.Services.AddConsul(builder.Configuration);
-builder.Services.AddControllers();
 
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
