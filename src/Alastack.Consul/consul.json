@@ -49,16 +49,6 @@
         "Health": "http://host.docker.internal:5000/health",
         "Timeout": "00:00:10"
       }
-    }//,
-    //"Application": {
-    //  "Name": "Ocelot",
-    //  "Version": "1.0.0",
-    //  "Namespace": "public",
-    //  "Group": "default_group",
-    //  "Metadata": {
-    //    "EntryKey1": "manifest.json",
-    //    "ee": ""
-    //  }
     }
   }
 }

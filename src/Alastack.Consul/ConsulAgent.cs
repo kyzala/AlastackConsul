@@ -1,5 +1,5 @@
 ﻿namespace Alastack.Consul;
-public sealed class AgentConfig
+public sealed class ConsulAgent
 {
     public string Datacenter { get; init; } = default!;
 

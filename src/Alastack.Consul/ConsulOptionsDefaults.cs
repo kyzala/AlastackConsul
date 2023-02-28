@@ -1,19 +1,4 @@
 ﻿namespace Alastack.Consul;
-public static class ConsulOptionsDefaults
-{
-    public static class Service
-    {
-        public const string Environment = "Production";
-
-        public const string Namespace = "default";
-
-        public const string Version = "1.0.0";
-    }
-
-    
-
-    
-}
 
 public static class ConsulRegistrationDefaults
 {
@@ -29,6 +14,10 @@ public static class ConsulConfigurationDefaults
     public const string Namespace = "ns_default";
 
     public const string Group = "gp_default";
+
+    public const bool Optional = true;
+
+    public const bool ReloadOnChange = true;
 
     public const bool IgnoreException = true;
 

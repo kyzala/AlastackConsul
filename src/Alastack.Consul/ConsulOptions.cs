@@ -2,7 +2,7 @@
 
 public sealed class ConsulOptions
 {
-    public AgentConfig Agent { get; set; } = default!;
+    public ConsulAgent Agent { get; set; } = default!;
 
     public ConsulConfiguration? Configuration { get; set; }
 
