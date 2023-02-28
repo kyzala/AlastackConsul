@@ -12,6 +12,7 @@ namespace AspNetSample.Controllers
     };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        
 
         public WeatherForecastController(ILogger<WeatherForecastController> logger)
         {
@@ -29,5 +30,7 @@ namespace AspNetSample.Controllers
             })
             .ToArray();
         }
+
+        
     }
 }

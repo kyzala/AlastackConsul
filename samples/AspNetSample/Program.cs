@@ -1,3 +1,5 @@
+using AspNetSample;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile("appsettings.json", true, true);
@@ -12,7 +14,9 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
+
+app.UseHealthCheck("/health");
 
 app.UseAuthorization();
 
