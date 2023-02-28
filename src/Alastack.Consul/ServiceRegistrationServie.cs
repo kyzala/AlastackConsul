@@ -6,21 +6,22 @@ namespace Alastack.Consul
 {
     public class ServiceRegistrationServie : IHostedService
     {
-        private ConsulOptions _consulOptions;
-        //private IConsulClient _consulClient;
+        private readonly ConsulOptions _consulOptions;
+        private readonly IConsulClient _consulClient;
 
         public ServiceRegistrationServie(IOptions<ConsulOptions> options) 
         {
             _consulOptions = options.Value;
+            _consulClient = CreateConsulClient(_consulOptions);
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             var registration = _consulOptions.Registration ?? throw new ArgumentNullException(nameof(ServiceRegistration));
 
-            var consulClient = CreateConsulClient(_consulOptions);
+            //var consulClient = CreateConsulClient(_consulOptions);
 
-            await consulClient.Agent.ServiceRegister(new AgentServiceRegistration()
+            await _consulClient.Agent.ServiceRegister(new AgentServiceRegistration()
             {
                 ID = registration.Id ?? registration.BuildRegistrationId(),
                 Name = registration.Name ?? registration.BuildRegistrationName(),
@@ -40,13 +41,15 @@ namespace Alastack.Consul
                 }
                 //Checks = consulOptions.Application.Registration.Checks
             });
+            //consulClient.Dispose();
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {            
             var registration = _consulOptions.Registration ?? throw new ArgumentNullException(nameof(ServiceRegistration));
-            var consulClient = CreateConsulClient(_consulOptions); 
-            await consulClient.Agent.ServiceDeregister(registration.Id ?? registration.BuildRegistrationId());
+            //var consulClient = CreateConsulClient(_consulOptions); 
+            await _consulClient.Agent.ServiceDeregister(registration.Id ?? registration.BuildRegistrationId());
+            //consulClient.Dispose();
         }
 
         // Create Consul agent
