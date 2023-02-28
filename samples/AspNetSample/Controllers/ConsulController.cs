@@ -3,36 +3,35 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Sample.Configuration;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using System.Xml.Linq;
+using Alastack.Consul;
 
 namespace AspNetSample.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ConfigController : ControllerBase
+    public class ConsulController : ControllerBase
     {
-        private readonly ILogger<ConfigController> _logger;
+        private readonly ILogger<ConsulController> _logger;
         private readonly IConfiguration _configuration;
 
-        public ConfigController(ILogger<ConfigController> logger, IConfiguration configuration) 
+        public ConsulController(ILogger<ConsulController> logger, IConfiguration configuration) 
         {
             _logger = logger;
             _configuration = configuration;
         }
 
-        [HttpGet("raw")]
-        public IConfiguration GetConfig()
+        [HttpGet("options")]
+        public ConsulOptions? GetConfig()
         {
-            _logger.LogInformation(_configuration.ToString());
-
-            return _configuration;
-
+            return _configuration.GetSection("Consul").Get<ConsulOptions>();
         }
 
-        [HttpGet("{name}")]
+        [HttpGet("config/{name}")]
         public ConfigOptions? GetConfigOptions(string name)
         {
-            _logger.LogInformation(_configuration.GetSection(name).ToString());
-
             return _configuration.GetSection(name).Get<ConfigOptions>();
         }
     }
