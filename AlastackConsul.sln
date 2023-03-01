@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{EDC6A64F-D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alastack.Consul.Tests", "test\Alastack.Consul.Tests\Alastack.Consul.Tests.csproj", "{22F6DCC8-E2E1-48D1-A79F-35645E2DD9F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Configuration", "samples\Sample.Configuration\Sample.Configuration.csproj", "{034A2C09-803A-487A-A1FE-8E40FBD479F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Configuration", "samples\Sample.Configuration\Sample.Configuration.csproj", "{034A2C09-803A-487A-A1FE-8E40FBD479F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,6 +1,13 @@
 ﻿namespace Alastack.Consul;
-public static class ConsulOptionsExtentions
+
+public static class ServiceRegistrationExtentions
 {
+    public static string BuildRegistrationId(this ServiceRegistration registration)
+    {
+        registration.Id ??= $"{registration.Name}:{registration.Version}#{registration!.Address.Host}:{registration!.Address.Port}";
+        return registration.Id;
+    }
+
     public static string BuildRegistrationName(this ServiceRegistration registration)
     {
         if (registration.Name == null) 
@@ -8,12 +15,17 @@ public static class ConsulOptionsExtentions
             registration.Name = $"{registration.Name}";//:{service.Version}";
         }
         return registration.Name;
-    }
+    }    
 
-    public static string BuildRegistrationId(this ServiceRegistration registration)
+    public static string BuildHealthCheckId(this ServiceRegistration registration)
     {
-        registration.Id ??= $"{registration.Name}:{registration.Version}#{registration!.Address.Host}:{registration!.Address.Port}";
-        return registration.Id;
+        if (registration!.HealthCheck.CheckId == null)
+        {
+            var registrationName = registration.BuildRegistrationName();
+            registration.HealthCheck.CheckId = $"{registrationName}_hk_{Guid.NewGuid():n}";
+        }
+        return registration.HealthCheck.CheckId;
+
     }
 
     public static string BuildHealthCheckName(this ServiceRegistration registration)
@@ -21,7 +33,7 @@ public static class ConsulOptionsExtentions
         if (registration!.HealthCheck.Name == null)
         {
             var registrationName = registration.BuildRegistrationName();
-            registration.HealthCheck.Name = $"{registrationName}_healthcheck";
+            registration.HealthCheck.Name = $"{registrationName}_hk";
         }
         return registration.HealthCheck.Name;
 

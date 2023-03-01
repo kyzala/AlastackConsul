@@ -7,21 +7,26 @@ namespace Alastack.Consul
     public class ServiceRegistrationServie : IHostedService
     {
         private readonly ConsulOptions _consulOptions;
-        private readonly IConsulClient _consulClient;
+        //private readonly IConsulClient _consulClient;
 
         public ServiceRegistrationServie(IOptions<ConsulOptions> options) 
         {
+            if (options.Value.Registration == null) 
+            {
+                throw new ArgumentNullException(nameof(IOptions<ConsulOptions>.Value.Registration));
+            }
             _consulOptions = options.Value;
-            _consulClient = CreateConsulClient(_consulOptions);
+            //_consulOptions.Registration.Id ??= _consulOptions.Registration.BuildRegistrationId();
+            //_consulOptions.Registration.Name ??= _consulOptions.Registration.BuildRegistrationName();
+            //_consulClient = CreateConsulClient(_consulOptions);
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            var registration = _consulOptions.Registration ?? throw new ArgumentNullException(nameof(ServiceRegistration));
+            var registration = _consulOptions.Registration!;
+            var consulClient = CreateConsulClient(_consulOptions);
 
-            //var consulClient = CreateConsulClient(_consulOptions);
-
-            await _consulClient.Agent.ServiceRegister(new AgentServiceRegistration()
+            await consulClient.Agent.ServiceRegister(new AgentServiceRegistration()
             {
                 ID = registration.Id ?? registration.BuildRegistrationId(),
                 Name = registration.Name ?? registration.BuildRegistrationName(),
@@ -32,24 +37,24 @@ namespace Alastack.Consul
                 EnableTagOverride = registration.EnableTagOverride,
                 Check = new AgentServiceCheck
                 {
-                    //ID = "service:WebApi:1.0.0#127.0.0.1:7001",
+                    //CheckID = "service:WebApi:1.0.0#127.0.0.1:7001",
                     Name = registration.HealthCheck.Name ?? registration.BuildHealthCheckName(),
                     DeregisterCriticalServiceAfter = registration.HealthCheck.DeregisterCriticalServiceAfter,
                     Interval = registration.HealthCheck.Interval,
                     HTTP = registration.BuildHealthCheckAddress(),
                     Timeout = registration.HealthCheck.Timeout
                 }
-                //Checks = consulOptions.Application.Registration.Checks
-            });
-            //consulClient.Dispose();
+                //Checks = registration.Checks
+            }, cancellationToken);
+            consulClient.Dispose();
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {            
-            var registration = _consulOptions.Registration ?? throw new ArgumentNullException(nameof(ServiceRegistration));
-            //var consulClient = CreateConsulClient(_consulOptions); 
-            await _consulClient.Agent.ServiceDeregister(registration.Id ?? registration.BuildRegistrationId());
-            //consulClient.Dispose();
+            var registration = _consulOptions.Registration!;
+            var consulClient = CreateConsulClient(_consulOptions); 
+            await consulClient.Agent.ServiceDeregister(registration.Id ?? registration.BuildRegistrationId(), cancellationToken);
+            consulClient.Dispose();
         }
 
         // Create Consul agent

@@ -5,8 +5,6 @@ public sealed class ConsulAgent
 
     public Uri Address { get; init; } = default!;
 
-    //public int Port { get; init; }
-
     public string? Token { get; init; }
 
     public TimeSpan? WaitTime { get; init; }

@@ -11,15 +11,15 @@ public static class ConsulRegistrationDefaults
 
 public static class ConsulConfigurationDefaults
 {
-    public const string Namespace = "ns_default";
+    public const string Namespace = "ns.default";
 
-    public const string Group = "gp_default";
+    public const string Group = "gp.default";
 
     public const bool Optional = true;
 
     public const bool ReloadOnChange = true;
 
-    public const bool IgnoreException = true;
+    public const bool IgnoreException = false;
 
     public static readonly TimeSpan PollingWaitTime = TimeSpan.FromSeconds(5);
 

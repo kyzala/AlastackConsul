@@ -52,54 +52,21 @@ namespace Microsoft.Extensions.Configuration
                     {
                         options.Optional = configurationSet.Optional;
                         options.ReloadOnChange = configurationSet.ReloadOnChange;
-                        options.PollWaitTime = configurationSet.PollingWaitTime ?? configuration.PollingWaitTime;
+                        options.PollWaitTime = configurationSet.PollingWaitTime;
                         options.ConsulConfigurationOptions =
                             config =>
                             {
-                                config.Address = consulOptions.Agent.Address;//new Uri($"{agent.Address}:{agent.}");
+                                config.Address = consulOptions.Agent.Address;
                                 config.Token = consulOptions.Agent.Token;
                                 config.Datacenter = consulOptions.Agent.Datacenter;
                                 config.WaitTime = consulOptions.Agent.WaitTime;
                             };
-                        options.OnLoadException = exceptionContext => { exceptionContext.Ignore = configurationSet.IgnoreException ?? configuration.IgnoreException; };
+                        options.OnLoadException = exceptionContext => { exceptionContext.Ignore = configurationSet.IgnoreException; };
                     });
                 }
             }
 
             return builder;
         }
-
-        //private static void AddConsulConfiguration(this IConfigurationBuilder builder, ConsulOptions consulOptions, ConfigurationSetting configurationSetting, string configurationPath) 
-        //{
-        //    if (consulOptions.Agent == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(consulOptions.Agent));
-        //    }
-        //    if (configurationSetting == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(configurationSetting));
-        //    }
-        //    if (configurationPath == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(configurationPath));
-        //    }
-
-        //    var pathKey = $"{configurationPath}/{configurationSetting.Name}";
-        //    builder.AddConsul(pathKey, options =>
-        //    {
-        //        options.Optional = configurationSetting.Optional;
-        //        options.ReloadOnChange = configurationSetting.ReloadOnChange;
-        //        options.PollWaitTime = ;
-        //        options.ConsulConfigurationOptions =
-        //            config =>
-        //            {
-        //                config.Address = agent.Address;//new Uri($"{agent.Address}:{agent.}");
-        //                config.Token = agent.Token;
-        //                config.Datacenter = agent.Datacenter;
-        //                config.WaitTime = agent.WaitTime;
-        //            };
-        //        options.OnLoadException = exceptionContext => { exceptionContext.Ignore = configurationSetting.IgnoreException; };
-        //    });
-        //}
     }
 }

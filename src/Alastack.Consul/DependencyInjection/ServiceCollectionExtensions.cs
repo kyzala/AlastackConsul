@@ -3,6 +3,7 @@ using Consul;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -39,6 +40,7 @@ public static class ServiceCollectionExtensions
         }
 
         services.Configure<ConsulOptions>(configuration.GetSection(key));
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<ConsulOptions>, ConsulPostConfigureOptions>());
         services.AddHostedService<ServiceRegistrationServie>();
         return services;
     }

@@ -3,33 +3,33 @@
     "Agent": {
       "Datacenter": "dc1",
       "Address": "http://127.0.0.1:8500",
-      //"Token": "cd40a34c-8628-ae63-9035-ed661a6e4520",
+      //"Token": "045ee828-2fa4-45b7-b01d-d9fb3937da54",
       "WaitTime": "00:00:05"
     },
     "Configuration": {
-      "PathBase": "AspNetSample/Configuration",
-      "Namespace": "ns_default",
-      //"PollingWaitTime": "00:00:05",
-      //"IgnoreException": false,
+      "PathBase": "alastack/aspnetsample",
+      "Namespace": "ns.default",
       "Sets": [
         {
           "Id": "appsettings.json",
-          "Group": "gp_default"
+          "Group": "gp.default"
         },
         {
-          "Id": "config0.json",
-          "Group": "gp_default"
+          "Id": "config.json",
+          "Group": "gp.group1"
         },
         {
           "Id": "config_other.json",
-          "Group": "group1",
+          "Group": "gp.group1",
           "Optional": false,
-          "ReloadOnChange": true
+          "ReloadOnChange": false,
+          "PollingWaitTime": "00:00:10",
+          "IgnoreException": true
         }
       ],
       "Metadata": {
-        "aa": "ed661a6e4520",
-        "bb": ""
+        "aa": "value1",
+        "bb": "value2"
       }
     },
     "Registration": {
@@ -37,17 +37,17 @@
       "Name": "AspNetSample",
       "Version": "1.0.0",
       "Address": "http://127.0.0.1:5000",
-      "Tags": [ "test", "aspnet" ],
+      "Tags": [ "apiserver", "test" ],
       "EnableTagOverride": true,
       "Metadata": {
-        "GenerateServiceRegistrationId": "true",
-        "GenerateServiceRegistrationName": "true"
+        "GenerateRegistrationId": "true",
+        "GenerateRegistrationName": "true"
       },
       "HealthCheck": {
+        "CheckId": null,
         "Name": "AspNetSample_HealthCheck",
         "DeregisterCriticalServiceAfter": "00:01:00",
         "Interval": "00:00:15",
-        //"Health": "/health",
         "Health": "http://127.0.0.1:5000/health",
         "Timeout": "00:00:10"
       }
