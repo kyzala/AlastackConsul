@@ -1,72 +1,74 @@
 ﻿using Alastack.Consul;
 using Winton.Extensions.Configuration.Consul;
 
-namespace Microsoft.Extensions.Configuration
+namespace Microsoft.Extensions.Configuration;
+
+/// <summary>
+/// Extension methods to add consul configuration.
+/// </summary>
+public static class ServiceConfigurationBuilderExtensions
 {
-    public static class ServiceConfigurationBuilderExtensions
+    public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder builder, string key = "Consul")
     {
-        public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder builder, string key = "Consul")
+        if (builder == null)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            builder.AddConsulConfiguration(builder.Build(), key);
-            return builder;
+            throw new ArgumentNullException(nameof(builder));
         }
 
-        public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder builder, IConfiguration configuration, string key = "Consul")
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
+        builder.AddConsulConfiguration(builder.Build(), key);
+        return builder;
+    }
 
-            var consulOptions = configuration.GetSection(key).Get<ConsulOptions>();
-            return builder.AddConsulConfiguration(consulOptions!);
+    public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder builder, IConfiguration configuration, string key = "Consul")
+    {
+        if (builder == null)
+        {
+            throw new ArgumentNullException(nameof(builder));
+        }
+        if (configuration == null)
+        {
+            throw new ArgumentNullException(nameof(configuration));
+        }
+        if (key == null)
+        {
+            throw new ArgumentNullException(nameof(key));
         }
 
-        public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder builder, ConsulOptions consulOptions)
+        var consulOptions = configuration.GetSection(key).Get<ConsulOptions>();
+        return builder.AddConsulConfiguration(consulOptions!);
+    }
+
+    public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder builder, ConsulOptions consulOptions)
+    {
+        if (consulOptions == null)
         {
-            if (consulOptions == null)
+            throw new ArgumentNullException(nameof(ConsulOptions));
+        }
+        if (consulOptions.Configuration?.Sets != null)
+        {
+            var configuration = consulOptions.Configuration;
+            var pathPrefix = $"{configuration.PathBase}/{configuration.Namespace}";
+            foreach (var configurationSet in configuration.Sets)
             {
-                throw new ArgumentNullException(nameof(ConsulOptions));
-            }
-            if (consulOptions.Configuration?.Sets != null)
-            {
-                var configuration = consulOptions.Configuration;
-                var pathPrefix = $"{configuration.PathBase}/{configuration.Namespace}";
-                foreach (var configurationSet in configuration.Sets)
+                var pathKey = $"{pathPrefix}/{configurationSet.Group}/{configurationSet.Id}";
+                builder.AddConsul(pathKey, options =>
                 {
-                    var pathKey = $"{pathPrefix}/{configurationSet.Group}/{configurationSet.Id}";
-                    builder.AddConsul(pathKey, options =>
-                    {
-                        options.Optional = configurationSet.Optional;
-                        options.ReloadOnChange = configurationSet.ReloadOnChange;
-                        options.PollWaitTime = configurationSet.PollingWaitTime;
-                        options.ConsulConfigurationOptions =
-                            config =>
-                            {
-                                config.Address = consulOptions.Agent.Address;
-                                config.Token = consulOptions.Agent.Token;
-                                config.Datacenter = consulOptions.Agent.Datacenter;
-                                config.WaitTime = consulOptions.Agent.WaitTime;
-                            };
-                        options.OnLoadException = exceptionContext => { exceptionContext.Ignore = configurationSet.IgnoreException; };
-                    });
-                }
+                    options.Optional = configurationSet.Optional;
+                    options.ReloadOnChange = configurationSet.ReloadOnChange;
+                    options.PollWaitTime = configurationSet.PollingWaitTime;
+                    options.ConsulConfigurationOptions =
+                        config =>
+                        {
+                            config.Address = consulOptions.Agent.Address;
+                            config.Token = consulOptions.Agent.Token;
+                            config.Datacenter = consulOptions.Agent.Datacenter;
+                            config.WaitTime = consulOptions.Agent.WaitTime;
+                        };
+                    options.OnLoadException = exceptionContext => { exceptionContext.Ignore = configurationSet.IgnoreException; };
+                });
             }
-
-            return builder;
         }
+
+        return builder;
     }
 }

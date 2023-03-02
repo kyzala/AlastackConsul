@@ -1,50 +1,46 @@
 ﻿namespace Alastack.Consul;
 
+/// <summary>
+/// ServiceRegistration Extentions.
+/// </summary>
 public static class ServiceRegistrationExtentions
 {
+    /// <summary>
+    /// Build a service registration id.
+    /// </summary>
+    /// <param name="registration"><see cref="ServiceRegistration"/></param>
+    /// <returns>A new service registration id.</returns>
     public static string BuildRegistrationId(this ServiceRegistration registration)
     {
-        registration.Id ??= $"{registration.Name}:{registration.Version}#{registration!.Address.Host}:{registration!.Address.Port}";
-        return registration.Id;
+        return $"{registration.Name}:{registration.Version}#{registration!.Address.Host}:{registration!.Address.Port}";
     }
 
-    public static string BuildRegistrationName(this ServiceRegistration registration)
-    {
-        if (registration.Name == null) 
-        {
-            registration.Name = $"{registration.Name}";//:{service.Version}";
-        }
-        return registration.Name;
-    }    
-
+    /// <summary>
+    /// Build a health check id.
+    /// </summary>
+    /// <param name="registration"><see cref="ServiceRegistration"/></param>
+    /// <returns>A new service health check id.</returns>
     public static string BuildHealthCheckId(this ServiceRegistration registration)
-    {
-        if (registration!.HealthCheck.CheckId == null)
-        {
-            var registrationName = registration.BuildRegistrationName();
-            registration.HealthCheck.CheckId = $"{registrationName}_hk_{Guid.NewGuid():n}";
-        }
-        return registration.HealthCheck.CheckId;
-
+    {        
+        return $"{registration.Name}_hk_{Guid.NewGuid():n}";
     }
 
+    /// <summary>
+    /// Build a health check name.
+    /// </summary>
+    /// <param name="registration"><see cref="ServiceRegistration"/></param>
+    /// <returns>A new service health check name.</returns>
     public static string BuildHealthCheckName(this ServiceRegistration registration)
     {
-        if (registration!.HealthCheck.Name == null)
-        {
-            var registrationName = registration.BuildRegistrationName();
-            registration.HealthCheck.Name = $"{registrationName}_hk";
-        }
-        return registration.HealthCheck.Name;
-
+        return $"{registration.Name}_hk";
     }
 
-    public static string BuildHealthCheckAddress(this ServiceRegistration registration) 
-    {
-        if (Uri.IsWellFormedUriString(registration!.HealthCheck.Health, UriKind.Relative)) 
-        {
-            registration.HealthCheck.Health = new Uri(registration.Address, registration.HealthCheck.Health).ToString();
-        }
-        return registration.HealthCheck.Health;
-    }
+    //public static string NormalizeHealthCheckAddress(this ServiceRegistration registration) 
+    //{
+    //    if (Uri.IsWellFormedUriString(registration.HealthCheck.Health, UriKind.Relative)) 
+    //    {
+    //        return new Uri(registration.Address, registration.HealthCheck.Health).ToString();
+    //    }
+    //    return registration.HealthCheck.Health;
+    //}
 }

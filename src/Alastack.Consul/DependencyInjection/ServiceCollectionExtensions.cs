@@ -1,12 +1,13 @@
 ﻿using Alastack.Consul;
-using Consul;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
+/// <summary>
+/// Extension methods to configure <see cref="ConsulOptions"/>.
+/// </summary>
 public static class ServiceCollectionExtensions
 {    
     public static IServiceCollection AddConsul(this IServiceCollection services, Action<ConsulOptions> configureOptions)
