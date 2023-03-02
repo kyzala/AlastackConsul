@@ -40,8 +40,9 @@
       "Tags": [ "apiserver", "test" ],
       "EnableTagOverride": true,
       "Metadata": {
-        "GenerateRegistrationId": "true",
-        "GenerateRegistrationName": "true"
+        "AutoRegistrationId": "true",
+        "AutoHealthCheckId": "true",
+        "AutoHealthCheckName": "true"
       },
       "HealthCheck": {
         "CheckId": null,
