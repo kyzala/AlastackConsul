@@ -33,19 +33,20 @@
       }
     },
     "Registration": {
-      "Id": "aspnetsample1",
+      //"Id": "aspnetsample1",
       "Name": "AspNetSample",
       "Version": "1.0.0",
       "Address": "http://127.0.0.1:5000",
       "Tags": [ "apiserver", "test" ],
       "EnableTagOverride": true,
       "Metadata": {
-        "GenerateRegistrationId": "true",
-        "GenerateRegistrationName": "true"
+        "AutoSetRegistrationId": "true",
+        "AutoSetHealthCheckId": "true",
+        "AutoSetHealthCheckName": "true"
       },
       "HealthCheck": {
-        "CheckId": null,
-        "Name": "AspNetSample_HealthCheck",
+        //"CheckId": null,
+        //"Name": "AspNetSample_HealthCheck",
         "DeregisterCriticalServiceAfter": "00:01:00",
         "Interval": "00:00:15",
         "Health": "http://127.0.0.1:5000/health",
