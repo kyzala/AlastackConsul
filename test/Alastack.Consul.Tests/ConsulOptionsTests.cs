@@ -61,7 +61,7 @@ namespace Alastack.Consul.Tests
             Assert.Equal("AspNetSample_HealthCheck", options.Registration.HealthCheck.Name);
             Assert.Equal(TimeSpan.FromMinutes(1), options.Registration.HealthCheck.DeregisterCriticalServiceAfter);
             Assert.Equal(TimeSpan.FromSeconds(30), options.Registration.HealthCheck.Interval);
-            Assert.Equal("http://127.0.0.1:5000/health", options.Registration.HealthCheck.Health);
+            Assert.Equal(new Uri("http://127.0.0.1:5000/health"), options.Registration.HealthCheck.Health);
             Assert.Equal(TimeSpan.FromSeconds(20), options.Registration.HealthCheck.Timeout);
         }
 
@@ -106,7 +106,7 @@ namespace Alastack.Consul.Tests
             Assert.Equal("AspNetSample_hk", options.Registration.HealthCheck.Name);
             Assert.Null(options.Registration.HealthCheck.DeregisterCriticalServiceAfter);
             Assert.Equal(TimeSpan.FromSeconds(15), options.Registration.HealthCheck.Interval);
-            Assert.Equal("http://127.0.0.1:5000/health", options.Registration.HealthCheck.Health);
+            Assert.Equal("http://127.0.0.1:5000/health", options.Registration.HealthCheck.Health.ToString());
             Assert.Equal(TimeSpan.FromSeconds(10), options.Registration.HealthCheck.Timeout);
         }
 
