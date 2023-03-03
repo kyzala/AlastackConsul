@@ -1,0 +1,95 @@
+{
+  "Consul1": {
+    "Agent": {
+      "Datacenter": "dc1",
+      "Address": "http://127.0.0.1:8500",
+      "Token": "045ee828-2fa4-45b7-b01d-d9fb3937da54",
+      "WaitTime": "00:00:05"
+    },
+    "Configuration": {
+      "PathBase": "alastack/aspnetsample",
+      "Namespace": "ns.default",
+      "Sets": [
+        {
+          "Id": "appsettings.json"
+        },
+        {
+          "Id": "config.json",
+          "Group": "gp.group1",
+          "Optional": true,
+          "ReloadOnChange": true,
+          "PollingWaitTime": "00:00:10",
+          "IgnoreException": true
+        }
+      ],
+      "Metadata": {
+        "aa": "value1",
+        "bb": "value2"
+      }
+    },
+    "Registration": {
+      "Id": "aspnetsample1",
+      "Name": "AspNetSample",
+      "Version": "1.0.0",
+      "Address": "http://127.0.0.1:5000",
+      "Tags": [ "apiserver", "test" ],
+      "EnableTagOverride": true,
+      "Metadata": {
+        "AutoRegistrationId": "true",
+        "AutoHealthCheckId": "true",
+        "AutoHealthCheckName": "true"
+      },
+      "HealthCheck": {
+        "CheckId": "AspNetSample_HealthCheck1",
+        "Name": "AspNetSample_HealthCheck",
+        "DeregisterCriticalServiceAfter": "00:01:00",
+        "Interval": "00:00:30",
+        "Health": "http://127.0.0.1:5000/health",
+        "Timeout": "00:00:20"
+      }
+    }
+  },
+  "Consul2": {
+    "Agent": {
+      //"Datacenter": "dc1",
+      "Address": "http://127.0.0.1:8500",
+      //"Token": "045ee828-2fa4-45b7-b01d-d9fb3937da54",
+      //"WaitTime": "00:00:05"
+    },
+    "Configuration": {
+      "PathBase": "alastack/aspnetsample",
+      //"Namespace": "ns.default",
+      "Sets": [
+        //{
+        //  "Id": "appsettings.json",
+        //  "Group": "gp.default"
+        //}
+      ]//,
+      //"Metadata": {
+      //  "aa": "value1",
+      //  "bb": "value2"
+      //}
+    },
+    "Registration": {
+      //"Id": "aspnetsample1",
+      "Name": "AspNetSample",
+      //"Version": "1.0.0",
+      "Address": "http://127.0.0.1:5000",
+      //"Tags": [ "apiserver", "test" ],
+      //"EnableTagOverride": true,
+      //"Metadata": {
+      //  "AutoRegistrationId": "true",
+      //  "AutoHealthCheckId": "true",
+      //  "AutoHealthCheckName": "true"
+      //},
+      "HealthCheck": {
+        //"CheckId": AspNetSample_HealthCheck1,
+        //"Name": "AspNetSample_HealthCheck",
+        //"DeregisterCriticalServiceAfter": "00:01:00",
+        //"Interval": "00:00:15",
+        "Health": "http://127.0.0.1:5000/health"//,
+        //"Timeout": "00:00:10"
+      }
+    }
+  }
+}

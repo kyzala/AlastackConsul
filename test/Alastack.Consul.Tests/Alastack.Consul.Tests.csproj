@@ -21,4 +21,14 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Alastack.Consul\Alastack.Consul.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="consul_test.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
