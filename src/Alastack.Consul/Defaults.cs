@@ -4,12 +4,7 @@
 /// Service registration defaults.
 /// </summary>
 public static class ServiceRegistrationDefaults
-{
-    /// <summary>
-    /// Default DeregisterCriticalServiceAfter for the service registration.
-    /// </summary>
-    public static readonly TimeSpan DeregisterCriticalServiceAfter = TimeSpan.FromMinutes(1);
-
+{    
     /// <summary>
     /// Default CheckInterval for the service registration.
     /// </summary>
@@ -19,6 +14,11 @@ public static class ServiceRegistrationDefaults
     /// Default CheckTimeout for the service registration.
     /// </summary>
     public static readonly TimeSpan CheckTimeout = TimeSpan.FromSeconds(10);
+
+    /// <summary>
+    /// Default version for the service.
+    /// </summary>
+    public const string Version = "1.0.0";
 }
 
 /// <summary>
@@ -35,12 +35,6 @@ public static class AppConfigurationDefaults
     /// Default Group for the application configuration.
     /// </summary>
     public const string Group = "gp.default";
-
-    //public const bool Optional = true;
-
-    //public const bool ReloadOnChange = true;
-
-    //public const bool IgnoreException = false;
 
     /// <summary>
     /// Default PollingWaitTime for the application configuration.

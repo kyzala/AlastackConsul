@@ -19,7 +19,7 @@ public sealed class ServiceHealthCheck
     /// If a health check is in the critical state for more than this configured value,
     /// then its associated service (and all of its associated checks) will automatically be deregistered.
     /// </summary>
-    public TimeSpan? DeregisterCriticalServiceAfter { get; set; } = ServiceRegistrationDefaults.DeregisterCriticalServiceAfter;
+    public TimeSpan? DeregisterCriticalServiceAfter { get; set; }
 
     /// <summary>
     /// Service health check interval.

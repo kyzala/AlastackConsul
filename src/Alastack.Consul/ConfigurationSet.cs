@@ -21,14 +21,14 @@ public sealed class ConfigurationSet
     public string? Description { get; set; }
 
     /// <summary>
-    /// Whether the configuration set is optional. Defaults to <c>true</c>.
+    /// Whether the configuration set is optional. Defaults to <c>false</c>.
     /// </summary>
-    public bool Optional { get; set; } = true;
+    public bool Optional { get; set; }
 
     /// <summary>
-    /// Whether the configuration should be reloaded if the configuration set changes.  Defaults to <c>true</c>.
+    /// Whether the configuration should be reloaded if the configuration set changes.  Defaults to <c>false</c>.
     /// </summary>
-    public bool ReloadOnChange { get; set; } = true;
+    public bool ReloadOnChange { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum amount of time to wait for changes to a set id if <see cref="ConfigurationSet.ReloadOnChange"/> is true.
@@ -36,7 +36,7 @@ public sealed class ConfigurationSet
     public TimeSpan PollingWaitTime { get; set; } = AppConfigurationDefaults.PollingWaitTime;
 
     /// <summary>
-    // Indicating whether the exception should be ignored. Set to true to prevent the exception from being thrown.
+    /// Indicating whether the exception should be ignored. Set to true to prevent the exception from being thrown. Defaults to <c>false</c>.
     /// </summary>
     public bool IgnoreException { get; set; }
 }

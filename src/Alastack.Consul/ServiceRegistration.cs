@@ -18,7 +18,7 @@ public sealed class ServiceRegistration
     /// <summary>
     /// Configure service Version.
     /// </summary>
-    public string? Version { get; set; }
+    public string Version { get; set; } = ServiceRegistrationDefaults.Version;
 
     /// <summary>
     /// Configure service address.
