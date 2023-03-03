@@ -29,7 +29,7 @@ public sealed class ServiceHealthCheck
     /// <summary>
     /// Service health check endpoint.
     /// </summary>
-    public string Health { get; set; } = default!;
+    public Uri Health { get; set; } = default!;
 
     /// <summary>
     ///  Service health timeout value.

@@ -46,7 +46,7 @@ public class ServiceRegistrationServie : IHostedService
                 //Name = registration.HealthCheck.Name,
                 DeregisterCriticalServiceAfter = registration.HealthCheck.DeregisterCriticalServiceAfter,
                 Interval = registration.HealthCheck.Interval,
-                HTTP = registration.HealthCheck.Health,
+                HTTP = registration.HealthCheck.Health.ToString(),
                 Timeout = registration.HealthCheck.Timeout
             }
             //Checks = registration.Checks
