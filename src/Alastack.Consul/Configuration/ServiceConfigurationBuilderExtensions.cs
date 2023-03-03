@@ -8,6 +8,12 @@ namespace Microsoft.Extensions.Configuration;
 /// </summary>
 public static class ServiceConfigurationBuilderExtensions
 {
+    /// <summary>
+    ///  Adds Consul as a configuration source to the <see cref="IConfigurationBuilder" />.
+    /// </summary>
+    /// <param name="builder">The <see cref="IConfigurationBuilder" /> to add to.</param>
+    /// <param name="key">The Consul configuration key. Defaults to <c>Consul</c>.</param>
+    /// <returns>The <see cref="IConfigurationBuilder" />.</returns>
     public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder builder, string key = "Consul")
     {
         if (builder == null)
@@ -19,6 +25,13 @@ public static class ServiceConfigurationBuilderExtensions
         return builder;
     }
 
+    /// <summary>
+    /// Adds Consul as a configuration source to the <see cref="IConfigurationBuilder" />.
+    /// </summary>
+    /// <param name="builder">The <see cref="IConfigurationBuilder" /> to add to.</param>
+    /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
+    /// <param name="key">The Consul configuration key. Defaults to <c>Consul</c>.</param>
+    /// <returns>The <see cref="IConfigurationBuilder" />.</returns>
     public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder builder, IConfiguration configuration, string key = "Consul")
     {
         if (builder == null)
@@ -38,6 +51,12 @@ public static class ServiceConfigurationBuilderExtensions
         return builder.AddConsulConfiguration(consulOptions!);
     }
 
+    /// <summary>
+    ///  Adds Consul as a configuration source to the <see cref="IConfigurationBuilder" />.
+    /// </summary>
+    /// <param name="builder">The <see cref="IConfigurationBuilder" /> to add to.</param>
+    /// <param name="consulOptions">The <see cref="ConsulOptions" />.</param>
+    /// <returns>The <see cref="IConfigurationBuilder" />.</returns>
     public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder builder, ConsulOptions consulOptions)
     {
         if (consulOptions == null)

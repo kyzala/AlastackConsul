@@ -24,6 +24,10 @@ public class ConsulPostConfigureOptions : IPostConfigureOptions<ConsulOptions>
             {
                 options.Registration.Id = options.Registration.BuildRegistrationId();
             }
+            //if (String.IsNullOrWhiteSpace(options.Registration.Version))
+            //{
+            //    options.Registration.Version = ServiceRegistrationDefaults.Version;
+            //}
             if (String.IsNullOrWhiteSpace(options.Registration.HealthCheck.Name))
             {
                 options.Registration.HealthCheck.Name = options.Registration.BuildHealthCheckName();
@@ -32,6 +36,8 @@ public class ConsulPostConfigureOptions : IPostConfigureOptions<ConsulOptions>
             {
                 options.Registration.HealthCheck.CheckId = options.Registration.BuildHealthCheckId();
             }
+
+            
 
             //options.Registration.HealthCheck.Health = options.Registration.NormalizeHealthCheckAddress();
         }
