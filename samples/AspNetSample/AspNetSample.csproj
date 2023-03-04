@@ -1,14 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="config1.json" />
+    <Content Remove="config2.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="config2.json" />
+    <None Include="config1.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Alastack.Consul\Alastack.Consul.csproj" />
-    <ProjectReference Include="..\Sample.Configuration\Sample.Configuration.csproj" />
+    <ProjectReference Include="..\Sample.Common\Sample.Common.csproj" />
   </ItemGroup>
 
 </Project>

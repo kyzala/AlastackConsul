@@ -1,12 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Alastack.Consul;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Sample.Configuration;
-using System.Text.Json.Serialization;
-using System.Text.Json;
-using System.Xml.Linq;
-using Alastack.Consul;
+using Sample.Common;
 
 namespace AspNetSample.Controllers
 {

@@ -1,0 +1,22 @@
+{
+  "Config1": {
+    "Name": "config1",
+    "Items": [
+      {
+        "Key": "key1",
+        "Value": "value1"
+      },
+      {
+        "Key": "key2",
+        "Value": "value2",
+        "OrderId": 1,
+        "DateTime": "2023-02-25",
+        "Tags": [ "a", "b", "c" ],
+        "Metadata": {
+          "name1": "value1",
+          "name2": "value2"
+        }
+      }
+    ]
+  }
+}

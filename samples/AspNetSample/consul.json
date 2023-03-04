@@ -11,15 +11,15 @@
       "Namespace": "ns.default",
       "Sets": [
         {
-          "Id": "appsettings.json",
+          "Id": "logging.json",
           "Group": "gp.default"
         },
         {
-          "Id": "config.json",
+          "Id": "config1.json",
           "Group": "gp.group1"
         },
         {
-          "Id": "config_other.json",
+          "Id": "config2.json",
           "Group": "gp.group1",
           "Optional": false,
           "ReloadOnChange": false,
