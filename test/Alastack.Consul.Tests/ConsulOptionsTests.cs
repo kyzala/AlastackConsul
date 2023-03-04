@@ -33,6 +33,7 @@ namespace Alastack.Consul.Tests
             Assert.False(options.Configuration.Sets[0].ReloadOnChange);
             Assert.False(options.Configuration.Sets[0].IgnoreException);
             Assert.Equal(TimeSpan.FromSeconds(5), options.Configuration.Sets[0].PollingWaitTime);
+            Assert.Null(options.Configuration.Sets[0].Description);
 
             Assert.Equal("config.json", options.Configuration.Sets[1].Id);
             Assert.Equal("gp.group1", options.Configuration.Sets[1].Group);
@@ -40,6 +41,7 @@ namespace Alastack.Consul.Tests
             Assert.True(options.Configuration.Sets[1].ReloadOnChange);
             Assert.True(options.Configuration.Sets[1].IgnoreException);
             Assert.Equal(TimeSpan.FromSeconds(10), options.Configuration.Sets[1].PollingWaitTime);
+            Assert.Equal("some description", options.Configuration.Sets[1].Description);
 
             Assert.Equal(2, options.Configuration.Metadata!.Count);
             Assert.Equal("value1", options.Configuration.Metadata["aa"]);

@@ -19,7 +19,8 @@
           "Optional": true,
           "ReloadOnChange": true,
           "PollingWaitTime": "00:00:10",
-          "IgnoreException": true
+          "IgnoreException": true,
+          "Description": "some description"
         }
       ],
       "Metadata": {
