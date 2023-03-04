@@ -10,6 +10,7 @@
 	<Copyright>Copyright © 2023 kyzala</Copyright>
 	<PackageTags>Alastack;Consul;Configuration</PackageTags>
 	<Description>Alastack.Consul supports Service Discovery and Configuration with Hashicorp Consul.</Description>
+	<PackageIcon>icon.png</PackageIcon>
 	<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	<PackageProjectUrl>https://github.com/kyzala/AlastackConsul</PackageProjectUrl>
 	<RepositoryUrl>https://github.com/kyzala/AlastackConsul</RepositoryUrl>
@@ -27,5 +28,7 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
     <PackageReference Include="Winton.Extensions.Configuration.Consul" Version="3.2.0" />
   </ItemGroup>
-
+  <ItemGroup>
+	<None Include="..\..\icon.png" Pack="true" PackagePath="\" Visible="False" />
+  </ItemGroup>
 </Project>
