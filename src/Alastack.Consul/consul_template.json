@@ -1,18 +1,18 @@
 {
   "Consul": {
     "Agent": {
-      "Datacenter": "dc1",
+      "Datacenter": "dc1", // Default to "dc1"
       "Address": "http://127.0.0.1:8500",
-      //"Token": "045ee828-2fa4-45b7-b01d-d9fb3937da54",
-      "WaitTime": "00:00:05"
+      "Token": "045ee828-2fa4-45b7-b01d-d9fb3937da54", // Default to null
+      "WaitTime": "00:00:05" // Default to null
     },
     "Configuration": {
       "PathBase": "alastack/aspnetsample",
-      "Namespace": "ns.default",
+      "Namespace": "ns.default", // Default to "ns.default"
       "Sets": [
         {
           "Id": "appsettings.json",
-          "Group": "gp.default"
+          "Group": "gp.default" // Default to "gp.default"
         },
         {
           "Id": "config.json",
@@ -24,7 +24,8 @@
           "Optional": false,
           "ReloadOnChange": false,
           "PollingWaitTime": "00:00:10",
-          "IgnoreException": true
+          "IgnoreException": true,
+          "Description": "description"
         }
       ],
       "Metadata": {
@@ -33,24 +34,24 @@
       }
     },
     "Registration": {
-      "Id": "aspnetsample1",
+      "Id": "aspnetsample1", //
       "Name": "AspNetSample",
-      "Version": "1.0.0",
+      "Version": "1.0.0", // Default to "1.0.0"
       "Address": "http://127.0.0.1:5000",
       "Tags": [ "apiserver", "test" ],
-      "EnableTagOverride": true,
+      "EnableTagOverride": true, // Default to false
       "Metadata": {
         "AutoRegistrationId": "true",
         "AutoHealthCheckId": "true",
         "AutoHealthCheckName": "true"
       },
       "HealthCheck": {
-        "CheckId": null,
-        "Name": "AspNetSample_HealthCheck",
-        "DeregisterCriticalServiceAfter": "00:01:00",
-        "Interval": "00:00:15",
+        "CheckId": "AspNetSample_HealthCheck1", // 
+        "Name": "AspNetSample_HealthCheck", // Default to "{Registration.Name}_hk"
+        "DeregisterCriticalServiceAfter": "00:01:00", // Default to null
+        "Interval": "00:00:15", // Default to "00:00:15"
         "Health": "http://127.0.0.1:5000/health",
-        "Timeout": "00:00:10"
+        "Timeout": "00:00:10" // Default to "00:00:10"
       }
     }
   }
