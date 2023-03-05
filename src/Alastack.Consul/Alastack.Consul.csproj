@@ -8,8 +8,8 @@
 	<Version>1.0.0</Version>
 	<Authors>kyzala</Authors>
 	<Copyright>Copyright © 2023 kyzala</Copyright>
-	<PackageTags>Alastack;Consul;Configuration</PackageTags>
-	<Description>Alastack.Consul supports Service Discovery and Configuration with Hashicorp Consul.</Description>
+	<PackageTags>Alastack;Consul;Configuration;Service-Discovery</PackageTags>
+	<Description>Alastack.Consul supports Configuration and Service Discovery with Hashicorp Consul.</Description>
 	<PackageIcon>icon.png</PackageIcon>
 	<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	<PackageProjectUrl>https://github.com/kyzala/AlastackConsul</PackageProjectUrl>
