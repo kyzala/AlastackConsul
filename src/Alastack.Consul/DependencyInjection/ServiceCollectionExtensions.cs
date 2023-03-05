@@ -28,6 +28,7 @@ public static class ServiceCollectionExtensions
         }
 
         services.Configure(configure);
+        services.AddConsulCore();
         return services;
     }
 
@@ -54,7 +55,14 @@ public static class ServiceCollectionExtensions
         }
 
         services.Configure<ConsulOptions>(configuration.GetSection(key));
+        services.AddConsulCore();
+        return services;
+    }
+
+    private static IServiceCollection AddConsulCore(this IServiceCollection services) 
+    {
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<ConsulOptions>, ConsulPostConfigureOptions>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IValidateOptions<ConsulOptions>, ConsulValidateOptions>());
         services.AddHostedService<ServiceRegistrationServie>();
         return services;
     }
