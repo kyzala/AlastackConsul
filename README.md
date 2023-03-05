@@ -36,7 +36,7 @@ app.MapControllers();
 app.Run();
 ```
 
-## Config properties
+## All Config properties
 
 ```JSON
 {
@@ -100,9 +100,9 @@ app.Run();
 }
 ```
 
-### Configuration PathKey in Consul Key/Value store
+### Configuration Path Key in Consul Key/Value store
 
-- **< Key / values** / {Configuration.PathBase} / {Configuration.Namespace} / {Set.Group} / {Set.Id}
+- {Configuration.PathBase} / {Configuration.Namespace} / {Set.Group} / {Set.Id}
 
 ## More Samples
 
