@@ -82,9 +82,9 @@ app.Run();
       "Tags": [ "apiserver", "test" ],
       "EnableTagOverride": true, // Default to false
       "Metadata": {
-        "RegistrationIdPolicy": "Default", // Default, ByConsul
-        "HealthCheckIdPolicy": "Default", // Default, ByConsul
-        "HealthCheckNamePolicy": "Default", // Default, ByConsul
+        "RegistrationIdPolicy": "Default", // or "ByConsul"
+        "HealthCheckIdPolicy": "Default", // or "ByConsul"
+        "HealthCheckNamePolicy": "Default", // or "ByConsul"
         "MyKey1": "MyValue1"
       },
       "HealthCheck": {
