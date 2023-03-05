@@ -13,11 +13,7 @@ public class ConsulPostConfigureOptions : IPostConfigureOptions<ConsulOptions>
     /// <param name="name">The name of the <see cref="ConsulOptions"/> instance being configured.</param>
     /// <param name="options">The <see cref="ConsulOptions"/> instance to configure.</param>
     public void PostConfigure(string? name, ConsulOptions options)
-    {
-        if (options.Registration == null && options.Configuration == null) 
-        {
-            throw new ArgumentNullException(nameof(options), "Registration or Configuration null.");
-        }
+    {       
         if (options.Registration != null) 
         {            
             if (String.IsNullOrWhiteSpace(options.Registration.Id)) 
