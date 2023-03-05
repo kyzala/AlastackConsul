@@ -10,9 +10,14 @@ public static class ServiceRegistrationExtentions
     /// </summary>
     /// <param name="registration"><see cref="ServiceRegistration"/></param>
     /// <returns>A new service registration id.</returns>
-    public static string BuildRegistrationId(this ServiceRegistration registration)
+    public static string? BuildRegistrationId(this ServiceRegistration registration)
     {
-        return $"{registration.Name}:{registration.Version}#{registration!.Address.Host}:{registration!.Address.Port}";
+        if (registration.IsPolicyDefault(RegistrationPolicies.RegistrationIdPolicy))
+        {
+            return $"{registration.Name}:{registration.Version}#{registration!.Address.Host}:{registration!.Address.Port}";
+        }
+        return null;
+        
     }
 
     /// <summary>
@@ -20,9 +25,13 @@ public static class ServiceRegistrationExtentions
     /// </summary>
     /// <param name="registration"><see cref="ServiceRegistration"/></param>
     /// <returns>A new service health check id.</returns>
-    public static string BuildHealthCheckId(this ServiceRegistration registration)
-    {        
-        return $"{registration.Name}_hk_{Guid.NewGuid():n}";
+    public static string? BuildHealthCheckId(this ServiceRegistration registration)
+    {
+        if (registration.IsPolicyDefault(RegistrationPolicies.HealthCheckIdPolicy)) 
+        {
+            return $"{registration.Name}_hk_{Guid.NewGuid():n}";
+        }
+        return null;
     }
 
     /// <summary>
@@ -30,9 +39,13 @@ public static class ServiceRegistrationExtentions
     /// </summary>
     /// <param name="registration"><see cref="ServiceRegistration"/></param>
     /// <returns>A new service health check name.</returns>
-    public static string BuildHealthCheckName(this ServiceRegistration registration)
+    public static string? BuildHealthCheckName(this ServiceRegistration registration)
     {
-        return $"{registration.Name}_hk";
+        if (registration.IsPolicyDefault(RegistrationPolicies.HealthCheckNamePolicy)) 
+        {
+            return $"{registration.Name}_hk";
+        }
+        return null;
     }
 
     //public static string NormalizeHealthCheckAddress(this ServiceRegistration registration) 
@@ -43,4 +56,23 @@ public static class ServiceRegistrationExtentions
     //    }
     //    return registration.HealthCheck.Health;
     //}
+
+    private static string GetPolicyValue(this ServiceRegistration registration, string policy) 
+    {
+        if (registration.Metadata != null && registration.Metadata.TryGetValue(policy, out var value)) 
+        {
+            if (RegistrationPolicyValues.IsByConsul(value)) 
+            {
+                return RegistrationPolicyValues.ByConsul;
+            }
+        }
+        return RegistrationPolicyValues.Default;
+    }
+
+    private static bool IsPolicyDefault(this ServiceRegistration registration, string policy) 
+    {
+        var policyValue = registration.GetPolicyValue(policy);
+
+        return String.Equals(RegistrationPolicyValues.Default, policyValue, StringComparison.OrdinalIgnoreCase);
+    }
 }
