@@ -1,5 +1,6 @@
 ﻿using Alastack.Consul;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Sample.Common;
 
 namespace AspNetSample.Controllers
@@ -17,14 +18,24 @@ namespace AspNetSample.Controllers
             _configuration = configuration;
         }
 
-        [HttpGet("options")]
-        public ConsulOptions? GetConfig()
+        // api/Consul/ConsulConfig
+        [HttpGet("ConsulConfig")]
+        public ConsulOptions? GetConsulConfig()
         {
             return _configuration.GetSection("Consul").Get<ConsulOptions>();
         }
 
-        [HttpGet("config/{name}")]
-        public ConfigOptions? GetConfigOptions(string name)
+        // api/Consul/ConsulOptions
+        [HttpGet("ConsulOptions")]
+        public ConsulOptions? GetConfig([FromServices] IOptionsMonitor<ConsulOptions> optionsMonitor)
+        {
+            return optionsMonitor.CurrentValue;
+        }
+
+        // api/Consul/TestConfig/config1
+        // api/Consul/TestConfig/config2
+        [HttpGet("TestConfig/{name}")]
+        public ConfigOptions? GetTestConfig(string name)
         {
             return _configuration.GetSection(name).Get<ConfigOptions>();
         }
