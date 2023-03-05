@@ -29,25 +29,26 @@
         }
       ],
       "Metadata": {
-        "aa": "value1",
-        "bb": "value2"
+        "MyKey1": "MyValue1",
+        "MyKey2": "MyValue2"
       }
     },
     "Registration": {
-      "Id": "aspnetsample1", //
+      "Id": "aspnetsample1", // If not set, default to $"{registration.Name}:{registration.Version}#{registration!.Address.Host}:{registration!.Address.Port}"
       "Name": "AspNetSample",
       "Version": "1.0.0", // Default to "1.0.0"
       "Address": "http://127.0.0.1:5000",
       "Tags": [ "apiserver", "test" ],
       "EnableTagOverride": true, // Default to false
       "Metadata": {
-        "AutoRegistrationId": "true",
-        "AutoHealthCheckId": "true",
-        "AutoHealthCheckName": "true"
+        "RegistrationIdPolicy": "Default", // Default, ByConsul
+        "HealthCheckIdPolicy": "Default", // Default, ByConsul
+        "HealthCheckNamePolicy": "Default", // Default, ByConsul
+        "MyKey1": "MyValue1"
       },
       "HealthCheck": {
-        "CheckId": "AspNetSample_HealthCheck1", // 
-        "Name": "AspNetSample_HealthCheck", // Default to "{Registration.Name}_hk"
+        "CheckId": "AspNetSample_HealthCheck1", // If not set, default to $"{Registration.Name}_hk_{Guid.NewGuid():n}"
+        "Name": "AspNetSample_HealthCheck", // If not set, default to $"{Registration.Name}_hk"
         "DeregisterCriticalServiceAfter": "00:01:00", // Default to null
         "Interval": "00:00:15", // Default to "00:00:15"
         "Health": "http://127.0.0.1:5000/health",
