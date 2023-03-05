@@ -36,7 +36,7 @@ app.MapControllers();
 app.Run();
 ```
 
-## ConsulOptions Config properties
+## Config properties
 
 ```JSON
 {
@@ -75,7 +75,7 @@ app.Run();
       }
     },
     "Registration": {
-      "Id": "aspnetsample1", // If not set, default to $"{registration.Name}:{registration.Version}#{registration!.Address.Host}:{registration!.Address.Port}"
+      "Id": "aspnetsample1", // Default to $"{Registration.Name}:{Registration.Version}#{Registration.Address.Host}:{Registration.Address.Port}"
       "Name": "AspNetSample",
       "Version": "1.0.0", // Default to "1.0.0"
       "Address": "http://127.0.0.1:5000",
@@ -88,8 +88,8 @@ app.Run();
         "MyKey1": "MyValue1"
       },
       "HealthCheck": {
-        "CheckId": "AspNetSample_HealthCheck1", // If not set, default to $"{Registration.Name}_hk_{Guid.NewGuid():n}"
-        "Name": "AspNetSample_HealthCheck", // If not set, default to $"{Registration.Name}_hk"
+        "CheckId": "AspNetSample_HealthCheck1", // Default to $"{Registration.Name}_hk_{Guid.NewGuid():n}"
+        "Name": "AspNetSample_HealthCheck", // Default to $"{Registration.Name}_hk"
         "DeregisterCriticalServiceAfter": "00:01:00", // Default to null
         "Interval": "00:00:15", // Default to "00:00:15"
         "Health": "http://127.0.0.1:5000/health",
