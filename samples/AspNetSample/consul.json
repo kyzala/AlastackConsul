@@ -28,8 +28,7 @@
         }
       ],
       "Metadata": {
-        "aa": "value1",
-        "bb": "value2"
+        "MyKey1": "MyValue1"
       }
     },
     "Registration": {
@@ -40,9 +39,10 @@
       "Tags": [ "apiserver", "test" ],
       "EnableTagOverride": true,
       "Metadata": {
-        "AutoSetRegistrationId": "true",
-        "AutoSetHealthCheckId": "true",
-        "AutoSetHealthCheckName": "true"
+        "RegistrationIdPolicy": "Default", // Default, ByConsul
+        "HealthCheckIdPolicy": "Default", // Default, ByConsul
+        "HealthCheckNamePolicy": "Default", // Default, ByConsul
+        "MyKey1": "MyValue1"
       },
       "HealthCheck": {
         //"CheckId": null,
