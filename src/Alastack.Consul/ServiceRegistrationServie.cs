@@ -33,7 +33,7 @@ public class ServiceRegistrationServie : IHostedService
 
         await consulClient.Agent.ServiceRegister(new AgentServiceRegistration()
         {
-            //ID = registration.Id,
+            ID = registration.Id,
             Name = registration.Name,
             Address = registration.Address.Host,
             Port = registration.Address.Port,
@@ -42,8 +42,8 @@ public class ServiceRegistrationServie : IHostedService
             EnableTagOverride = registration.EnableTagOverride,
             Check = new AgentServiceCheck
             {
-                //CheckID = registration.HealthCheck.CheckId,
-                //Name = registration.HealthCheck.Name,
+                CheckID = registration.HealthCheck.CheckId,
+                Name = registration.HealthCheck.Name,
                 DeregisterCriticalServiceAfter = registration.HealthCheck.DeregisterCriticalServiceAfter,
                 Interval = registration.HealthCheck.Interval,
                 HTTP = registration.HealthCheck.Health.ToString(),
