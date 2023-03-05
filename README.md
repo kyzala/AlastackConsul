@@ -104,6 +104,6 @@ app.Run();
 
 - {Configuration.PathBase} / {Configuration.Namespace} / {Set.Group} / {Set.Id}
 
-## More Samples
+## Samples
 
 Visit the [samples](https://github.com/kyzala/AlastackConsul/tree/main/samples) folder.
