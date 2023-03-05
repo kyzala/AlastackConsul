@@ -100,6 +100,10 @@ app.Run();
 }
 ```
 
+### Configuration PathKey in Consul Key/Value store
+
+- **< Key / values** / {Configuration.PathBase} / {Configuration.Namespace} / {Set.Group} / {Set.Id}
+
 ## More Samples
 
 Visit the [samples](https://github.com/kyzala/AlastackConsul/tree/main/samples) folder.
