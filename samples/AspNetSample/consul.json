@@ -38,19 +38,19 @@
       "Address": "http://127.0.0.1:5000",
       "Tags": [ "apiserver", "test" ],
       "EnableTagOverride": true,
-      "Metadata": {
-        "RegistrationIdPolicy": "Default", // Default, ByConsul
-        "HealthCheckIdPolicy": "Default", // Default, ByConsul
-        "HealthCheckNamePolicy": "Default", // Default, ByConsul
-        "MyKey1": "MyValue1"
-      },
       "HealthCheck": {
-        //"CheckId": null,
+        //"CheckId": AspNetSample_HealthCheck1,
         //"Name": "AspNetSample_HealthCheck",
         "DeregisterCriticalServiceAfter": "00:01:00",
         "Interval": "00:00:15",
         "Health": "http://127.0.0.1:5000/health",
         "Timeout": "00:00:10"
+      },
+      "Metadata": {
+        "RegistrationIdPolicy": "Default", // or "ByConsul"
+        "HealthCheckIdPolicy": "Default", // or "ByConsul"
+        "HealthCheckNamePolicy": "Default", // or "ByConsul"
+        "MyKey1": "MyValue1"
       }
     }
   }

@@ -35,12 +35,6 @@
       "Address": "http://127.0.0.1:5000",
       "Tags": [ "apiserver", "test" ],
       "EnableTagOverride": true,
-      "Metadata": {
-        "RegistrationIdPolicy": "Default", // or "ByConsul"
-        "HealthCheckIdPolicy": "Default", // or "ByConsul"
-        "HealthCheckNamePolicy": "Default", // or "ByConsul"
-        "MyKey1": "MyValue1"
-      },
       "HealthCheck": {
         "CheckId": "AspNetSample_HealthCheck1",
         "Name": "AspNetSample_HealthCheck",
@@ -48,6 +42,12 @@
         "Interval": "00:00:30",
         "Health": "http://127.0.0.1:5000/health",
         "Timeout": "00:00:20"
+      },
+      "Metadata": {
+        "RegistrationIdPolicy": "Default", // or "ByConsul"
+        "HealthCheckIdPolicy": "Default", // or "ByConsul"
+        "HealthCheckNamePolicy": "Default", // or "ByConsul"
+        "MyKey1": "MyValue1"
       }
     }
   },
