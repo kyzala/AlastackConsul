@@ -100,9 +100,11 @@ app.Run();
 }
 ```
 
-### Configuration Path Key in Consul Key/Value store
+### Configuration in Consul Key/Value store
 
-- {Configuration.PathBase} / {Configuration.Namespace} / {Set.Group} / {Set.Id}
+Using [Winton.Extensions.Configuration.Consul](https://github.com/wintoncode/Winton.Extensions.Configuration.Consul) to provide Consul Configuration source.
+Path key: 
+{Configuration.PathBase} / {Configuration.Namespace} / {Set.Group} / {Set.Id}
 
 ## Samples
 
