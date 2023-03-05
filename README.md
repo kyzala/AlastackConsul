@@ -104,7 +104,7 @@ app.Run();
 
 Using [Winton.Extensions.Configuration.Consul](https://github.com/wintoncode/Winton.Extensions.Configuration.Consul) to provide Consul Configuration source.
 
-Path key: 
+**Path key:** 
 {Configuration.PathBase} / {Configuration.Namespace} / {Set.Group} / {Set.Id}
 
 ## Samples
