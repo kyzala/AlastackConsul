@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.Configuration;
 /// <summary>
 /// Extension methods to add consul configuration.
 /// </summary>
-public static class ServiceConfigurationBuilderExtensions
+public static class ConfigurationBuilderExtensions
 {
     /// <summary>
     ///  Adds Consul as a configuration source to the <see cref="IConfigurationBuilder" />.
