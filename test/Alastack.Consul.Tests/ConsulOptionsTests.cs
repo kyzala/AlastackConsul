@@ -44,8 +44,8 @@ namespace Alastack.Consul.Tests
             Assert.Equal("some description", options.Configuration.Sets[1].Description);
 
             Assert.Equal(2, options.Configuration.Metadata!.Count);
-            Assert.Equal("value1", options.Configuration.Metadata["aa"]);
-            Assert.Equal("value2", options.Configuration.Metadata["bb"]);
+            Assert.Equal("MyValue1", options.Configuration.Metadata["MyKey1"]);
+            Assert.Equal("MyValue2", options.Configuration.Metadata["MyKey2"]);
 
             // Registration
 
@@ -56,7 +56,7 @@ namespace Alastack.Consul.Tests
             Assert.Equal(new Uri("http://127.0.0.1:5000"), options.Registration.Address);
             Assert.Equal(2, options.Registration.Tags!.Length);
             Assert.True(options.Registration.EnableTagOverride);
-            Assert.Equal(3, options.Registration.Metadata!.Count);
+            Assert.Equal(4, options.Registration.Metadata!.Count);
 
             Assert.NotNull(options.Registration.HealthCheck);
             Assert.Equal("AspNetSample_HealthCheck1", options.Registration.HealthCheck.CheckId);
