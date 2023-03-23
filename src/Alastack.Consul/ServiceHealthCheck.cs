@@ -8,12 +8,12 @@ public sealed class ServiceHealthCheck
     /// <summary>
     /// Service health check id.
     /// </summary>
-    public string CheckId { get; set; } = default!;
+    public string? CheckId { get; set; }
 
     /// <summary>
     /// Service health check name.
     /// </summary>
-    public string Name { get; set; } = default!;
+    public string? Name { get; set; }
 
     /// <summary>
     /// If a health check is in the critical state for more than this configured value,

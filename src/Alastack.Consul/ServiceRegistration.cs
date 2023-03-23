@@ -8,7 +8,7 @@ public sealed class ServiceRegistration
     /// <summary>
     /// Configure service id.
     /// </summary>
-    public string Id { get; set; } = default!;
+    public string? Id { get; set; }
 
     /// <summary>
     /// Configure service name.
