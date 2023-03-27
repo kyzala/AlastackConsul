@@ -15,11 +15,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{EDC6A64F-D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alastack.Consul.Tests", "test\Alastack.Consul.Tests\Alastack.Consul.Tests.csproj", "{22F6DCC8-E2E1-48D1-A79F-35645E2DD9F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleSample", "samples\ConsoleSample\ConsoleSample.csproj", "{1DE22138-561E-41E2-B155-1901BEA2B217}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleSample", "samples\ConsoleSample\ConsoleSample.csproj", "{1DE22138-561E-41E2-B155-1901BEA2B217}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkerServiceSample", "samples\WorkerServiceSample\WorkerServiceSample.csproj", "{9EC659D1-5AD6-45B3-9689-A13AA7F0B32B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkerServiceSample", "samples\WorkerServiceSample\WorkerServiceSample.csproj", "{9EC659D1-5AD6-45B3-9689-A13AA7F0B32B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Common", "samples\Sample.Common\Sample.Common.csproj", "{1568F366-4789-4F94-95E6-F29904FC564A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Folder", "Solution Folder", "{91672949-90C0-4DFC-8A3E-F122714E2EFF}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
