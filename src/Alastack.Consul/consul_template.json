@@ -34,7 +34,7 @@
       }
     },
     "Registration": {
-      "Id": "aspnetsample1", // Default to $"{registration.Name}:{registration.Version}#{registration!.Address.Host}:{registration!.Address.Port}"
+      "Id": "aspnetsample1", // Default to $"{registration.Name}#{registration!.Address.Host}:{registration!.Address.Port}"
       "Name": "AspNetSample",
       "Version": "1.0.0", // Default to "1.0.0"
       "Address": "http://127.0.0.1:5000",

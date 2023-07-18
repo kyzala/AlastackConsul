@@ -14,7 +14,7 @@ public static class ServiceRegistrationExtentions
     {
         if (registration.IsPolicyDefault(RegistrationPolicies.RegistrationIdPolicy))
         {
-            return $"{registration.Name}:{registration.Version}#{registration!.Address.Host}:{registration!.Address.Port}";
+            return $"{registration.Name}#{registration!.Address.Host}:{registration!.Address.Port}";
         }
         return null;
         
