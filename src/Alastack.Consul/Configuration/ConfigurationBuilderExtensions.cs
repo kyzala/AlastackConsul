@@ -1,4 +1,5 @@
 ﻿using Alastack.Consul;
+using System.Reflection.Metadata.Ecma335;
 using Winton.Extensions.Configuration.Consul;
 
 namespace Microsoft.Extensions.Configuration;
@@ -13,15 +14,16 @@ public static class ConfigurationBuilderExtensions
     /// </summary>
     /// <param name="builder">The <see cref="IConfigurationBuilder" /> to add to.</param>
     /// <param name="key">The Consul configuration key. Defaults to <c>Consul</c>.</param>
+    /// <param name="optional">Whether the configuration is optional.</param>
     /// <returns>The <see cref="IConfigurationBuilder" />.</returns>
-    public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder builder, string key = "Consul")
+    public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder builder, string key = "Consul", bool optional = false) 
     {
         if (builder == null)
         {
             throw new ArgumentNullException(nameof(builder));
         }
 
-        builder.AddConsulConfiguration(builder.Build(), key);
+        builder.AddConsulConfiguration(builder.Build(), key, optional);
         return builder;
     }
 
@@ -31,8 +33,9 @@ public static class ConfigurationBuilderExtensions
     /// <param name="builder">The <see cref="IConfigurationBuilder" /> to add to.</param>
     /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
     /// <param name="key">The Consul configuration key. Defaults to <c>Consul</c>.</param>
+    /// <param name="optional">Whether the configuration is optional.</param>
     /// <returns>The <see cref="IConfigurationBuilder" />.</returns>
-    public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder builder, IConfiguration configuration, string key = "Consul")
+    public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder builder, IConfiguration configuration, string key = "Consul", bool optional = false)
     {
         if (builder == null)
         {
@@ -48,7 +51,18 @@ public static class ConfigurationBuilderExtensions
         }
 
         var consulOptions = configuration.GetSection(key).Get<ConsulOptions>();
-        return builder.AddConsulConfiguration(consulOptions!);
+        if (consulOptions == null) 
+        {
+            if (optional)
+            {
+                return builder;
+            }
+            else
+            {
+                throw new ArgumentNullException($"The consul configuration is null.");
+            }
+        }
+        return builder.AddConsulConfiguration(consulOptions);
     }
 
     /// <summary>
