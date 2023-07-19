@@ -51,7 +51,7 @@ public static class ConfigurationBuilderExtensions
         }
 
         var consulOptions = configuration.GetSection(key).Get<ConsulOptions>();
-        if (consulOptions == null) 
+        if (consulOptions?.Configuration == null) 
         {
             if (optional)
             {
