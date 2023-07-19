@@ -14,12 +14,13 @@ public static class ServiceRegistrationExtentions
     {
         if (registration.IsPolicyDefault(RegistrationPolicies.RegistrationIdPolicy))
         {
-            return $"{registration.Name}#{registration!.Address.Host}:{registration!.Address.Port}";
+            return $"{registration.Name}@{registration.Address.Host}:{registration.Address.Port}";
         }
         return null;
         
     }
 
+    /*
     /// <summary>
     /// Build a health check id.
     /// </summary>
@@ -33,6 +34,7 @@ public static class ServiceRegistrationExtentions
         }
         return null;
     }
+    
 
     /// <summary>
     /// Build a health check name.
@@ -47,6 +49,7 @@ public static class ServiceRegistrationExtentions
         }
         return null;
     }
+    */
 
     //public static string NormalizeHealthCheckAddress(this ServiceRegistration registration) 
     //{
@@ -57,22 +60,22 @@ public static class ServiceRegistrationExtentions
     //    return registration.HealthCheck.Health;
     //}
 
-    private static string GetPolicyValue(this ServiceRegistration registration, string policy) 
-    {
-        if (registration.Metadata != null && registration.Metadata.TryGetValue(policy, out var value)) 
-        {
-            if (RegistrationPolicyValues.IsByConsul(value)) 
-            {
-                return RegistrationPolicyValues.ByConsul;
-            }
-        }
-        return RegistrationPolicyValues.Default;
-    }
-
     private static bool IsPolicyDefault(this ServiceRegistration registration, string policy) 
     {
         var policyValue = registration.GetPolicyValue(policy);
 
         return String.Equals(RegistrationPolicyValues.Default, policyValue, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetPolicyValue(this ServiceRegistration registration, string policy)
+    {
+        if (registration.Metadata != null && registration.Metadata.TryGetValue(policy, out var value))
+        {
+            if (RegistrationPolicyValues.IsByConsul(value))
+            {
+                return RegistrationPolicyValues.ByConsul;
+            }
+        }
+        return RegistrationPolicyValues.Default;
     }
 }
