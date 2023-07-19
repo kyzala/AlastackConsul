@@ -39,11 +39,12 @@
       "Tags": [ "apiserver", "test" ],
       "EnableTagOverride": true,
       "HealthCheck": {
-        //"CheckId": AspNetSample_HealthCheck1,
+        //"CheckId": "AspNetSample_HealthCheck1",
         //"Name": "AspNetSample_HealthCheck",
         "DeregisterCriticalServiceAfter": "00:01:00",
         "Interval": "00:00:15",
-        "Health": "http://127.0.0.1:5000/health",
+        //"Health": "http://127.0.0.1:5000/health",
+        "Health": "/health",
         "Timeout": "00:00:10"
       },
       "Metadata": {

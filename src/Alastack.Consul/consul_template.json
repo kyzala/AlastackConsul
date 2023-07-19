@@ -45,7 +45,7 @@
         "Name": "AspNetSample_HealthCheck", // Default to $"{Registration.Name}_hk"
         "DeregisterCriticalServiceAfter": "00:01:00", // Default to null
         "Interval": "00:00:15", // Default to "00:00:15"
-        "Health": "http://127.0.0.1:5000/health",
+        "Health": "/health", // or absolute uri: http://127.0.0.1:5000/health
         "Timeout": "00:00:10" // Default to "00:00:10"
       },
       "Metadata": {
