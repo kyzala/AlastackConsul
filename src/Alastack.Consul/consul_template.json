@@ -49,10 +49,7 @@
         "Timeout": "00:00:10" // Default to "00:00:10"
       },
       "Metadata": {
-        "RegistrationIdPolicy": "Default", // or "ByConsul"
-        "HealthCheckIdPolicy": "Default", // or "ByConsul"
-        "HealthCheckNamePolicy": "Default", // or "ByConsul"
-        "MyKey1": "MyValue1"
+        "RegistrationIdPolicy": "Default" // or "ByConsul"
       }
     }
   }
