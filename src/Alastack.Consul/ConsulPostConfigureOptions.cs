@@ -23,14 +23,19 @@ public class ConsulPostConfigureOptions : IPostConfigureOptions<ConsulOptions>
             
             if (String.IsNullOrWhiteSpace(options.Registration.HealthCheck.Name))
             {
-                options.Registration.HealthCheck.Name = options.Registration.BuildHealthCheckName();
-            }
-            if (String.IsNullOrWhiteSpace(options.Registration.HealthCheck.CheckId))
-            {
-                options.Registration.HealthCheck.CheckId = options.Registration.BuildHealthCheckId();
+                options.Registration.HealthCheck.Name = $"Service '{options.Registration.Name}' check";
             }
 
-            //options.Registration.HealthCheck.Health = options.Registration.NormalizeHealthCheckAddress();
+            if (String.IsNullOrWhiteSpace(options.Registration.HealthCheck.CheckId))
+            {
+                options.Registration.HealthCheck.CheckId = $"service:{options.Registration.Id}";
+            }
+
+            if (!options.Registration.HealthCheck.Health.IsAbsoluteUri) 
+            {
+                options.Registration.HealthCheck.Health = new Uri(options.Registration.Address, options.Registration.HealthCheck.Health);
+            }
+            
         }
     }
 }
