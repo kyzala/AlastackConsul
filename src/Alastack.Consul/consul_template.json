@@ -7,25 +7,25 @@
       "WaitTime": "00:00:05" // Default to null
     },
     "Configuration": {
-      "PathBase": "alastack/aspnetsample",
-      "Namespace": "ns.default", // Default to "ns.default"
+      "PathBase": "/dotnet/aspnetsample",
+      "Namespace": "public1", // Default to "public"
       "Sets": [
         {
-          "Id": "appsettings.json",
-          "Group": "gp.default" // Default to "gp.default"
+          "Id": "appsettings.json"
+          //"Group": "default"
         },
         {
           "Id": "config.json",
-          "Group": "gp.group1"
+          "Group": "group1" // Default to "default"
         },
         {
           "Id": "config_other.json",
-          "Group": "gp.group1",
-          "Optional": false,
-          "ReloadOnChange": false,
-          "PollingWaitTime": "00:00:10",
-          "IgnoreException": true,
-          "Description": "description"
+          "Group": "group1",
+          "Optional": true, // Default to false
+          "ReloadOnChange": true, // Default to false
+          "PollingWaitTime": "00:00:10", // Default to 5s
+          "IgnoreException": true, // Default to false
+          "Description": "description" // Default to null
         }
       ],
       "Metadata": {
@@ -49,7 +49,7 @@
         "Timeout": "00:00:10" // Default to "00:00:10"
       },
       "Metadata": {
-        "RegistrationIdPolicy": "Default" // or "ByConsul"
+        //"RegistrationIdNullPolicy": "Default" // or "Consul"
       }
     }
   }
