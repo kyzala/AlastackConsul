@@ -48,25 +48,25 @@ app.Run();
       "WaitTime": "00:00:05" // Default to null
     },
     "Configuration": {
-      "PathBase": "alastack/aspnetsample",
-      "Namespace": "ns.default", // Default to "ns.default"
+      "PathBase": "/dotnet/aspnetsample",
+      "Namespace": "public1", // Default to "public"
       "Sets": [
         {
-          "Id": "appsettings.json",
-          "Group": "gp.default" // Default to "gp.default"
+          "Id": "appsettings.json"
+          //"Group": "default"
         },
         {
           "Id": "config.json",
-          "Group": "gp.group1"
+          "Group": "group1" // Default to "default"
         },
         {
           "Id": "config_other.json",
-          "Group": "gp.group1",
-          "Optional": false,
-          "ReloadOnChange": false,
-          "PollingWaitTime": "00:00:10",
-          "IgnoreException": true,
-          "Description": "description"
+          "Group": "group1",
+          "Optional": true, // Default to false
+          "ReloadOnChange": true, // Default to false
+          "PollingWaitTime": "00:00:10", // Default to 5s
+          "IgnoreException": true, // Default to false
+          "Description": "description" // Default to null
         }
       ],
       "Metadata": {
@@ -75,25 +75,22 @@ app.Run();
       }
     },
     "Registration": {
-      "Id": "aspnetsample1", // Default to $"{registration.Name}:{registration.Version}#{registration!.Address.Host}:{registration!.Address.Port}"
+      //"Id": "aspnetsample1", // Default to $"{registration.Name}@{registration.Address.Host}:{registration.Address.Port}"
       "Name": "AspNetSample",
       "Version": "1.0.0", // Default to "1.0.0"
       "Address": "http://127.0.0.1:5000",
       "Tags": [ "apiserver", "test" ],
       "EnableTagOverride": true, // Default to false
       "HealthCheck": {
-        "CheckId": "AspNetSample_HealthCheck1", // Default to $"{Registration.Name}_hk_{Guid.NewGuid():n}"
-        "Name": "AspNetSample_HealthCheck", // Default to $"{Registration.Name}_hk"
+        //"CheckId": "AspNetSample_HealthCheck1", // Default to $"service:{options.Registration.Id}"
+        //"Name": "AspNetSample_HealthCheck", // Default to $"Service '{options.Registration.Name}' check"
         "DeregisterCriticalServiceAfter": "00:01:00", // Default to null
         "Interval": "00:00:15", // Default to "00:00:15"
-        "Health": "http://127.0.0.1:5000/health",
+        "Health": "/health", // or absolute uri: http://127.0.0.1:5000/health
         "Timeout": "00:00:10" // Default to "00:00:10"
       },
       "Metadata": {
-        "RegistrationIdPolicy": "Default", // or "ByConsul"
-        "HealthCheckIdPolicy": "Default", // or "ByConsul"
-        "HealthCheckNamePolicy": "Default", // or "ByConsul"
-        "MyKey1": "MyValue1"
+        //"RegistrationIdNullPolicy": "Default" // or "Consul"
       }
     }
   }
