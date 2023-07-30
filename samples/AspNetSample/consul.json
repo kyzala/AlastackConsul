@@ -6,22 +6,21 @@
       "WaitTime": "00:00:05"
     },
     "Configuration": {
-      "PathBase": "alastack/aspnetsample",
-      "Namespace": "ns.default",
+      "PathBase": "/aspnetsample",
+      "Namespace": "public1",
       "Sets": [
         {
-          "Id": "logging.json",
-          "Group": "gp.default"
+          "Id": "logging.json"
         },
         {
           "Id": "config1.json",
-          "Group": "gp.group1"
+          "Group": "group1"
         },
         {
           "Id": "config2.json",
-          "Group": "gp.group1",
-          "Optional": false,
-          "ReloadOnChange": false,
+          "Group": "group1",
+          "Optional": true,
+          "ReloadOnChange": true,
           "PollingWaitTime": "00:00:10",
           "IgnoreException": true
         }
@@ -43,7 +42,7 @@
         "Timeout": "00:00:10"
       },
       "Metadata": {
-        "RegistrationIdPolicy": "Default"
+        //"RegistrationIdNullPolicy": "Default"
       }
     }
   }
