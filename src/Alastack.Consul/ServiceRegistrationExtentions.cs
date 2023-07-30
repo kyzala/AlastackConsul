@@ -12,7 +12,7 @@ public static class ServiceRegistrationExtentions
     /// <returns>A new service registration id.</returns>
     public static string? BuildRegistrationId(this ServiceRegistration registration)
     {
-        if (registration.IsPolicyDefault(RegistrationPolicies.RegistrationIdPolicy))
+        if (registration.IsPolicyDefault(RegistrationPolicies.RegistrationIdNullPolicy))
         {
             return $"{registration.Name}@{registration.Address.Host}:{registration.Address.Port}";
         }
@@ -64,18 +64,18 @@ public static class ServiceRegistrationExtentions
     {
         var policyValue = registration.GetPolicyValue(policy);
 
-        return String.Equals(RegistrationPolicyValues.Default, policyValue, StringComparison.OrdinalIgnoreCase);
+        return String.Equals(RegistrationIdNullPolicy.Default, policyValue, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string GetPolicyValue(this ServiceRegistration registration, string policy)
     {
         if (registration.Metadata != null && registration.Metadata.TryGetValue(policy, out var value))
         {
-            if (RegistrationPolicyValues.IsByConsul(value))
+            if (RegistrationIdNullPolicy.IsConsul(value))
             {
-                return RegistrationPolicyValues.ByConsul;
+                return RegistrationIdNullPolicy.Consul;
             }
         }
-        return RegistrationPolicyValues.Default;
+        return RegistrationIdNullPolicy.Default;
     }
 }

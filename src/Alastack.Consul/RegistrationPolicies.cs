@@ -2,25 +2,25 @@
 
 internal static class RegistrationPolicies
 {
-    public const string RegistrationIdPolicy = nameof(RegistrationIdPolicy);
+    public const string RegistrationIdNullPolicy = nameof(RegistrationIdNullPolicy);
 
-    public const string HealthCheckIdPolicy = nameof(HealthCheckIdPolicy);
+    //public const string HealthCheckIdPolicy = nameof(HealthCheckIdPolicy);
 
-    public const string HealthCheckNamePolicy = nameof(HealthCheckNamePolicy);
+    //public const string HealthCheckNamePolicy = nameof(HealthCheckNamePolicy);
 }
 
-internal static class RegistrationPolicyValues
+internal static class RegistrationIdNullPolicy
 {
-    public const string Default = "Default";
+    public const string Default = nameof(Default);
 
-    public const string ByConsul = "ByConsul";
+    public const string Consul = nameof(Consul);
 
-    public static bool IsByConsul(string policyValue)
+    public static bool IsConsul(string policyValue)
     {
         if (string.IsNullOrWhiteSpace(policyValue))
         {
             return false;
         }
-        return String.Equals(ByConsul, policyValue, StringComparison.OrdinalIgnoreCase);
+        return String.Equals(Consul, policyValue, StringComparison.OrdinalIgnoreCase);
     }
 }
