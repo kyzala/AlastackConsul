@@ -29,12 +29,12 @@ public static class AppConfigurationDefaults
     /// <summary>
     /// Default Namespace for the application configuration.
     /// </summary>
-    public const string Namespace = "ns.default";
+    public const string Namespace = "public";
 
     /// <summary>
     /// Default Group for the application configuration.
     /// </summary>
-    public const string Group = "gp.default";
+    public const string Group = "default";
 
     /// <summary>
     /// Default PollingWaitTime for the application configuration.
