@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Sample.Common;
+using System.Text.Json;
 
 namespace AspNetSample.Controllers
 {
@@ -16,6 +17,18 @@ namespace AspNetSample.Controllers
         {
             _logger = logger;
             _configuration = configuration;
+        }
+
+        [HttpGet("Configuration")]
+        public object GetConfiguration()
+        {
+            //var configAsList = _configuration.AsEnumerable().ToList();
+            //var json = JsonSerializer.Serialize(configAsList);
+
+            var configAsDict = _configuration.AsEnumerable().ToDictionary(c => c.Key, c => c.Value);
+            var json = JsonSerializer.Serialize(configAsDict);
+
+            return json;
         }
 
         // api/Consul/ConsulConfig
