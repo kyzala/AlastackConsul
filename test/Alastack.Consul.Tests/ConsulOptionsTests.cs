@@ -23,12 +23,12 @@ namespace Alastack.Consul.Tests
             //Configuration
 
             Assert.NotNull(options.Configuration);
-            Assert.Equal("alastack/aspnetsample", options.Configuration!.PathBase);
-            Assert.Equal("ns.default", options.Configuration.Namespace);
+            Assert.Equal("/alastack/aspnetsample", options.Configuration!.PathBase);
+            Assert.Equal("public1", options.Configuration.Namespace);
 
             Assert.Equal(2, options.Configuration.Sets!.Count);
             Assert.Equal("appsettings.json", options.Configuration.Sets[0].Id);
-            Assert.Equal("gp.default", options.Configuration.Sets[0].Group);
+            Assert.Equal("default", options.Configuration.Sets[0].Group);
             Assert.False(options.Configuration.Sets[0].Optional);
             Assert.False(options.Configuration.Sets[0].ReloadOnChange);
             Assert.False(options.Configuration.Sets[0].IgnoreException);
@@ -36,7 +36,7 @@ namespace Alastack.Consul.Tests
             Assert.Null(options.Configuration.Sets[0].Description);
 
             Assert.Equal("config.json", options.Configuration.Sets[1].Id);
-            Assert.Equal("gp.group1", options.Configuration.Sets[1].Group);
+            Assert.Equal("group1", options.Configuration.Sets[1].Group);
             Assert.True(options.Configuration.Sets[1].Optional);
             Assert.True(options.Configuration.Sets[1].ReloadOnChange);
             Assert.True(options.Configuration.Sets[1].IgnoreException);
@@ -56,7 +56,7 @@ namespace Alastack.Consul.Tests
             Assert.Equal(new Uri("http://127.0.0.1:5000"), options.Registration.Address);
             Assert.Equal(2, options.Registration.Tags!.Length);
             Assert.True(options.Registration.EnableTagOverride);
-            Assert.Equal(4, options.Registration.Metadata!.Count);
+            Assert.Equal(2, options.Registration.Metadata!.Count);
 
             Assert.NotNull(options.Registration.HealthCheck);
             Assert.Equal("AspNetSample_HealthCheck1", options.Registration.HealthCheck.CheckId);
@@ -85,8 +85,8 @@ namespace Alastack.Consul.Tests
             //Configuration
 
             Assert.NotNull(options.Configuration);
-            Assert.Equal("alastack/aspnetsample", options.Configuration!.PathBase);
-            Assert.Equal("ns.default", options.Configuration.Namespace);
+            Assert.Equal("/alastack/aspnetsample", options.Configuration!.PathBase);
+            Assert.Equal("public", options.Configuration.Namespace);
 
             Assert.Null(options.Configuration.Sets);
 
@@ -95,7 +95,7 @@ namespace Alastack.Consul.Tests
             // Registration
 
             Assert.NotNull(options.Registration);
-            Assert.Equal("AspNetSample:1.0.0#127.0.0.1:5000", options.Registration!.Id);
+            Assert.Equal("AspNetSample@127.0.0.1:5000", options.Registration!.Id);
             Assert.Equal("AspNetSample", options.Registration.Name);
             Assert.Equal("1.0.0", options.Registration.Version);
             Assert.Equal(new Uri("http://127.0.0.1:5000"), options.Registration.Address);
@@ -104,8 +104,8 @@ namespace Alastack.Consul.Tests
             Assert.Null(options.Registration.Metadata);
 
             Assert.NotNull(options.Registration!.HealthCheck);
-            Assert.StartsWith("AspNetSample_hk_", options.Registration.HealthCheck.CheckId);
-            Assert.Equal("AspNetSample_hk", options.Registration.HealthCheck.Name);
+            Assert.StartsWith("service:AspNetSample@127.0.0.1:5000", options.Registration.HealthCheck.CheckId);
+            Assert.Equal("Service 'AspNetSample' check", options.Registration.HealthCheck.Name);
             Assert.Null(options.Registration.HealthCheck.DeregisterCriticalServiceAfter);
             Assert.Equal(TimeSpan.FromSeconds(15), options.Registration.HealthCheck.Interval);
             Assert.Equal("http://127.0.0.1:5000/health", options.Registration.HealthCheck.Health.ToString());

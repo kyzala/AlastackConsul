@@ -7,15 +7,15 @@
       "WaitTime": "00:00:05"
     },
     "Configuration": {
-      "PathBase": "alastack/aspnetsample",
-      "Namespace": "ns.default",
+      "PathBase": "/alastack/aspnetsample",
+      "Namespace": "public1",
       "Sets": [
         {
           "Id": "appsettings.json"
         },
         {
           "Id": "config.json",
-          "Group": "gp.group1",
+          "Group": "group1",
           "Optional": true,
           "ReloadOnChange": true,
           "PollingWaitTime": "00:00:10",
@@ -40,13 +40,11 @@
         "Name": "AspNetSample_HealthCheck",
         "DeregisterCriticalServiceAfter": "00:01:00",
         "Interval": "00:00:30",
-        "Health": "http://127.0.0.1:5000/health",
+        "Health": "/health",
         "Timeout": "00:00:20"
       },
       "Metadata": {
-        "RegistrationIdPolicy": "Default", // or "ByConsul"
-        "HealthCheckIdPolicy": "Default", // or "ByConsul"
-        "HealthCheckNamePolicy": "Default", // or "ByConsul"
+        "RegistrationIdNullPolicy": "Default", // or "Consul"
         "MyKey1": "MyValue1"
       }
     }
@@ -59,7 +57,7 @@
       //"WaitTime": "00:00:05"
     },
     "Configuration": {
-      "PathBase": "alastack/aspnetsample",
+      "PathBase": "/alastack/aspnetsample",
       //"Namespace": "ns.default",
       "Sets": [
         //{
