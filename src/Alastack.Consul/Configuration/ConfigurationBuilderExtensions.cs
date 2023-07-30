@@ -80,7 +80,7 @@ public static class ConfigurationBuilderExtensions
         if (consulOptions.Configuration?.Sets != null)
         {
             var configuration = consulOptions.Configuration;
-            var pathPrefix = $"{configuration.PathBase}/{configuration.Namespace}";
+            var pathPrefix = $"{configuration.PathBase.TrimStart('/')}/{configuration.Namespace}";
             foreach (var configurationSet in configuration.Sets)
             {
                 var pathKey = $"{pathPrefix}/{configurationSet.Group}/{configurationSet.Id}";
