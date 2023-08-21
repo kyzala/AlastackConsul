@@ -1,5 +1,6 @@
 {
   "Consul": {
+    //"IsEnabled": true, // Default to "true"
     "Agent": {
       "Datacenter": "dc1", // Default to "dc1"
       "Address": "http://127.0.0.1:8500",
