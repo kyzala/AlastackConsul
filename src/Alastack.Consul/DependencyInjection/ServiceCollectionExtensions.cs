@@ -89,7 +89,7 @@ public static class ServiceCollectionExtensions
     {
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<ConsulOptions>, ConsulPostConfigureOptions>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IValidateOptions<ConsulOptions>, ConsulValidateOptions>());
-        services.AddHostedService<ServiceRegistrationServie>();
+        services.AddHostedService<ServiceRegistrationService>();
         return services;
     }
 }
