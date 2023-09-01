@@ -35,6 +35,7 @@
       }
     },
     "Registration": {
+      //"IsEnabled": true, // Default to "true"
       //"Id": "aspnetsample1", // Default to $"{registration.Name}@{registration.Address.Host}:{registration.Address.Port}"
       "Name": "AspNetSample",
       "Version": "1.0.0", // Default to "1.0.0"
