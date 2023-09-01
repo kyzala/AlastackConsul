@@ -1,5 +1,4 @@
 ﻿using Alastack.Consul;
-using System.Reflection.Metadata.Ecma335;
 using Winton.Extensions.Configuration.Consul;
 
 namespace Microsoft.Extensions.Configuration;
