@@ -15,6 +15,7 @@ namespace ConsoleSample
             builder.AddJsonFile("appsettings.json", false, true);
             builder.AddConsulConfiguration();
             var configuration = builder.Build();
+
             var options = configuration.GetSection("ConfigOptions").Get<ConfigOptions>();
 
             var jsonSerializerOptions = new JsonSerializerOptions { WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
