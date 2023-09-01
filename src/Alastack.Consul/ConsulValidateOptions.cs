@@ -14,14 +14,14 @@ public class ConsulValidateOptions : IValidateOptions<ConsulOptions>
     /// <param name="options">The <see cref="ConsulOptions"/> instance to validate.</param>
     /// <returns>The <see cref="ValidateOptionsResult"/> result.</returns>
     public ValidateOptionsResult Validate(string? name, ConsulOptions options)
-    {
-        if (options.Agent == null)
+    {        
+        if (options.Registration != null || options.Configuration != null)
         {
-            return ValidateOptionsResult.Fail("Agent is null.");
-        }
-        if (options.Registration == null && options.Configuration == null)
-        {
-            return ValidateOptionsResult.Fail("Registration and Configuration are both null.");
+            if (options.Agent == null)
+            {
+                return ValidateOptionsResult.Fail("Agent is null.");
+            }
+            //return ValidateOptionsResult.Fail("Registration and Configuration are both null.");
         }
 
         return ValidateOptionsResult.Success;
