@@ -29,7 +29,7 @@ public class ServiceRegistrationService : IHostedService
     {
         if (_consulOptions.Registration != null)
         {
-            var registration = _consulOptions.Registration!;
+            var registration = _consulOptions.Registration;
 
             var consulClient = CreateConsulClient(_consulOptions.Agent);
 
@@ -63,7 +63,7 @@ public class ServiceRegistrationService : IHostedService
         if (_consulOptions.Registration != null)
         {
             var consulClient = CreateConsulClient(_consulOptions.Agent);
-            await consulClient.Agent.ServiceDeregister(_consulOptions.Registration!.Id, cancellationToken);
+            await consulClient.Agent.ServiceDeregister(_consulOptions.Registration.Id, cancellationToken);
             consulClient.Dispose();
         }
     }
