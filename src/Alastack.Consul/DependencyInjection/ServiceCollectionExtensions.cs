@@ -10,18 +10,6 @@ namespace Microsoft.Extensions.DependencyInjection;
 /// </summary>
 public static class ServiceCollectionExtensions
 {
-
-    /// <summary>
-    /// Adds services for <see cref="ConsulOptions"/> to the specified <see cref="IServiceCollection"/>.
-    /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/> to add services to.</param>
-    /// <param name="configure">Used to configure the provided <see cref="ConsulOptions"/>.</param>
-    /// <returns>The service collection.</returns>
-    public static IServiceCollection AddConsulNaming(this IServiceCollection services, Action<ConsulOptions> configure) 
-    {
-        return services.AddConsul(configure);
-    }
-
     /// <summary>
     /// Adds services for <see cref="ConsulOptions"/> to the specified <see cref="IServiceCollection"/>.
     /// </summary>
@@ -30,6 +18,30 @@ public static class ServiceCollectionExtensions
     /// <returns>The service collection.</returns>
     [Obsolete("This method is obsolete. Call AddConsulNaming instead.", false)]
     public static IServiceCollection AddConsul(this IServiceCollection services, Action<ConsulOptions> configure)
+    {
+        return services.AddConsulNaming(configure);
+    }
+
+    /// <summary>
+    /// Adds services for <see cref="ConsulOptions"/> to the specified <see cref="IServiceCollection"/>.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/> to add services to.</param>
+    /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
+    /// <param name="key">The Consul configuration key. Defaults to <c>Consul</c>.</param>
+    /// <returns>The service collection.</returns>
+    [Obsolete("This method is obsolete. Call AddConsulNaming instead.", false)]
+    public static IServiceCollection AddConsul(this IServiceCollection services, IConfiguration configuration, string key = "Consul")
+    {
+        return services.AddConsulNaming(configuration, key);
+    }
+
+    /// <summary>
+    /// Adds services for <see cref="ConsulOptions"/> to the specified <see cref="IServiceCollection"/>.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/> to add services to.</param>
+    /// <param name="configure">Used to configure the provided <see cref="ConsulOptions"/>.</param>
+    /// <returns>The service collection.</returns>
+    public static IServiceCollection AddConsulNaming(this IServiceCollection services, Action<ConsulOptions> configure)
     {
         if (services == null)
         {
@@ -54,19 +66,6 @@ public static class ServiceCollectionExtensions
     /// <returns>The service collection.</returns>
     public static IServiceCollection AddConsulNaming(this IServiceCollection services, IConfiguration configuration, string key = "Consul") 
     {
-        return services.AddConsul(configuration, key);
-    }
-
-    /// <summary>
-    /// Adds services for <see cref="ConsulOptions"/> to the specified <see cref="IServiceCollection"/>.
-    /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/> to add services to.</param>
-    /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
-    /// <param name="key">The Consul configuration key. Defaults to <c>Consul</c>.</param>
-    /// <returns>The service collection.</returns>
-    [Obsolete("This method is obsolete. Call AddConsulNaming instead.", false)]
-    public static IServiceCollection AddConsul(this IServiceCollection services, IConfiguration configuration, string key = "Consul") 
-    {
         if (services == null)
         {
             throw new ArgumentNullException(nameof(services));
@@ -82,7 +81,7 @@ public static class ServiceCollectionExtensions
 
         services.Configure<ConsulOptions>(configuration.GetSection(key));
         services.AddConsulCore();
-        return services;
+        return services;        
     }
 
     private static IServiceCollection AddConsulCore(this IServiceCollection services) 
