@@ -26,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Folder", "Solution
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alastack.Consul.AspNetCore", "src\Alastack.Consul.AspNetCore\Alastack.Consul.AspNetCore.csproj", "{83CB6AAE-ABFD-46C5-B95A-4D6C76886E80}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{1568F366-4789-4F94-95E6-F29904FC564A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1568F366-4789-4F94-95E6-F29904FC564A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1568F366-4789-4F94-95E6-F29904FC564A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83CB6AAE-ABFD-46C5-B95A-4D6C76886E80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83CB6AAE-ABFD-46C5-B95A-4D6C76886E80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83CB6AAE-ABFD-46C5-B95A-4D6C76886E80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83CB6AAE-ABFD-46C5-B95A-4D6C76886E80}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +73,7 @@ Global
 		{1DE22138-561E-41E2-B155-1901BEA2B217} = {9082AC1A-FD18-4765-B566-5640B12DAD9D}
 		{9EC659D1-5AD6-45B3-9689-A13AA7F0B32B} = {9082AC1A-FD18-4765-B566-5640B12DAD9D}
 		{1568F366-4789-4F94-95E6-F29904FC564A} = {9082AC1A-FD18-4765-B566-5640B12DAD9D}
+		{83CB6AAE-ABFD-46C5-B95A-4D6C76886E80} = {69088A22-70EC-496A-ACDD-0E4FEABA81A2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B4666193-0F92-4DED-A70F-7BF173E5B153}
