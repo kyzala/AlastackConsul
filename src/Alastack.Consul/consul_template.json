@@ -36,19 +36,34 @@
     },
     "Registration": {
       //"IsEnabled": true, // Default to "true"
-      //"Id": "aspnetsample1", // Default to $"{registration.Name}@{registration.Address.Host}:{registration.Address.Port}"
       "Name": "AspNetSample",
       "Version": "1.0.0", // Default to "1.0.0"
-      "Address": "http://127.0.0.1:5000",
-      "Tags": [ "apiserver", "test" ],
-      "EnableTagOverride": true, // Default to false
-      "HealthCheck": {
-        //"CheckId": "AspNetSample_HealthCheck1", // Default to $"service:{options.Registration.Id}"
-        //"Name": "AspNetSample_HealthCheck", // Default to $"Service '{options.Registration.Name}' check"
-        "DeregisterCriticalServiceAfter": "00:01:00", // Default to null
-        "Interval": "00:00:15", // Default to "00:00:15"
-        "Health": "/health", // or absolute uri: http://127.0.0.1:5000/health
-        "Timeout": "00:00:10" // Default to "00:00:10"
+      "Instances": [
+        {
+          //"Id": "aspnetsample1", // Default to $"{registration.Name}@{registration.Address.Host}:{registration.Address.Port}"
+          "Address": "http://localhost:5000",
+          "Tags": [ "apiserver", "test" ],
+          "EnableTagOverride": true, // Default to false
+          "HealthCheck": {
+            //"CheckId": "AspNetSample_HealthCheck1", // Default to $"service:{options.Registration.Id}"
+            //"Name": "AspNetSample_HealthCheck", // Default to $"Service '{options.Registration.Name}' check"
+            "DeregisterCriticalServiceAfter": "00:01:00", // Default to null
+            "Interval": "00:00:15", // Default to "00:00:15"
+            "Health": "/health", // or absolute uri: http://127.0.0.1:5000/health
+            "Timeout": "00:00:10" // Default to "00:00:10"
+          }
+        },
+        {
+          "Address": "https://localhost:5001",
+          "Tags": [ "apiserver", "test" ],
+          "EnableTagOverride": true // Default to false
+        }
+      ],
+      "HealthCheckDefault": {
+        "DeregisterCriticalServiceAfter": "00:01:00",
+        "Interval": "00:00:15",
+        "Health": "/health",
+        "Timeout": "00:00:10"
       },
       "Metadata": {
         //"RegistrationIdNullPolicy": "Default" // or "Consul"
