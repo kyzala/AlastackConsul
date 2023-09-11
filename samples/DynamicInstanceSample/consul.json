@@ -1,0 +1,53 @@
+{
+  "Consul": {
+    "Agent": {
+      "Datacenter": "dc1",
+      "Address": "http://127.0.0.1:8500",
+      "WaitTime": "00:00:05"
+    },
+    "Configuration": {
+      "PathBase": "/aspnetsample",
+      "Namespace": "public1",
+      "Sets": [
+        {
+          "Id": "logging.json"
+        },
+        {
+          "Id": "config1.json",
+          "Group": "group1"
+        },
+        {
+          "Id": "config2.json",
+          "Group": "group1",
+          "Optional": true,
+          "ReloadOnChange": true,
+          "PollingWaitTime": "00:00:10",
+          "IgnoreException": true
+        }
+      ],
+      "Metadata": {
+        "MyKey1": "MyValue1"
+      }
+    },
+    "Registration": {
+      "Name": "AspNetSample",
+      "Version": "1.0.0",
+      "Instances": [
+        {
+          "Address": "http://127.0.0.1:5000",
+          "Tags": [ "apiserver", "test" ],
+          "EnableTagOverride": true,
+          "HealthCheck": {
+            "DeregisterCriticalServiceAfter": "00:01:00",
+            "Interval": "00:00:15",
+            "Health": "/health",
+            "Timeout": "00:00:10"
+          }
+        }
+      ],      
+      "Metadata": {
+        //"RegistrationIdNullPolicy": "Default"
+      }
+    }
+  }
+}
