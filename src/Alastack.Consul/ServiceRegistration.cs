@@ -6,11 +6,6 @@
 public sealed class ServiceRegistration
 {
     /// <summary>
-    /// Configure service id.
-    /// </summary>
-    public string? Id { get; set; }
-
-    /// <summary>
     /// Configure service name.
     /// </summary>
     public string Name { get; set; } = default!;
@@ -21,28 +16,18 @@ public sealed class ServiceRegistration
     public string Version { get; set; } = ServiceRegistrationDefaults.Version;
 
     /// <summary>
-    /// Configure service address.
+    /// Registration instances
     /// </summary>
-    public Uri Address { get; set; } = default!;
+    public ICollection<RegistrationInstance> Instances { get; set; } = default!;
 
     /// <summary>
-    /// Configure service tags.
+    /// ServiceHealthCheck default to <see cref="RegistrationInstance.HealthCheck"/>.
     /// </summary>
-    public string[]? Tags { get; set; }
-
-    /// <summary>
-    /// Configure Enable tag override flag.
-    /// </summary>
-    public bool EnableTagOverride { get; set; }
+    public ServiceHealthCheck HealthCheckDefault { get; set; } = new ServiceHealthCheck();
 
     /// <summary>
     /// Metadata for the service.
     /// </summary>
     public IDictionary<string, string>? Metadata { get; set; }
-
-    /// <summary>
-    /// Configure service Health check.
-    /// </summary>
-    public ServiceHealthCheck HealthCheck { get; set; } = default!;
 
 }

@@ -80,7 +80,7 @@ public static class ServiceCollectionExtensions
         }
 
         services.Configure<ConsulOptions>(configuration.GetSection(key));
-        services.AddConsulCore();
+        services.AddConsulCore();        
         return services;        
     }
 
@@ -88,7 +88,11 @@ public static class ServiceCollectionExtensions
     {
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<ConsulOptions>, ConsulPostConfigureOptions>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IValidateOptions<ConsulOptions>, ConsulValidateOptions>());
-        services.AddHostedService<ServiceRegistrationService>();
+        services.AddSingleton<IRegistrationService, RegistrationService>();
+        services.AddHostedService<DynamicRegistrationHostedService>();
+
+        //services.TryAddEnumerable(ServiceDescriptor.Singleton<IServerAddressesHandler, NoneServerAddressesHandler>());
+
         return services;
     }
 }

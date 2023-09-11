@@ -15,27 +15,35 @@ public class ConsulPostConfigureOptions : IPostConfigureOptions<ConsulOptions>
     public void PostConfigure(string? name, ConsulOptions options)
     {       
         if (options.Registration != null) 
-        {            
-            if (String.IsNullOrWhiteSpace(options.Registration.Id)) 
-            {
-                options.Registration.Id = options.Registration.BuildRegistrationId();
-            }
-            
-            if (String.IsNullOrWhiteSpace(options.Registration.HealthCheck.Name))
-            {
-                options.Registration.HealthCheck.Name = $"Service '{options.Registration.Name}' check";
-            }
+        {
 
-            if (String.IsNullOrWhiteSpace(options.Registration.HealthCheck.CheckId))
+            foreach (var instance in options.Registration.Instances) 
             {
-                options.Registration.HealthCheck.CheckId = $"service:{options.Registration.Id}";
-            }
+                if (String.IsNullOrWhiteSpace(instance.Id))
+                {
+                    instance.Id = instance.BuildRegistrationInstanceId(options.Registration.Name, options.Registration.Metadata);
+                }
 
-            if (!options.Registration.HealthCheck.Health.IsAbsoluteUri) 
-            {
-                options.Registration.HealthCheck.Health = new Uri(options.Registration.Address, options.Registration.HealthCheck.Health);
+                if (instance.HealthCheck == null) 
+                {
+                    instance.HealthCheck = options.Registration.HealthCheckDefault;
+                }
+
+                if (String.IsNullOrWhiteSpace(instance.HealthCheck.Name))
+                {
+                    instance.HealthCheck.Name = $"Service '{options.Registration.Name}' check";
+                }
+
+                if (String.IsNullOrWhiteSpace(instance.HealthCheck.CheckId))
+                {
+                    instance.HealthCheck.CheckId = $"service:{instance.Id}";
+                }
+
+                if (!instance.HealthCheck.Health.IsAbsoluteUri)
+                {
+                    instance.HealthCheck.Health = new Uri(instance.Address, instance.HealthCheck.Health);
+                }
             }
-            
         }
     }
 }

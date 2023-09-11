@@ -5,10 +5,10 @@
 /// </summary>
 public static class ServiceRegistrationExtentions
 {
-    /// <summary>
+    /*/// <summary>
     /// Build a service registration id.
     /// </summary>
-    /// <param name="registration"><see cref="ServiceRegistration"/></param>
+    /// <param name = "registration" >< see cref="ServiceRegistration"/></param>
     /// <returns>A new service registration id.</returns>
     public static string? BuildRegistrationId(this ServiceRegistration registration)
     {
@@ -17,7 +17,17 @@ public static class ServiceRegistrationExtentions
             return $"{registration.Name}@{registration.Address.Host}:{registration.Address.Port}";
         }
         return null;
-        
+
+    }*/
+
+    public static string? BuildRegistrationInstanceId(this RegistrationInstance instance, string ServiceName, IDictionary<string, string>? metadata)
+    {
+        if (metadata.IsPolicyDefault(RegistrationPolicies.RegistrationIdNullPolicy))
+        {
+            return $"{ServiceName}@{instance.Address.Host}:{instance.Address.Port}";
+        }
+        return null;
+
     }
 
     /*
@@ -60,16 +70,16 @@ public static class ServiceRegistrationExtentions
     //    return registration.HealthCheck.Health;
     //}
 
-    private static bool IsPolicyDefault(this ServiceRegistration registration, string policy) 
+    private static bool IsPolicyDefault(this IDictionary<string, string>? metadata, string policy) 
     {
-        var policyValue = registration.GetPolicyValue(policy);
+        var policyValue = metadata.GetPolicyValue(policy);
 
         return String.Equals(RegistrationIdNullPolicy.Default, policyValue, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static string GetPolicyValue(this ServiceRegistration registration, string policy)
+    private static string GetPolicyValue(this IDictionary<string, string>? metadata, string policy)
     {
-        if (registration.Metadata != null && registration.Metadata.TryGetValue(policy, out var value))
+        if (metadata != null && metadata.TryGetValue(policy, out var value))
         {
             if (RegistrationIdNullPolicy.IsConsul(value))
             {
