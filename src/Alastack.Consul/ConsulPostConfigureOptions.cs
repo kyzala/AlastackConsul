@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Alastack.Consul.Registration;
+using Microsoft.Extensions.Options;
 
 namespace Alastack.Consul;
 
@@ -14,35 +15,11 @@ public class ConsulPostConfigureOptions : IPostConfigureOptions<ConsulOptions>
     /// <param name="options">The <see cref="ConsulOptions"/> instance to configure.</param>
     public void PostConfigure(string? name, ConsulOptions options)
     {       
-        if (options.Registration != null) 
+        if (options.Registration?.Instances != null) 
         {
-
             foreach (var instance in options.Registration.Instances) 
             {
-                if (String.IsNullOrWhiteSpace(instance.Id))
-                {
-                    instance.Id = instance.BuildRegistrationInstanceId(options.Registration.Name, options.Registration.Metadata);
-                }
-
-                if (instance.HealthCheck == null) 
-                {
-                    instance.HealthCheck = options.Registration.HealthCheckDefault;
-                }
-
-                if (String.IsNullOrWhiteSpace(instance.HealthCheck.Name))
-                {
-                    instance.HealthCheck.Name = $"Service '{options.Registration.Name}' check";
-                }
-
-                if (String.IsNullOrWhiteSpace(instance.HealthCheck.CheckId))
-                {
-                    instance.HealthCheck.CheckId = $"service:{instance.Id}";
-                }
-
-                if (!instance.HealthCheck.Health.IsAbsoluteUri)
-                {
-                    instance.HealthCheck.Health = new Uri(instance.Address, instance.HealthCheck.Health);
-                }
+                instance.Configure(registration: options.Registration);
             }
         }
     }
