@@ -3,7 +3,7 @@
     //"IsEnabled": true, // Default to "true"
     "Agent": {
       "Datacenter": "dc1", // Default to "dc1"
-      "Address": "http://127.0.0.1:8500",
+      "Address": "http://localhost:8500",
       "Token": "045ee828-2fa4-45b7-b01d-d9fb3937da54", // Default to null
       "WaitTime": "00:00:05" // Default to null
     },
