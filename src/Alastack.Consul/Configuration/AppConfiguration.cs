@@ -1,4 +1,4 @@
-﻿namespace Alastack.Consul;
+﻿namespace Alastack.Consul.Configuration;
 
 /// <summary>
 /// Application configuration definition.

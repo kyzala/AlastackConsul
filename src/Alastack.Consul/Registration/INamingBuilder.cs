@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Alastack.Consul;
+namespace Alastack.Consul.Registration;
 
 /// <summary>
 /// An interface for configuring Naming services.

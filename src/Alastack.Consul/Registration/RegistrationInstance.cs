@@ -1,4 +1,4 @@
-﻿namespace Alastack.Consul;
+﻿namespace Alastack.Consul.Registration;
 
 /// <summary>
 /// Registration instance
@@ -10,7 +10,7 @@ public class RegistrationInstance
     /// </summary>
     public string? Id { get; set; }
 
-    
+
     /// <summary>
     /// Configure service addresses.
     /// </summary>

@@ -1,10 +1,50 @@
-﻿namespace Alastack.Consul;
+﻿using Microsoft.Extensions.Options;
+
+namespace Alastack.Consul.Registration;
 
 /// <summary>
 /// ServiceRegistration Extentions.
 /// </summary>
 public static class ServiceRegistrationExtentions
 {
+
+    public static void Configure(this RegistrationInstance instance, ServiceRegistration registration) 
+    {
+        if (String.IsNullOrWhiteSpace(instance.Id))
+        {
+            instance.Id = instance.BuildRegistrationInstanceId(registration.Name, registration.Metadata);
+        }
+
+        if (instance.HealthCheck == null)
+        {
+            instance.HealthCheck = new ServiceHealthCheck 
+            {
+                CheckId = registration.HealthCheckDefault.CheckId,
+                Name = registration.HealthCheckDefault.Name,
+                DeregisterCriticalServiceAfter = registration.HealthCheckDefault.DeregisterCriticalServiceAfter,
+                Interval = registration.HealthCheckDefault.Interval,
+                Health = registration.HealthCheckDefault.Health,
+                Timeout = registration.HealthCheckDefault.Timeout
+            };
+        }
+
+        if (String.IsNullOrWhiteSpace(instance.HealthCheck.Name))
+        {
+            instance.HealthCheck.Name = $"Service '{instance.Id}' check";
+        }
+
+        if (String.IsNullOrWhiteSpace(instance.HealthCheck.CheckId))
+        {
+            instance.HealthCheck.CheckId = $"service:{instance.Id}";
+        }
+
+        if (!instance.HealthCheck.Health.IsAbsoluteUri)
+        {
+            instance.HealthCheck.Health = new Uri(instance.Address, instance.HealthCheck.Health);
+        }
+    }
+
+
     /*/// <summary>
     /// Build a service registration id.
     /// </summary>
@@ -70,11 +110,11 @@ public static class ServiceRegistrationExtentions
     //    return registration.HealthCheck.Health;
     //}
 
-    private static bool IsPolicyDefault(this IDictionary<string, string>? metadata, string policy) 
+    private static bool IsPolicyDefault(this IDictionary<string, string>? metadata, string policy)
     {
         var policyValue = metadata.GetPolicyValue(policy);
 
-        return String.Equals(RegistrationIdNullPolicy.Default, policyValue, StringComparison.OrdinalIgnoreCase);
+        return string.Equals(RegistrationIdNullPolicy.Default, policyValue, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string GetPolicyValue(this IDictionary<string, string>? metadata, string policy)

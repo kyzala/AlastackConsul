@@ -1,4 +1,4 @@
-﻿namespace Alastack.Consul;
+﻿namespace Alastack.Consul.Configuration;
 
 /// <summary>
 /// Application configuration set definition.
@@ -31,7 +31,7 @@ public sealed class ConfigurationSet
     public bool ReloadOnChange { get; set; }
 
     /// <summary>
-    /// Gets or sets the maximum amount of time to wait for changes to a set id if <see cref="ConfigurationSet.ReloadOnChange"/> is true.
+    /// Gets or sets the maximum amount of time to wait for changes to a set id if <see cref="ReloadOnChange"/> is true.
     /// </summary>
     public TimeSpan PollingWaitTime { get; set; } = AppConfigurationDefaults.PollingWaitTime;
 

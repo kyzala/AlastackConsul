@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Options;
 using System.Collections.ObjectModel;
 
-namespace Alastack.Consul;
+namespace Alastack.Consul.Registration;
 
 public class DynamicRegistrationHostedService : BackgroundService
 {
@@ -23,31 +23,10 @@ public class DynamicRegistrationHostedService : BackgroundService
     /// <inheritdoc />
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {        
-        /*int timestep = 0;
-        while (!stoppingToken.IsCancellationRequested && !_serverAddressesFactory.Configuered && timestep < Defaults.ServerAddressTimeout)
+        if (!stoppingToken.IsCancellationRequested)
         {
-            await Task.Delay(100, stoppingToken);
-            timestep += 100;
-        }
-        if (!stoppingToken.IsCancellationRequested && _serverAddressesFactory.Configuered)
-        {
-            var addresses = _serverAddressesFactory.GetServerAddresses();
             _consulOptions.Registration!.Instances ??= new Collection<RegistrationInstance>();
-            foreach (var address in addresses)
-            {
-                var addr = new Uri(address);
-                if (!_consulOptions.Registration!.Instances.Any(ins => ins.Address == addr)) 
-                {
-                    _consulOptions.Registration!.Instances.Add(new RegistrationInstance { Address = addr });
-                }
-            }
-            await _registrationService.ServiceRegister(stoppingToken);
-            
-        }*/
-        if (!stoppingToken.IsCancellationRequested) 
-        {            
-            _consulOptions.Registration!.Instances ??= new Collection<RegistrationInstance>();
-            foreach(var handler in  _serverAddressesHandlers) 
+            foreach (var handler in _serverAddressesHandlers)
             {
                 var addresses = await handler.GetServerAddresses(stoppingToken);
                 foreach (var address in addresses)
@@ -55,12 +34,16 @@ public class DynamicRegistrationHostedService : BackgroundService
                     var addr = new Uri(address);
                     if (!_consulOptions.Registration!.Instances.Any(ins => ins.Address == addr))
                     {
-                        _consulOptions.Registration!.Instances.Add(new RegistrationInstance { Address = addr });
+                        var instance = new RegistrationInstance 
+                        { 
+                            Address = addr
+                        };
+                        instance.Configure(_consulOptions.Registration);
+                        _consulOptions.Registration!.Instances.Add(instance);
                     }
-                }
-                await _registrationService.ServiceRegister(stoppingToken);                
+                }                
             }
-            
+            await _registrationService.ServiceRegister(stoppingToken);
             _successed = true;
         }
     }
@@ -68,10 +51,10 @@ public class DynamicRegistrationHostedService : BackgroundService
     /// <inheritdoc />
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        if (_successed) 
+        if (_successed)
         {
             await _registrationService.ServiceDeregister(cancellationToken);
-        }        
+        }
         await base.StopAsync(cancellationToken);
     }
 

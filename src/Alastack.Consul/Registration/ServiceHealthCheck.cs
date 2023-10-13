@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Alastack.Consul;
+namespace Alastack.Consul.Registration;
 
 /// <summary>
 /// ServiceHealthCheck is used to create an associated check for a service.
@@ -31,7 +31,7 @@ public sealed class ServiceHealthCheck
     /// <summary>
     /// Service health check endpoint.
     /// </summary>
-    public Uri Health { get; set; } = new Uri("/health");
+    public Uri Health { get; set; } = new Uri("/health", UriKind.Relative);
 
     /// <summary>
     ///  Service health timeout value.

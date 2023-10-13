@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
-namespace Alastack.Consul;
+namespace Alastack.Consul.Registration;
 
 /// <summary>
 /// Hosted servie for the service registration.
@@ -16,7 +16,7 @@ public class DefaultRegistrationHostedService : IHostedService
     /// </summary>
     /// <param name="options"><see cref="ConsulOptions"/></param>    
     /// <param name="registrationService"><see cref="IRegistrationService"/></param>
-    public DefaultRegistrationHostedService(IOptions<ConsulOptions> options, IRegistrationService registrationService) 
+    public DefaultRegistrationHostedService(IOptions<ConsulOptions> options, IRegistrationService registrationService)
     {
         //if (options.Value.Registration == null) 
         //{
@@ -37,5 +37,5 @@ public class DefaultRegistrationHostedService : IHostedService
     {
         await _registrationService.ServiceDeregister(cancellationToken);
     }
-    
+
 }

@@ -1,4 +1,4 @@
-﻿namespace Alastack.Consul;
+﻿namespace Alastack.Consul.Registration;
 
 /// <summary>
 /// Service registration for service discovery.

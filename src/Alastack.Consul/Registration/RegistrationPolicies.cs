@@ -1,4 +1,4 @@
-﻿namespace Alastack.Consul;
+﻿namespace Alastack.Consul.Registration;
 
 internal static class RegistrationPolicies
 {
@@ -21,6 +21,6 @@ internal static class RegistrationIdNullPolicy
         {
             return false;
         }
-        return String.Equals(Consul, policyValue, StringComparison.OrdinalIgnoreCase);
+        return string.Equals(Consul, policyValue, StringComparison.OrdinalIgnoreCase);
     }
 }

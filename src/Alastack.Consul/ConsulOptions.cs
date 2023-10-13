@@ -1,4 +1,7 @@
-﻿namespace Alastack.Consul;
+﻿using Alastack.Consul.Configuration;
+using Alastack.Consul.Registration;
+
+namespace Alastack.Consul;
 
 /// <summary>
 /// Consul options for Service Discovery and Configuration.

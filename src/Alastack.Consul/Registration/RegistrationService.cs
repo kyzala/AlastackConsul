@@ -1,7 +1,7 @@
 ﻿using Consul;
 using Microsoft.Extensions.Options;
 
-namespace Alastack.Consul;
+namespace Alastack.Consul.Registration;
 
 public class RegistrationService : IRegistrationService
 {
