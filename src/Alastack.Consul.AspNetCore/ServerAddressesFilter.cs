@@ -1,21 +1,19 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.AspNetCore.Hosting.Server;
+﻿using Alastack.Consul.Registration;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 
 namespace Alastack.Consul.AspNetCore;
 
 public class ServerAddressesFilter : IStartupFilter
 {
     private readonly IServer _server;
-    //private readonly IConfiguration _configuration;
     public readonly IServerAddressesHandler _serverAddressesHandler;
 
     public ServerAddressesFilter(IServer server, IEnumerable<IServerAddressesHandler> serverAddressesHandlers)
     {
         _server = server;
-        //_configuration = configuration;
         var handler = serverAddressesHandlers.FirstOrDefault(handler => handler.GetType() == typeof(KestrelServerAddressesHandler));
 
         if (handler != null)
