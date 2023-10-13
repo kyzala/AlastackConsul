@@ -2,7 +2,7 @@
   "Consul": {
     "Agent": {
       "Datacenter": "dc1",
-      "Address": "http://127.0.0.1:8500",
+      "Address": "http://localhost:8500",
       "WaitTime": "00:00:05"
     },
     "Configuration": {
