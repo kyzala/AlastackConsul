@@ -66,6 +66,8 @@ builder.Services.AddConsulNaming(builder.Configuration).AddAspNetCore();
 }
 ```
 
+![](docs/registration.png)
+
 ## All Config properties
 
 ```JSON
@@ -149,6 +151,8 @@ Using [Winton.Extensions.Configuration.Consul](https://github.com/wintoncode/Win
 
 **Path key:** 
 `{Configuration.PathBase} / {Configuration.Namespace} / {Set.Group} / {Set.Id}`
+
+![](docs/configuration.png)
 
 ## Samples
 
