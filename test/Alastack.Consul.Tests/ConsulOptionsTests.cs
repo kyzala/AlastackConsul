@@ -16,7 +16,7 @@ namespace Alastack.Consul.Tests
             // Agent
 
             Assert.Equal("dc1", options!.Agent.Datacenter);
-            Assert.Equal(new Uri("http://127.0.0.1:8500"), options.Agent.Address);
+            Assert.Equal(new Uri("http://localhost:8500"), options.Agent.Address);
             Assert.Equal("045ee828-2fa4-45b7-b01d-d9fb3937da54", options.Agent.Token);
             Assert.Equal(TimeSpan.FromSeconds(5), options.Agent.WaitTime);
 
@@ -55,7 +55,7 @@ namespace Alastack.Consul.Tests
                 Assert.Equal("aspnetsample1", instance!.Id);
                 Assert.Equal("AspNetSample", options.Registration.Name);
                 Assert.Equal("1.0.0", options.Registration.Version);
-                Assert.Equal(new Uri("http://127.0.0.1:5000"), instance.Address);
+                Assert.Equal(new Uri("http://localhost:5000"), instance.Address);
                 Assert.Equal(2, instance.Tags!.Length);
                 Assert.True(instance.EnableTagOverride);
                 Assert.Equal(2, options.Registration.Metadata!.Count);
@@ -65,7 +65,7 @@ namespace Alastack.Consul.Tests
                 Assert.Equal("AspNetSample_HealthCheck", instance.HealthCheck.Name);
                 Assert.Equal(TimeSpan.FromMinutes(1), instance.HealthCheck.DeregisterCriticalServiceAfter);
                 Assert.Equal(TimeSpan.FromSeconds(30), instance.HealthCheck.Interval);
-                Assert.Equal(new Uri("http://127.0.0.1:5000/health"), instance.HealthCheck.Health);
+                Assert.Equal(new Uri("http://localhost:5000/health"), instance.HealthCheck.Health);
                 Assert.Equal(TimeSpan.FromSeconds(20), instance.HealthCheck.Timeout);
             }
             
@@ -82,7 +82,7 @@ namespace Alastack.Consul.Tests
             // Agent
 
             Assert.Null(options!.Agent.Datacenter);
-            Assert.Equal(new Uri("http://127.0.0.1:8500"), options.Agent.Address);
+            Assert.Equal(new Uri("http://localhost:8500"), options.Agent.Address);
             Assert.Null(options.Agent.Token);
             Assert.Null(options.Agent.WaitTime);
 
@@ -101,20 +101,20 @@ namespace Alastack.Consul.Tests
             Assert.NotNull(options.Registration);
             foreach (var instance in options.Registration.Instances) 
             {
-                Assert.Equal("AspNetSample@127.0.0.1:5000", instance.Id);
+                Assert.Equal("AspNetSample@localhost:5000", instance.Id);
                 Assert.Equal("AspNetSample", options.Registration.Name);
                 Assert.Equal("1.0.0", options.Registration.Version);
-                Assert.Equal(new Uri("http://127.0.0.1:5000"), instance.Address);
+                Assert.Equal(new Uri("http://localhost:5000"), instance.Address);
                 Assert.Null(instance.Tags);
                 Assert.False(instance.EnableTagOverride);
                 Assert.Null(options.Registration.Metadata);
 
                 Assert.NotNull(instance.HealthCheck);
-                Assert.StartsWith("service:AspNetSample@127.0.0.1:5000", instance.HealthCheck.CheckId);
-                Assert.Equal("Service 'AspNetSample' check", instance.HealthCheck.Name);
-                Assert.Null(instance.HealthCheck.DeregisterCriticalServiceAfter);
+                Assert.StartsWith("service:AspNetSample@localhost:5000", instance.HealthCheck.CheckId);
+                Assert.Equal($"Service '{instance.Id}' check", instance.HealthCheck.Name);
+                Assert.NotNull(instance.HealthCheck.DeregisterCriticalServiceAfter);
                 Assert.Equal(TimeSpan.FromSeconds(15), instance.HealthCheck.Interval);
-                Assert.Equal("http://127.0.0.1:5000/health", instance.HealthCheck.Health.ToString());
+                Assert.Equal("http://localhost:5000/health", instance.HealthCheck.Health.ToString());
                 Assert.Equal(TimeSpan.FromSeconds(10), instance.HealthCheck.Timeout);
             }
                
