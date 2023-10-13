@@ -42,7 +42,7 @@
         {
           //"Id": "aspnetsample1", // Default to $"{registration.Name}@{registration.Address.Host}:{registration.Address.Port}"
           "Address": "http://localhost:5000",
-          "Tags": [ "apiserver", "test" ],
+          "Tags": [ "apiserver", "test", "http" ],
           "EnableTagOverride": true, // Default to false
           "HealthCheck": {
             //"CheckId": "AspNetSample_HealthCheck1", // Default to $"service:{options.Registration.Id}"
@@ -55,7 +55,7 @@
         },
         {
           "Address": "https://localhost:5001",
-          "Tags": [ "apiserver", "test" ],
+          "Tags": [ "apiserver", "test", "https" ],
           "EnableTagOverride": true // Default to false
         }
       ],

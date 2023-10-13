@@ -2,7 +2,7 @@
   "Consul1": {
     "Agent": {
       "Datacenter": "dc1",
-      "Address": "http://127.0.0.1:8500",
+      "Address": "http://localhost:8500",
       "Token": "045ee828-2fa4-45b7-b01d-d9fb3937da54",
       "WaitTime": "00:00:05"
     },
@@ -34,7 +34,7 @@
       "Instances": [
         {
           "Id": "aspnetsample1",
-          "Addresses": [ "http://127.0.0.1:5000" ],
+          "Address": "http://localhost:5000",
           "Tags": [ "apiserver", "test" ],
           "EnableTagOverride": true,
           "HealthCheck": {
@@ -62,7 +62,7 @@
   "Consul2": {
     "Agent": {
       //"Datacenter": "dc1",
-      "Addresses": "http://127.0.0.1:8500",
+      "Address": "http://localhost:8500"
       //"Token": "045ee828-2fa4-45b7-b01d-d9fb3937da54",
       //"WaitTime": "00:00:05"
     },
@@ -85,7 +85,7 @@
       //"Version": "1.0.0",
       "Instances": [
         {
-          "Address": "http://127.0.0.1:5000",
+          "Address": "http://localhost:5000",
           //"Tags": [ "apiserver", "test" ],
           //"EnableTagOverride": true,
           //"Metadata": {
@@ -98,7 +98,7 @@
             //"Name": "AspNetSample_HealthCheck",
             //"DeregisterCriticalServiceAfter": "00:01:00",
             //"Interval": "00:00:15",
-            "Health": "http://127.0.0.1:5000/health" //,
+            "Health": "http://localhost:5000/health" //,
             //"Timeout": "00:00:10"
           }
         }

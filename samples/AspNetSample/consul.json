@@ -34,8 +34,19 @@
       "Version": "1.0.0",
       "Instances": [
         {
-          "Address": "http://127.0.0.1:5000",
-          "Tags": [ "apiserver", "test" ],
+          "Address": "http://localhost:5000",
+          "Tags": [ "apiserver", "test", "http" ],
+          "EnableTagOverride": true,
+          "HealthCheck": {
+            "DeregisterCriticalServiceAfter": "00:01:00",
+            "Interval": "00:00:15",
+            "Health": "/health",
+            "Timeout": "00:00:10"
+          }
+        },
+        {
+          "Address": "https://localhost:5001",
+          "Tags": [ "apiserver", "test", "https" ],
           "EnableTagOverride": true,
           "HealthCheck": {
             "DeregisterCriticalServiceAfter": "00:01:00",

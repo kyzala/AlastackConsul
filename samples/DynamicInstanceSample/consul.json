@@ -30,21 +30,21 @@
       }
     },
     "Registration": {
-      "Name": "AspNetSample",
+      "Name": "DynamicInstanceSample",
       "Version": "1.0.0",
-      "Instances": [
-        {
-          "Address": "http://127.0.0.1:5000",
-          "Tags": [ "apiserver", "test" ],
-          "EnableTagOverride": true,
-          "HealthCheck": {
-            "DeregisterCriticalServiceAfter": "00:01:00",
-            "Interval": "00:00:15",
-            "Health": "/health",
-            "Timeout": "00:00:10"
-          }
-        }
-      ],      
+      //"Instances": [
+      //  {
+      //    "Address": "http://localhost:5002",
+      //    "Tags": [ "apiserver", "test" ],
+      //    "EnableTagOverride": true,
+      //    "HealthCheck": {
+      //      "DeregisterCriticalServiceAfter": "00:01:00",
+      //      "Interval": "00:00:15",
+      //      "Health": "/health",
+      //      "Timeout": "00:00:10"
+      //    }
+      //  }
+      //],
       "Metadata": {
         //"RegistrationIdNullPolicy": "Default"
       }
