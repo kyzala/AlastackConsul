@@ -8,8 +8,6 @@ Alastack.Consul supports Configuration and Service Discovery with Hashicorp Cons
 
 ### Install package from the .NET CLI
 
-Client：
-
 ```
 dotnet add package Alastack.Consul
 ```
@@ -24,8 +22,8 @@ builder.Configuration.AddJsonFile("consul.json", true, true);
 // Add Consul Configuration
 builder.Configuration.AddConsulConfiguration();
 
-// Add Consul Registration
-builder.Services.AddConsul(builder.Configuration);
+// Add Consul Naming
+builder.Services.AddConsulNaming(builder.Configuration);
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -37,6 +35,37 @@ app.MapControllers();
 app.Run();
 ```
 
+### Dynamic Registration for AspNetCore
+
+```
+dotnet add package Alastack.Consul.AspNetCore
+```
+
+code snippet:
+
+```c#
+// builder.Services.AddConsulNaming(builder.Configuration);
+builder.Services.AddConsulNaming(builder.Configuration).AddAspNetCore();
+```
+
+```JSON
+{
+  "Consul": {
+    "Agent": {
+      "Datacenter": "dc1",
+      "Address": "http://localhost:8500",
+      "WaitTime": "00:00:05"
+    },
+    "Registration": {
+      "Name": "DynamicInstanceSample",
+      "Version": "1.0.0",
+      "Metadata": {
+      }
+    }
+  }
+}
+```
+
 ## All Config properties
 
 ```JSON
@@ -44,7 +73,7 @@ app.Run();
   "Consul": {
     "Agent": {
       "Datacenter": "dc1", // Default to "dc1"
-      "Address": "http://127.0.0.1:8500",
+      "Address": "http://localhost:8500",
       "Token": "045ee828-2fa4-45b7-b01d-d9fb3937da54", // Default to null
       "WaitTime": "00:00:05" // Default to null
     },
@@ -76,19 +105,35 @@ app.Run();
       }
     },
     "Registration": {
-      //"Id": "aspnetsample1", // Default to $"{registration.Name}@{registration.Address.Host}:{registration.Address.Port}"
+      //"IsEnabled": true, // Default to "true"
       "Name": "AspNetSample",
       "Version": "1.0.0", // Default to "1.0.0"
-      "Address": "http://127.0.0.1:5000",
-      "Tags": [ "apiserver", "test" ],
-      "EnableTagOverride": true, // Default to false
-      "HealthCheck": {
-        //"CheckId": "AspNetSample_HealthCheck1", // Default to $"service:{options.Registration.Id}"
-        //"Name": "AspNetSample_HealthCheck", // Default to $"Service '{options.Registration.Name}' check"
-        "DeregisterCriticalServiceAfter": "00:01:00", // Default to null
-        "Interval": "00:00:15", // Default to "00:00:15"
-        "Health": "/health", // or absolute uri: http://127.0.0.1:5000/health
-        "Timeout": "00:00:10" // Default to "00:00:10"
+      "Instances": [
+        {
+          //"Id": "aspnetsample1", // Default to $"{registration.Name}@{registration.Address.Host}:{registration.Address.Port}"
+          "Address": "http://localhost:5000",
+          "Tags": [ "apiserver", "test", "http" ],
+          "EnableTagOverride": true, // Default to false
+          "HealthCheck": {
+            //"CheckId": "AspNetSample_HealthCheck1", // Default to $"service:{options.Registration.Id}"
+            //"Name": "AspNetSample_HealthCheck", // Default to $"Service '{options.Registration.Name}' check"
+            "DeregisterCriticalServiceAfter": "00:01:00", // Default to null
+            "Interval": "00:00:15", // Default to "00:00:15"
+            "Health": "/health", // or absolute uri: http://127.0.0.1:5000/health
+            "Timeout": "00:00:10" // Default to "00:00:10"
+          }
+        },
+        {
+          "Address": "https://localhost:5001",
+          "Tags": [ "apiserver", "test", "https" ],
+          "EnableTagOverride": true // Default to false
+        }
+      ],
+      "HealthCheckDefault": {
+        "DeregisterCriticalServiceAfter": "00:01:00",
+        "Interval": "00:00:15",
+        "Health": "/health",
+        "Timeout": "00:00:10"
       },
       "Metadata": {
         //"RegistrationIdNullPolicy": "Default" // or "Consul"
