@@ -1,4 +1,5 @@
 ﻿using Alastack.Consul;
+using Alastack.Consul.Registration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
