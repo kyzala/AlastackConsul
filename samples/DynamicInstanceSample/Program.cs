@@ -14,4 +14,6 @@ app.UseHealthCheck("/health");
 app.UseAuthorization();
 app.MapControllers();
 
+Console.WriteLine(Environment.Version);
+
 app.Run();
