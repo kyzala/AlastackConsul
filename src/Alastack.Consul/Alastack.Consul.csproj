@@ -1,23 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-	<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<Version>1.2.1</Version>
-	<Authors>kyzala</Authors>
-	<Copyright>Copyright © 2023 kyzala</Copyright>
+  <PropertyGroup>	
+	<Version>1.2.1</Version>	
 	<PackageTags>Alastack;Consul;Configuration;Service-Discovery</PackageTags>
 	<Description>Alastack.Consul supports Configuration and Service Discovery with Hashicorp Consul.</Description>
-	<PackageIcon>icon.png</PackageIcon>
-	<PackageLicenseExpression>MIT</PackageLicenseExpression>
-	<PackageProjectUrl>https://github.com/kyzala/AlastackConsul</PackageProjectUrl>
-	<RepositoryUrl>https://github.com/kyzala/AlastackConsul</RepositoryUrl>
-	<RespositoryType>git</RespositoryType>
-	<IncludeSymbols>true</IncludeSymbols>
-	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	<PublishRepositoryUrl>true</PublishRepositoryUrl>
+	
   </PropertyGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
@@ -40,7 +27,5 @@
 		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
 		<PackageReference Include="Winton.Extensions.Configuration.Consul" Version="3.4.0" />
 	</ItemGroup>
-  <ItemGroup>
-	<None Include="..\..\icon.png" Pack="true" PackagePath="\" Visible="False" />
-  </ItemGroup>
+  
 </Project>
