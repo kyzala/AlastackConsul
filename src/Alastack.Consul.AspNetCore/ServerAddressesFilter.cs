@@ -22,7 +22,7 @@ public class ServerAddressesFilter : IStartupFilter
         }
         else 
         {
-            throw new ArgumentNullException($"{nameof(KestrelServerAddressesHandler)} not configured.");
+            throw new InvalidOperationException($"{nameof(KestrelServerAddressesHandler)} not configured.");
         }
     }
 

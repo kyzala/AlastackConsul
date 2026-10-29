@@ -37,7 +37,12 @@ public class KestrelServerAddressesHandler : IServerAddressesHandler
             return _addresses;
         }
         
-        throw new ArgumentNullException("Server addresses not configured.");
+        if (cancellationToken.IsCancellationRequested)
+        {
+            throw new OperationCanceledException(cancellationToken);
+        }
+
+        throw new TimeoutException("Server addresses were not configured within the timeout.");
         
     }
 }
