@@ -58,7 +58,7 @@ public static class ConfigurationBuilderExtensions
             }
             else
             {
-                throw new ArgumentNullException($"The consul configuration is null.");
+                throw new InvalidOperationException($"The Consul configuration section '{key}' was not found.");
             }
         }
         return builder.AddConsulConfiguration(consulOptions);
@@ -76,9 +76,19 @@ public static class ConfigurationBuilderExtensions
         {
             throw new ArgumentNullException(nameof(consulOptions));
         }
-        if (consulOptions.Configuration?.Sets != null)
+        if (consulOptions.Configuration?.Sets is { Count: > 0 })
         {
             var configuration = consulOptions.Configuration;
+
+            if (string.IsNullOrWhiteSpace(configuration.PathBase))
+            {
+                throw new InvalidOperationException("The Consul Configuration.PathBase is required when Configuration.Sets is specified.");
+            }
+            if (consulOptions.Agent == null)
+            {
+                throw new InvalidOperationException("The Consul Agent configuration is required when Configuration.Sets is specified.");
+            }
+
             var pathPrefix = $"{configuration.PathBase.TrimStart('/')}/{configuration.Namespace}";
             foreach (var configurationSet in configuration.Sets)
             {

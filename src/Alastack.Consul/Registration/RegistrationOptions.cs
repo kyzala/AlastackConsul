@@ -1,4 +1,6 @@
-﻿namespace Alastack.Consul.Registration;
+﻿using System.Collections.ObjectModel;
+
+namespace Alastack.Consul.Registration;
 
 /// <summary>
 /// Service registration options for service discovery.
@@ -18,7 +20,7 @@ public sealed class RegistrationOptions
     /// <summary>
     /// Registration instances
     /// </summary>
-    public ICollection<RegistrationInstance> Instances { get; set; } = default!;
+    public ICollection<RegistrationInstance> Instances { get; set; } = new Collection<RegistrationInstance>();
 
     /// <summary>
     /// ServiceHealthCheck default to <see cref="RegistrationInstance.HealthCheck"/>.

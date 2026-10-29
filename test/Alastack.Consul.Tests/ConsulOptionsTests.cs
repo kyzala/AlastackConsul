@@ -120,6 +120,49 @@ namespace Alastack.Consul.Tests
                
         }
 
+        [Fact]
+        public void Test_Registration_Instances_Default_To_Empty()
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["Consul:Agent:Address"] = "http://localhost:8500",
+                    ["Consul:Registration:Name"] = "test"
+                })
+                .Build();
+
+            var options = configuration.GetSection("Consul").Get<ConsulOptions>();
+
+            Assert.NotNull(options!.Registration);
+            Assert.Empty(options.Registration!.Instances);
+        }
+
+        [Fact]
+        public void Test_AddConsulConfiguration_Requires_Agent()
+        {
+            IConfigurationBuilder builder = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["Consul:Configuration:PathBase"] = "alastack/test",
+                    ["Consul:Configuration:Sets:0:Id"] = "config.json"
+                });
+
+            Assert.Throws<InvalidOperationException>(() => builder.AddConsulConfiguration());
+        }
+
+        [Fact]
+        public void Test_AddConsulConfiguration_Requires_PathBase()
+        {
+            IConfigurationBuilder builder = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["Consul:Agent:Address"] = "http://localhost:8500",
+                    ["Consul:Configuration:Sets:0:Id"] = "config.json"
+                });
+
+            Assert.Throws<InvalidOperationException>(() => builder.AddConsulConfiguration());
+        }
+
         private static ConsulOptions? BuildConsulOptions(string path, string key) 
         {
             IConfigurationBuilder builder = new ConfigurationBuilder();
