@@ -40,7 +40,7 @@
           "HealthCheck": {
             "DeregisterCriticalServiceAfter": "00:01:00",
             "Interval": "00:00:15",
-            "Health": "/health",
+            "Endpoint": "/health",
             "Timeout": "00:00:10"
           }
         },
@@ -51,7 +51,7 @@
           "HealthCheck": {
             "DeregisterCriticalServiceAfter": "00:01:00",
             "Interval": "00:00:15",
-            "Health": "/health",
+            "Endpoint": "/health",
             "Timeout": "00:00:10"
           }
         }

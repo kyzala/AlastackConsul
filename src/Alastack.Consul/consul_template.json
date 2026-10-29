@@ -1,6 +1,5 @@
 {
   "Consul": {
-    //"IsEnabled": true, // Default to "true"
     "Agent": {
       "Datacenter": "dc1", // Default to "dc1"
       "Address": "http://localhost:8500",
@@ -35,7 +34,6 @@
       }
     },
     "Registration": {
-      //"IsEnabled": true, // Default to "true"
       "Name": "AspNetSample",
       "Version": "1.0.0", // Default to "1.0.0"
       "Instances": [
@@ -49,7 +47,7 @@
             //"Name": "AspNetSample_HealthCheck", // Default to $"Service '{options.Registration.Name}' check"
             "DeregisterCriticalServiceAfter": "00:01:00", // Default to null
             "Interval": "00:00:15", // Default to "00:00:15"
-            "Health": "/health", // or absolute uri: http://127.0.0.1:5000/health
+            "Endpoint": "/health", // or absolute uri: http://127.0.0.1:5000/health
             "Timeout": "00:00:10" // Default to "00:00:10"
           }
         },
@@ -59,10 +57,10 @@
           "EnableTagOverride": true // Default to false
         }
       ],
-      "HealthCheckDefault": {
+      "DefaultHealthCheck": {
         "DeregisterCriticalServiceAfter": "00:01:00",
         "Interval": "00:00:15",
-        "Health": "/health",
+        "Endpoint": "/health",
         "Timeout": "00:00:10"
       },
       "Metadata": {

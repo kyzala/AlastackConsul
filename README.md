@@ -45,7 +45,7 @@ code snippet:
 
 ```c#
 // builder.Services.AddConsulNaming(builder.Configuration);
-builder.Services.AddConsulNaming(builder.Configuration).AddAspNetCore();
+builder.Services.AddConsulNaming(builder.Configuration).AddConsulAspNetCore();
 ```
 
 ```JSON
@@ -107,7 +107,6 @@ builder.Services.AddConsulNaming(builder.Configuration).AddAspNetCore();
       }
     },
     "Registration": {
-      //"IsEnabled": true, // Default to "true"
       "Name": "AspNetSample",
       "Version": "1.0.0", // Default to "1.0.0"
       "Instances": [
@@ -119,9 +118,9 @@ builder.Services.AddConsulNaming(builder.Configuration).AddAspNetCore();
           "HealthCheck": {
             //"CheckId": "AspNetSample_HealthCheck1", // Default to $"service:{options.Registration.Id}"
             //"Name": "AspNetSample_HealthCheck", // Default to $"Service '{options.Registration.Name}' check"
-            "DeregisterCriticalServiceAfter": "00:01:00", // Default to null
+            "DeregisterCriticalServiceAfter": "00:01:00", // Default to "00:01:00"
             "Interval": "00:00:15", // Default to "00:00:15"
-            "Health": "/health", // or absolute uri: http://127.0.0.1:5000/health
+            "Endpoint": "/health", // or absolute uri: http://127.0.0.1:5000/health
             "Timeout": "00:00:10" // Default to "00:00:10"
           }
         },
@@ -131,10 +130,10 @@ builder.Services.AddConsulNaming(builder.Configuration).AddAspNetCore();
           "EnableTagOverride": true // Default to false
         }
       ],
-      "HealthCheckDefault": {
+      "DefaultHealthCheck": {
         "DeregisterCriticalServiceAfter": "00:01:00",
         "Interval": "00:00:15",
-        "Health": "/health",
+        "Endpoint": "/health",
         "Timeout": "00:00:10"
       },
       "Metadata": {
