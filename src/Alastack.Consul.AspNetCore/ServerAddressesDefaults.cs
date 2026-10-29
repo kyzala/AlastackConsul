@@ -1,6 +1,6 @@
 ﻿namespace Alastack.Consul.AspNetCore
 {
-    public class Defaults
+    public static class ServerAddressesDefaults
     {
         /// <summary>
         /// Default timeout(milliseconds) for server address read. 

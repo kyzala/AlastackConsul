@@ -7,7 +7,7 @@ public class KestrelServerAddressesHandler : IServerAddressesHandler
 {        
     private readonly ICollection<string> _addresses = new Collection<string>();
 
-    public bool Configuered { get; set; }
+    public bool Configured { get; set; }
 
 
     public KestrelServerAddressesHandler()
@@ -21,23 +21,23 @@ public class KestrelServerAddressesHandler : IServerAddressesHandler
 
     public async Task<ICollection<string>> GetServerAddresses(CancellationToken cancellationToken)
     {
-        if (Configuered) 
+        if (Configured) 
         {
             return _addresses;
         }
 
         int timestep = 0;
-        while (!cancellationToken.IsCancellationRequested && !Configuered && timestep < Defaults.ServerAddressTimeout)
+        while (!cancellationToken.IsCancellationRequested && !Configured && timestep < ServerAddressesDefaults.ServerAddressTimeout)
         {
             await Task.Delay(100, cancellationToken);
             timestep += 100;
         }
-        if (Configuered)
+        if (Configured)
         {
             return _addresses;
         }
         
-        throw new ArgumentNullException("Server addresses not configuered.");
+        throw new ArgumentNullException("Server addresses not configured.");
         
     }
 }

@@ -3,9 +3,9 @@
 namespace Alastack.Consul.Registration;
 
 /// <summary>
-/// ServiceRegistration Extentions.
+/// Registration extensions.
 /// </summary>
-public static class ServiceRegistrationExtentions
+public static class RegistrationExtensions
 {
 
     public static void Configure(this RegistrationInstance instance, ServiceRegistration registration) 

@@ -22,7 +22,7 @@ public class ServerAddressesFilter : IStartupFilter
         }
         else 
         {
-            throw new ArgumentNullException($"{nameof(KestrelServerAddressesHandler)} not configuered.");
+            throw new ArgumentNullException($"{nameof(KestrelServerAddressesHandler)} not configured.");
         }
     }
 
@@ -36,7 +36,7 @@ public class ServerAddressesFilter : IStartupFilter
                 _serverAddressesHandler.AddServerAddress(address);
             }
         }
-        _serverAddressesHandler.Configuered = true;
+        _serverAddressesHandler.Configured = true;
 
         return next;
     }

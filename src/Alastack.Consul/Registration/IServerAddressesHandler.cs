@@ -2,7 +2,7 @@
 
 public interface IServerAddressesHandler
 {
-    bool Configuered { get; set; }
+    bool Configured { get; set; }
 
     void AddServerAddress(string address);
 
