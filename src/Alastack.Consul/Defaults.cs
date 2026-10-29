@@ -16,6 +16,11 @@ public static class ServiceRegistrationDefaults
     public static readonly TimeSpan CheckTimeout = TimeSpan.FromSeconds(10);
 
     /// <summary>
+    /// Default DeregisterCriticalServiceAfter for the service health check.
+    /// </summary>
+    public static readonly TimeSpan DeregisterCriticalServiceAfter = TimeSpan.FromSeconds(60);
+
+    /// <summary>
     /// Default version for the service.
     /// </summary>
     public const string Version = "1.0.0";

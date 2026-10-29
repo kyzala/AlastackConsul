@@ -9,11 +9,6 @@ namespace Alastack.Consul;
 public sealed class ConsulOptions
 {
     /// <summary>
-    /// Gets or sets flag indicating if the consulOptions is enabled. Default is <c>true</c>.
-    /// </summary>
-    public bool IsEnabled { get; set; } = true;
-
-    /// <summary>
     /// Agent configuration settings.
     /// </summary>
     public AgentOptions Agent { get; set; } = default!;
