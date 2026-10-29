@@ -156,3 +156,35 @@ Using [Winton.Extensions.Configuration.Consul](https://github.com/wintoncode/Win
 ## Samples
 
 Visit the [samples](https://github.com/kyzala/AlastackConsul/tree/main/samples) folder.
+
+## Migrating from 1.2.x to 1.3.0
+
+1.3.0 contains breaking renames. Update code and configuration keys as follows.
+
+**Code**
+
+| 1.2.x | 1.3.0 |
+| --- | --- |
+| `ServiceRegistration` | `RegistrationOptions` |
+| `ServiceRegistrationExtentions` | `RegistrationExtensions` |
+| `AgentConfiguration` | `AgentOptions` |
+| `AppConfiguration` | `ConfigurationOptions` |
+| `AppConfigurationDefaults` | `ConfigurationDefaults` |
+| `RegistrationInstance` | `ServiceInstance` |
+| `ServiceHealthCheck` | `HealthCheckOptions` |
+| `RegistrationOptions.HealthCheckDefault` | `RegistrationOptions.DefaultHealthCheck` |
+| `HealthCheckOptions.Health` | `HealthCheckOptions.Endpoint` |
+| `ConsulOptions.IsEnabled` | removed, it was never read |
+| `AddAspNetCore()` | `AddConsulAspNetCore()` |
+| `IServerAddressesHandler.Configuered` | `IServerAddressesHandler.Configured` |
+| AspNetCore `Defaults` | `ServerAddressesDefaults` |
+
+`RegistrationService`, `DynamicRegistrationHostedService`, `KestrelServerAddressesHandler` and `ServerAddressesFilter` are now internal. Resolve `IRegistrationService` and `IServerAddressesHandler` through dependency injection instead of constructing them.
+
+**Configuration keys**
+
+| 1.2.x | 1.3.0 |
+| --- | --- |
+| `"HealthCheckDefault"` | `"DefaultHealthCheck"` |
+| `HealthCheck."Health"` | `HealthCheck."Endpoint"` |
+| `"IsEnabled"` | removed |
