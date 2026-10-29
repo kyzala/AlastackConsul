@@ -26,5 +26,5 @@ public sealed class ConsulOptions
     /// <summary>
     /// Service registration settings.
     /// </summary>
-    public ServiceRegistration? Registration { get; set; }
+    public RegistrationOptions? Registration { get; set; }
 }

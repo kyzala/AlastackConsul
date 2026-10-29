@@ -74,7 +74,7 @@ public static class ConfigurationBuilderExtensions
     {
         if (consulOptions == null)
         {
-            throw new ArgumentNullException(nameof(ConsulOptions));
+            throw new ArgumentNullException(nameof(consulOptions));
         }
         if (consulOptions.Configuration?.Sets != null)
         {

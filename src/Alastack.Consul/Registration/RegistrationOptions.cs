@@ -1,9 +1,9 @@
 ﻿namespace Alastack.Consul.Registration;
 
 /// <summary>
-/// Service registration for service discovery.
+/// Service registration options for service discovery.
 /// </summary>
-public sealed class ServiceRegistration
+public sealed class RegistrationOptions
 {
     /// <summary>
     /// Configure service name.

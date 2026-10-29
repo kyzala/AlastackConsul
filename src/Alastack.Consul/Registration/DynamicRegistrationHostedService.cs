@@ -25,6 +25,11 @@ public class DynamicRegistrationHostedService : BackgroundService
     {        
         if (!stoppingToken.IsCancellationRequested)
         {
+            if (_consulOptions.Registration == null)
+            {
+                return;
+            }
+
             _consulOptions.Registration!.Instances ??= new Collection<RegistrationInstance>();
             foreach (var handler in _serverAddressesHandlers)
             {

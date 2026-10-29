@@ -8,7 +8,7 @@ namespace Alastack.Consul.Registration;
 public static class RegistrationExtensions
 {
 
-    public static void Configure(this RegistrationInstance instance, ServiceRegistration registration) 
+    public static void Configure(this RegistrationInstance instance, RegistrationOptions registration) 
     {
         if (String.IsNullOrWhiteSpace(instance.Id))
         {
@@ -48,9 +48,9 @@ public static class RegistrationExtensions
     /*/// <summary>
     /// Build a service registration id.
     /// </summary>
-    /// <param name = "registration" >< see cref="ServiceRegistration"/></param>
+    /// <param name = "registration" >< see cref="RegistrationOptions"/></param>
     /// <returns>A new service registration id.</returns>
-    public static string? BuildRegistrationId(this ServiceRegistration registration)
+    public static string? BuildRegistrationId(this RegistrationOptions registration)
     {
         if (registration.IsPolicyDefault(RegistrationPolicies.RegistrationIdNullPolicy))
         {
@@ -74,9 +74,9 @@ public static class RegistrationExtensions
     /// <summary>
     /// Build a health check id.
     /// </summary>
-    /// <param name="registration"><see cref="ServiceRegistration"/></param>
+    /// <param name="registration"><see cref="RegistrationOptions"/></param>
     /// <returns>A new service health check id.</returns>
-    public static string? BuildHealthCheckId(this ServiceRegistration registration)
+    public static string? BuildHealthCheckId(this RegistrationOptions registration)
     {
         if (registration.IsPolicyDefault(RegistrationPolicies.HealthCheckIdPolicy)) 
         {
@@ -89,9 +89,9 @@ public static class RegistrationExtensions
     /// <summary>
     /// Build a health check name.
     /// </summary>
-    /// <param name="registration"><see cref="ServiceRegistration"/></param>
+    /// <param name="registration"><see cref="RegistrationOptions"/></param>
     /// <returns>A new service health check name.</returns>
-    public static string? BuildHealthCheckName(this ServiceRegistration registration)
+    public static string? BuildHealthCheckName(this RegistrationOptions registration)
     {
         if (registration.IsPolicyDefault(RegistrationPolicies.HealthCheckNamePolicy)) 
         {
@@ -101,7 +101,7 @@ public static class RegistrationExtensions
     }
     */
 
-    //public static string NormalizeHealthCheckAddress(this ServiceRegistration registration) 
+    //public static string NormalizeHealthCheckAddress(this RegistrationOptions registration) 
     //{
     //    if (Uri.IsWellFormedUriString(registration.HealthCheck.Health, UriKind.Relative)) 
     //    {
