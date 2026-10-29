@@ -11,7 +11,7 @@ public sealed class AppConfiguration
     public string PathBase { get; set; } = default!;
 
     /// <summary>
-    /// The application configuration namespace. Defaults to <c>ns.default</c>.
+    /// The application configuration namespace. Defaults to <c>public</c>.
     /// </summary>
     public string Namespace { get; set; } = AppConfigurationDefaults.Namespace;
 

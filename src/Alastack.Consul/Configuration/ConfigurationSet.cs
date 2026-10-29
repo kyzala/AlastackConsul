@@ -11,7 +11,7 @@ public sealed class ConfigurationSet
     public string Id { get; set; } = default!;
 
     /// <summary>
-    /// Group for the configuration set. Defaults to <c>gp.default</c>.
+    /// Group for the configuration set. Defaults to <c>default</c>.
     /// </summary>
     public string Group { get; set; } = AppConfigurationDefaults.Group;
 
