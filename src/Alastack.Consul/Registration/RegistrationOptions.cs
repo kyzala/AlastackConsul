@@ -20,12 +20,12 @@ public sealed class RegistrationOptions
     /// <summary>
     /// Registration instances
     /// </summary>
-    public ICollection<RegistrationInstance> Instances { get; set; } = new Collection<RegistrationInstance>();
+    public ICollection<ServiceInstance> Instances { get; set; } = new Collection<ServiceInstance>();
 
     /// <summary>
-    /// ServiceHealthCheck default to <see cref="RegistrationInstance.HealthCheck"/>.
+    /// Health check default for <see cref="ServiceInstance.HealthCheck"/>.
     /// </summary>
-    public ServiceHealthCheck HealthCheckDefault { get; set; } = new ServiceHealthCheck();
+    public HealthCheckOptions DefaultHealthCheck { get; set; } = new HealthCheckOptions();
 
     /// <summary>
     /// Metadata for the service.

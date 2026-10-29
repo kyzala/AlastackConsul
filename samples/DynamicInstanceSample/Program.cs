@@ -5,7 +5,7 @@ builder.Configuration.AddJsonFile("consul.json", false, true);
 // Add Consul Configuration
 builder.Configuration.AddConsulConfiguration();
 // Add Consul Naming
-builder.Services.AddConsulNaming(builder.Configuration).AddAspNetCore();
+builder.Services.AddConsulNaming(builder.Configuration).AddConsulAspNetCore();
 builder.Services.AddControllers();
 
 var app = builder.Build();

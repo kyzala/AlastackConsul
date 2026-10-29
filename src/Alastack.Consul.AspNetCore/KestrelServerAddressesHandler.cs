@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace Alastack.Consul.AspNetCore;
 
-public class KestrelServerAddressesHandler : IServerAddressesHandler
+internal class KestrelServerAddressesHandler : IServerAddressesHandler
 {        
     private readonly ICollection<string> _addresses = new Collection<string>();
 

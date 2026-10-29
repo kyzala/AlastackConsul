@@ -8,23 +8,23 @@ namespace Alastack.Consul.Registration;
 public static class RegistrationExtensions
 {
 
-    public static void Configure(this RegistrationInstance instance, RegistrationOptions registration) 
+    public static void Configure(this ServiceInstance instance, RegistrationOptions registration) 
     {
         if (String.IsNullOrWhiteSpace(instance.Id))
         {
-            instance.Id = instance.BuildRegistrationInstanceId(registration.Name, registration.Metadata);
+            instance.Id = instance.BuildServiceInstanceId(registration.Name, registration.Metadata);
         }
 
         if (instance.HealthCheck == null)
         {
-            instance.HealthCheck = new ServiceHealthCheck 
+            instance.HealthCheck = new HealthCheckOptions 
             {
-                CheckId = registration.HealthCheckDefault.CheckId,
-                Name = registration.HealthCheckDefault.Name,
-                DeregisterCriticalServiceAfter = registration.HealthCheckDefault.DeregisterCriticalServiceAfter,
-                Interval = registration.HealthCheckDefault.Interval,
-                Health = registration.HealthCheckDefault.Health,
-                Timeout = registration.HealthCheckDefault.Timeout
+                CheckId = registration.DefaultHealthCheck.CheckId,
+                Name = registration.DefaultHealthCheck.Name,
+                DeregisterCriticalServiceAfter = registration.DefaultHealthCheck.DeregisterCriticalServiceAfter,
+                Interval = registration.DefaultHealthCheck.Interval,
+                Endpoint = registration.DefaultHealthCheck.Endpoint,
+                Timeout = registration.DefaultHealthCheck.Timeout
             };
         }
 
@@ -38,77 +38,22 @@ public static class RegistrationExtensions
             instance.HealthCheck.CheckId = $"service:{instance.Id}";
         }
 
-        if (!instance.HealthCheck.Health.IsAbsoluteUri)
+        if (!instance.HealthCheck.Endpoint.IsAbsoluteUri)
         {
-            instance.HealthCheck.Health = new Uri(instance.Address, instance.HealthCheck.Health);
+            instance.HealthCheck.Endpoint = new Uri(instance.Address, instance.HealthCheck.Endpoint);
         }
     }
 
 
-    /*/// <summary>
-    /// Build a service registration id.
-    /// </summary>
-    /// <param name = "registration" >< see cref="RegistrationOptions"/></param>
-    /// <returns>A new service registration id.</returns>
-    public static string? BuildRegistrationId(this RegistrationOptions registration)
-    {
-        if (registration.IsPolicyDefault(RegistrationPolicies.RegistrationIdNullPolicy))
-        {
-            return $"{registration.Name}@{registration.Address.Host}:{registration.Address.Port}";
-        }
-        return null;
-
-    }*/
-
-    public static string? BuildRegistrationInstanceId(this RegistrationInstance instance, string ServiceName, IDictionary<string, string>? metadata)
+    public static string? BuildServiceInstanceId(this ServiceInstance instance, string serviceName, IDictionary<string, string>? metadata)
     {
         if (metadata.IsPolicyDefault(RegistrationPolicies.RegistrationIdNullPolicy))
         {
-            return $"{ServiceName}@{instance.Address.Host}:{instance.Address.Port}";
+            return $"{serviceName}@{instance.Address.Host}:{instance.Address.Port}";
         }
         return null;
 
     }
-
-    /*
-    /// <summary>
-    /// Build a health check id.
-    /// </summary>
-    /// <param name="registration"><see cref="RegistrationOptions"/></param>
-    /// <returns>A new service health check id.</returns>
-    public static string? BuildHealthCheckId(this RegistrationOptions registration)
-    {
-        if (registration.IsPolicyDefault(RegistrationPolicies.HealthCheckIdPolicy)) 
-        {
-            return $"{registration.Name}_hk_{Guid.NewGuid():n}";
-        }
-        return null;
-    }
-    
-
-    /// <summary>
-    /// Build a health check name.
-    /// </summary>
-    /// <param name="registration"><see cref="RegistrationOptions"/></param>
-    /// <returns>A new service health check name.</returns>
-    public static string? BuildHealthCheckName(this RegistrationOptions registration)
-    {
-        if (registration.IsPolicyDefault(RegistrationPolicies.HealthCheckNamePolicy)) 
-        {
-            return $"{registration.Name}_hk";
-        }
-        return null;
-    }
-    */
-
-    //public static string NormalizeHealthCheckAddress(this RegistrationOptions registration) 
-    //{
-    //    if (Uri.IsWellFormedUriString(registration.HealthCheck.Health, UriKind.Relative)) 
-    //    {
-    //        return new Uri(registration.Address, registration.HealthCheck.Health).ToString();
-    //    }
-    //    return registration.HealthCheck.Health;
-    //}
 
     private static bool IsPolicyDefault(this IDictionary<string, string>? metadata, string policy)
     {

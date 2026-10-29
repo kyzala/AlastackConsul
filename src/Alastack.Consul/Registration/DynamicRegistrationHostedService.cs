@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 
 namespace Alastack.Consul.Registration;
 
-public class DynamicRegistrationHostedService : BackgroundService
+internal class DynamicRegistrationHostedService : BackgroundService
 {
     private readonly ConsulOptions _consulOptions;
     private readonly IRegistrationService _registrationService;
@@ -30,7 +30,7 @@ public class DynamicRegistrationHostedService : BackgroundService
                 return;
             }
 
-            _consulOptions.Registration!.Instances ??= new Collection<RegistrationInstance>();
+            _consulOptions.Registration!.Instances ??= new Collection<ServiceInstance>();
             foreach (var handler in _serverAddressesHandlers)
             {
                 var addresses = await handler.GetServerAddresses(stoppingToken);
@@ -39,7 +39,7 @@ public class DynamicRegistrationHostedService : BackgroundService
                     var addr = new Uri(address);
                     if (!_consulOptions.Registration!.Instances.Any(ins => ins.Address == addr))
                     {
-                        var instance = new RegistrationInstance 
+                        var instance = new ServiceInstance 
                         { 
                             Address = addr
                         };

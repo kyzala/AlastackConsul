@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 
 namespace Alastack.Consul.Registration;
 
-public class RegistrationService : IRegistrationService
+internal class RegistrationService : IRegistrationService
 {
     private readonly ConsulOptions _consulOptions;
 
@@ -37,7 +37,7 @@ public class RegistrationService : IRegistrationService
                         Name = instance.HealthCheck.Name,
                         DeregisterCriticalServiceAfter = instance.HealthCheck.DeregisterCriticalServiceAfter,
                         Interval = instance.HealthCheck.Interval,
-                        HTTP = instance.HealthCheck.Health.ToString(),
+                        HTTP = instance.HealthCheck.Endpoint.ToString(),
                         Timeout = instance.HealthCheck.Timeout
                     }
                     //Checks = registration.Checks

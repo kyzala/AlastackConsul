@@ -1,9 +1,9 @@
 ﻿namespace Alastack.Consul.Registration;
 
 /// <summary>
-/// Registration instance
+/// Service instance registration settings.
 /// </summary>
-public class RegistrationInstance
+public class ServiceInstance
 {
     /// <summary>
     /// Configure service id.
@@ -27,12 +27,7 @@ public class RegistrationInstance
     public bool EnableTagOverride { get; set; }
 
     /// <summary>
-    /// Metadata for the service.
-    /// </summary>
-    //public IDictionary<string, string>? Metadata { get; set; }
-
-    /// <summary>
     /// Configure service Health check.
     /// </summary>
-    public ServiceHealthCheck? HealthCheck { get; set; } = default!;
+    public HealthCheckOptions? HealthCheck { get; set; } = default!;
 }

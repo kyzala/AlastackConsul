@@ -65,7 +65,7 @@ namespace Alastack.Consul.Tests
                 Assert.Equal("AspNetSample_HealthCheck", instance.HealthCheck.Name);
                 Assert.Equal(TimeSpan.FromMinutes(1), instance.HealthCheck.DeregisterCriticalServiceAfter);
                 Assert.Equal(TimeSpan.FromSeconds(30), instance.HealthCheck.Interval);
-                Assert.Equal(new Uri("http://localhost:5000/health"), instance.HealthCheck.Health);
+                Assert.Equal(new Uri("http://localhost:5000/health"), instance.HealthCheck.Endpoint);
                 Assert.Equal(TimeSpan.FromSeconds(20), instance.HealthCheck.Timeout);
             }
             
@@ -114,7 +114,7 @@ namespace Alastack.Consul.Tests
                 Assert.Equal($"Service '{instance.Id}' check", instance.HealthCheck.Name);
                 Assert.NotNull(instance.HealthCheck.DeregisterCriticalServiceAfter);
                 Assert.Equal(TimeSpan.FromSeconds(15), instance.HealthCheck.Interval);
-                Assert.Equal("http://localhost:5000/health", instance.HealthCheck.Health.ToString());
+                Assert.Equal("http://localhost:5000/health", instance.HealthCheck.Endpoint.ToString());
                 Assert.Equal(TimeSpan.FromSeconds(10), instance.HealthCheck.Timeout);
             }
                

@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class KestrelServiceCollectionExtensions
 {
-    public static IServiceCollection AddAspNetCore(this IServiceCollection services)
+    public static IServiceCollection AddConsulAspNetCore(this IServiceCollection services)
     {        
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IServerAddressesHandler, KestrelServerAddressesHandler>());
         services.TryAddEnumerable(ServiceDescriptor.Transient<IStartupFilter, ServerAddressesFilter>());

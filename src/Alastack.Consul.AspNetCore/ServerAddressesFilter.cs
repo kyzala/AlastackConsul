@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Hosting.Server.Features;
 
 namespace Alastack.Consul.AspNetCore;
 
-public class ServerAddressesFilter : IStartupFilter
+internal class ServerAddressesFilter : IStartupFilter
 {
     private readonly IServer _server;
     public readonly IServerAddressesHandler _serverAddressesHandler;
