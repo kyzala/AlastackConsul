@@ -64,7 +64,7 @@ public class RegistrationService : IRegistrationService
     }
 
     // Create ConsulClient instance.
-    private static IConsulClient CreateConsulClient(AgentConfiguration consulAgent)
+    private static IConsulClient CreateConsulClient(AgentOptions consulAgent)
     {
         return new ConsulClient(config =>
         {

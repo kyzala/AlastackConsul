@@ -22,9 +22,9 @@ public static class ServiceRegistrationDefaults
 }
 
 /// <summary>
-/// Application configuration defaults.
+/// Configuration defaults.
 /// </summary>
-public static class AppConfigurationDefaults
+public static class ConfigurationDefaults
 {
     /// <summary>
     /// Default Namespace for the application configuration.

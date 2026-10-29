@@ -6,7 +6,7 @@ namespace Alastack.Consul;
 /// <summary>
 /// Consul options for Service Discovery and Configuration.
 /// </summary>
-public sealed class ConsulOptions    
+public sealed class ConsulOptions
 {
     /// <summary>
     /// Gets or sets flag indicating if the consulOptions is enabled. Default is <c>true</c>.
@@ -16,12 +16,12 @@ public sealed class ConsulOptions
     /// <summary>
     /// Agent configuration settings.
     /// </summary>
-    public AgentConfiguration Agent { get; set; } = default!;
+    public AgentOptions Agent { get; set; } = default!;
 
     /// <summary>
     /// Application configuration settings.
     /// </summary>
-    public AppConfiguration? Configuration { get; set; }
+    public ConfigurationOptions? Configuration { get; set; }
 
     /// <summary>
     /// Service registration settings.

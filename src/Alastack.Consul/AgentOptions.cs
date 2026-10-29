@@ -1,29 +1,29 @@
 ﻿namespace Alastack.Consul;
 
 /// <summary>
-/// Consul agent configuration definition.
+/// Consul agent options.
 /// </summary>
-public sealed class AgentConfiguration
+public sealed class AgentOptions
 {
     /// <summary>
     /// Datacenter to provide with each request. If not provided, the default agent datacenter is used.
     /// </summary>
-    public string Datacenter { get; init; } = default!;
+    public string Datacenter { get; set; } = default!;
 
     /// <summary>
     /// The Uri to connect to the Consul agent.
     /// </summary>
-    public Uri Address { get; init; } = default!;
+    public Uri Address { get; set; } = default!;
 
     /// <summary>
     /// Token is used to provide an ACL token which overrides the agent's default token. 
     /// This ACL token is used for every request by clients created using this configuration.
     /// </summary>
-    public string? Token { get; init; }
+    public string? Token { get; set; }
 
     /// <summary>
     /// WaitTime limits how long a Watch will block. If not provided, the agent default values will be used.
     /// </summary>
-    public TimeSpan? WaitTime { get; init; }
+    public TimeSpan? WaitTime { get; set; }
 
 }

@@ -1,9 +1,9 @@
 ﻿namespace Alastack.Consul.Configuration;
 
 /// <summary>
-/// Application configuration definition.
+/// Options for the application configuration stored in Consul KV.
 /// </summary>
-public sealed class AppConfiguration
+public sealed class ConfigurationOptions
 {
     /// <summary>
     /// Base path for the application configuration stored in consul KV.
@@ -13,7 +13,7 @@ public sealed class AppConfiguration
     /// <summary>
     /// The application configuration namespace. Defaults to <c>public</c>.
     /// </summary>
-    public string Namespace { get; set; } = AppConfigurationDefaults.Namespace;
+    public string Namespace { get; set; } = ConfigurationDefaults.Namespace;
 
     /// <summary>
     /// The application <see cref="ConfigurationSet"/> list.

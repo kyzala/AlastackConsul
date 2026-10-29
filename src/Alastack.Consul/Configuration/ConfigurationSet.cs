@@ -13,7 +13,7 @@ public sealed class ConfigurationSet
     /// <summary>
     /// Group for the configuration set. Defaults to <c>default</c>.
     /// </summary>
-    public string Group { get; set; } = AppConfigurationDefaults.Group;
+    public string Group { get; set; } = ConfigurationDefaults.Group;
 
     /// <summary>
     /// The configuration set description.
@@ -33,7 +33,7 @@ public sealed class ConfigurationSet
     /// <summary>
     /// Gets or sets the maximum amount of time to wait for changes to a set id if <see cref="ReloadOnChange"/> is true.
     /// </summary>
-    public TimeSpan PollingWaitTime { get; set; } = AppConfigurationDefaults.PollingWaitTime;
+    public TimeSpan PollingWaitTime { get; set; } = ConfigurationDefaults.PollingWaitTime;
 
     /// <summary>
     /// Indicating whether the exception should be ignored. Set to true to prevent the exception from being thrown. Defaults to <c>false</c>.
