@@ -12,7 +12,7 @@ internal class RegistrationService : IRegistrationService
         _registrationOptions = options.Value;
     }
 
-    public async Task ServiceRegister(CancellationToken cancellationToken)
+    public async Task RegisterAsync(CancellationToken cancellationToken)
     {
         var consulClient = CreateConsulClient(_registrationOptions.Agent);
 
@@ -43,7 +43,7 @@ internal class RegistrationService : IRegistrationService
         consulClient.Dispose();
     }
 
-    public async Task ServiceDeregister(CancellationToken cancellationToken)
+    public async Task DeregisterAsync(CancellationToken cancellationToken)
     {
         var consulClient = CreateConsulClient(_registrationOptions.Agent);
         foreach (var instance in _registrationOptions.Instances)

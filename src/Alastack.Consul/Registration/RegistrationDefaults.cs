@@ -1,4 +1,4 @@
-namespace Alastack.Consul;
+namespace Alastack.Consul.Registration;
 
 /// <summary>
 /// Service registration defaults.
@@ -24,26 +24,4 @@ public static class RegistrationDefaults
     /// Default version for the service.
     /// </summary>
     public const string Version = "1.0.0";
-}
-
-/// <summary>
-/// Configuration defaults.
-/// </summary>
-public static class ConfigurationDefaults
-{
-    /// <summary>
-    /// Default Namespace for the application configuration.
-    /// </summary>
-    public const string Namespace = "public";
-
-    /// <summary>
-    /// Default Group for the application configuration.
-    /// </summary>
-    public const string Group = "default";
-
-    /// <summary>
-    /// Default PollingWaitTime for the application configuration.
-    /// </summary>
-    public static readonly TimeSpan PollingWaitTime = TimeSpan.FromSeconds(5);
-
 }

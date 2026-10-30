@@ -41,7 +41,7 @@ internal class DynamicRegistrationHostedService : BackgroundService
                     }
                 }
             }
-            await _registrationService.ServiceRegister(stoppingToken);
+            await _registrationService.RegisterAsync(stoppingToken);
             _successed = true;
         }
     }
@@ -51,7 +51,7 @@ internal class DynamicRegistrationHostedService : BackgroundService
     {
         if (_successed)
         {
-            await _registrationService.ServiceDeregister(cancellationToken);
+            await _registrationService.DeregisterAsync(cancellationToken);
         }
         await base.StopAsync(cancellationToken);
     }

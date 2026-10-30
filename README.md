@@ -175,6 +175,7 @@ Visit the [samples](https://github.com/kyzala/AlastackConsul/tree/main/samples) 
 | `ServiceHealthCheck` | `HealthCheckOptions` |
 | `ServiceRegistration.HealthCheckDefault` | `ConsulRegistrationOptions.DefaultHealthCheck` |
 | `HealthCheckOptions.Health` | `HealthCheckOptions.Endpoint` |
+| `IRegistrationService.ServiceRegister` / `ServiceDeregister` | `RegisterAsync` / `DeregisterAsync` |
 | `ConsulOptions.IsEnabled` | removed, it was never read |
 | `AddConsul()` | `AddConsulRegistration()` |
 | `AddAspNetCore()` | `AddConsulAspNetCore()` |

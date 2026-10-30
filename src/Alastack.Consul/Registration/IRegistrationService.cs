@@ -1,9 +1,8 @@
-﻿namespace Alastack.Consul.Registration
-{
-    public interface IRegistrationService
-    {
-        Task ServiceRegister(CancellationToken cancellationToken);
+namespace Alastack.Consul.Registration;
 
-        Task ServiceDeregister(CancellationToken cancellationToken);
-    }
+public interface IRegistrationService
+{
+    Task RegisterAsync(CancellationToken cancellationToken);
+
+    Task DeregisterAsync(CancellationToken cancellationToken);
 }
