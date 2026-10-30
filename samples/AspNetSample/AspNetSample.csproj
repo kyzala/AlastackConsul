@@ -14,11 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="config2.json" />
-    <None Include="config1.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\src\Alastack.Consul\Alastack.Consul.csproj" />
     <ProjectReference Include="..\Sample.Common\Sample.Common.csproj" />
   </ItemGroup>

@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="config.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Alastack.Consul.AspNetCore\Alastack.Consul.AspNetCore.csproj" />
   </ItemGroup>
 

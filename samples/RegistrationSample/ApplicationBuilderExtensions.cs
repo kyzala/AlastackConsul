@@ -1,4 +1,4 @@
-﻿namespace DynamicInstanceSample;
+﻿namespace RegistrationSample;
 
 public static class ApplicationBuilderExtensions
 {

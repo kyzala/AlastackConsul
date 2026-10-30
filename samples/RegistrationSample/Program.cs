@@ -1,7 +1,7 @@
-using DynamicInstanceSample;
+using RegistrationSample;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AddJsonFile("consul.json", false, true);
+
 // Add Consul Configuration
 builder.Configuration.AddConsulConfiguration();
 // Add Consul Naming

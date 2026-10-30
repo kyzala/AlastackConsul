@@ -11,10 +11,7 @@
 
   <ItemGroup>
     <Content Remove="config.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="config.json" />
+    <Content Remove="logging.json" />
   </ItemGroup>
 
   <ItemGroup>

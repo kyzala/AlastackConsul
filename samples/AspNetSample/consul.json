@@ -6,12 +6,9 @@
       "WaitTime": "00:00:05"
     },
     "Configuration": {
-      "PathBase": "/aspnetsample",
+      "PathBase": "samples/AspNetSample",
       "Namespace": "public1",
       "Sets": [
-        {
-          "Id": "logging.json"
-        },
         {
           "Id": "config1.json",
           "Group": "group1"

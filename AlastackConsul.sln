@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{EDC6A64F-D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alastack.Consul.Tests", "test\Alastack.Consul.Tests\Alastack.Consul.Tests.csproj", "{22F6DCC8-E2E1-48D1-A79F-35645E2DD9F0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkerServiceSample", "samples\WorkerServiceSample\WorkerServiceSample.csproj", "{9EC659D1-5AD6-45B3-9689-A13AA7F0B32B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HostSample", "samples\HostSample\HostSample.csproj", "{9EC659D1-5AD6-45B3-9689-A13AA7F0B32B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Common", "samples\Sample.Common\Sample.Common.csproj", "{1568F366-4789-4F94-95E6-F29904FC564A}"
 EndProject
@@ -28,9 +28,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alastack.Consul.AspNetCore", "src\Alastack.Consul.AspNetCore\Alastack.Consul.AspNetCore.csproj", "{83CB6AAE-ABFD-46C5-B95A-4D6C76886E80}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DynamicInstanceSample", "samples\DynamicInstanceSample\DynamicInstanceSample.csproj", "{BADD916B-6B30-469F-84FE-411F277BE585}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RegistrationSample", "samples\RegistrationSample\RegistrationSample.csproj", "{BADD916B-6B30-469F-84FE-411F277BE585}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BasicConfigSample", "samples\BasicConfigSample\BasicConfigSample.csproj", "{ED126339-E879-D8FC-0958-DF939891AD37}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigSample", "samples\ConfigSample\ConfigSample.csproj", "{ED126339-E879-D8FC-0958-DF939891AD37}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConsulConfigs", "ConsulConfigs", "{1B9BF789-91E2-4289-AB91-35CA630BF4B5}"
+	ProjectSection(SolutionItems) = preProject
+		samples\ConsulConfigs\config.json = samples\ConsulConfigs\config.json
+		samples\ConsulConfigs\config1.json = samples\ConsulConfigs\config1.json
+		samples\ConsulConfigs\config2.json = samples\ConsulConfigs\config2.json
+		samples\ConsulConfigs\logging.json = samples\ConsulConfigs\logging.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +91,7 @@ Global
 		{83CB6AAE-ABFD-46C5-B95A-4D6C76886E80} = {69088A22-70EC-496A-ACDD-0E4FEABA81A2}
 		{BADD916B-6B30-469F-84FE-411F277BE585} = {9082AC1A-FD18-4765-B566-5640B12DAD9D}
 		{ED126339-E879-D8FC-0958-DF939891AD37} = {9082AC1A-FD18-4765-B566-5640B12DAD9D}
+		{1B9BF789-91E2-4289-AB91-35CA630BF4B5} = {9082AC1A-FD18-4765-B566-5640B12DAD9D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B4666193-0F92-4DED-A70F-7BF173E5B153}
