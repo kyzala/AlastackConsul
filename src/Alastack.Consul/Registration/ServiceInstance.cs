@@ -3,7 +3,7 @@
 /// <summary>
 /// Service instance registration settings.
 /// </summary>
-public class ServiceInstance
+public sealed class ServiceInstance
 {
     /// <summary>
     /// Configure service id.

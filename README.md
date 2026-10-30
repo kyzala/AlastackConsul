@@ -22,8 +22,8 @@ builder.Configuration.AddJsonFile("consul.json", true, true);
 // Add Consul Configuration
 builder.Configuration.AddConsulConfiguration();
 
-// Add Consul Naming
-builder.Services.AddConsulNaming(builder.Configuration);
+// Add Consul Registration
+builder.Services.AddConsulRegistration(builder.Configuration);
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -44,8 +44,8 @@ dotnet add package Alastack.Consul.AspNetCore
 code snippet:
 
 ```c#
-// builder.Services.AddConsulNaming(builder.Configuration);
-builder.Services.AddConsulNaming(builder.Configuration).AddConsulAspNetCore();
+// builder.Services.AddConsulRegistration(builder.Configuration);
+builder.Services.AddConsulRegistration(builder.Configuration).AddConsulAspNetCore();
 ```
 
 ```JSON
@@ -165,16 +165,18 @@ Visit the [samples](https://github.com/kyzala/AlastackConsul/tree/main/samples) 
 
 | 1.2.x | 1.3.0 |
 | --- | --- |
-| `ServiceRegistration` | `RegistrationOptions` |
+| `ConsulOptions` | split into `ConsulConfigurationOptions` and `ConsulRegistrationOptions` |
+| `ServiceRegistration` | `ConsulRegistrationOptions` |
 | `ServiceRegistrationExtentions` | `RegistrationExtensions` |
 | `AgentConfiguration` | `AgentOptions` |
-| `AppConfiguration` | `ConfigurationOptions` |
+| `AppConfiguration` | `ConsulConfigurationOptions` |
 | `AppConfigurationDefaults` | `ConfigurationDefaults` |
 | `RegistrationInstance` | `ServiceInstance` |
 | `ServiceHealthCheck` | `HealthCheckOptions` |
-| `RegistrationOptions.HealthCheckDefault` | `RegistrationOptions.DefaultHealthCheck` |
+| `ServiceRegistration.HealthCheckDefault` | `ConsulRegistrationOptions.DefaultHealthCheck` |
 | `HealthCheckOptions.Health` | `HealthCheckOptions.Endpoint` |
 | `ConsulOptions.IsEnabled` | removed, it was never read |
+| `AddConsul()` | `AddConsulRegistration()` |
 | `AddAspNetCore()` | `AddConsulAspNetCore()` |
 | `IServerAddressesHandler.Configuered` | `IServerAddressesHandler.Configured` |
 | AspNetCore `Defaults` | `ServerAddressesDefaults` |

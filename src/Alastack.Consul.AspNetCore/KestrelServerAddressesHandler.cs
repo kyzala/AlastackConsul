@@ -27,7 +27,7 @@ internal class KestrelServerAddressesHandler : IServerAddressesHandler
         }
 
         int timestep = 0;
-        while (!cancellationToken.IsCancellationRequested && !Configured && timestep < ServerAddressesDefaults.ServerAddressTimeout)
+        while (!cancellationToken.IsCancellationRequested && !Configured && timestep < ServerAddressesDefaults.ServerAddressesTimeout)
         {
             await Task.Delay(100, cancellationToken);
             timestep += 100;

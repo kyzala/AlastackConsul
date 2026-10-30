@@ -4,8 +4,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("consul.json", false, true);
 // Add Consul Configuration
 builder.Configuration.AddConsulConfiguration();
-// Add Consul Naming
-builder.Services.AddConsulNaming(builder.Configuration);
+// Add Consul Registration
+builder.Services.AddConsulRegistration(builder.Configuration);
 builder.Services.AddControllers();
 
 var app = builder.Build();

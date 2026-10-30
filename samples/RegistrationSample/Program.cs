@@ -4,8 +4,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add Consul Configuration
 builder.Configuration.AddConsulConfiguration();
-// Add Consul Naming
-builder.Services.AddConsulNaming(builder.Configuration).AddConsulAspNetCore();
+// Add Consul Registration
+builder.Services.AddConsulRegistration(builder.Configuration).AddConsulAspNetCore();
 builder.Services.AddControllers();
 
 var app = builder.Build();

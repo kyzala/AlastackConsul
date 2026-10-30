@@ -1,19 +1,19 @@
-﻿namespace Alastack.Consul;
+namespace Alastack.Consul;
 
 /// <summary>
 /// Service registration defaults.
 /// </summary>
-public static class ServiceRegistrationDefaults
-{    
+public static class RegistrationDefaults
+{
     /// <summary>
-    /// Default CheckInterval for the service registration.
+    /// Default health check interval for the service registration.
     /// </summary>
-    public static readonly TimeSpan CheckInterval = TimeSpan.FromSeconds(15);
+    public static readonly TimeSpan Interval = TimeSpan.FromSeconds(15);
 
     /// <summary>
-    /// Default CheckTimeout for the service registration.
+    /// Default health check timeout for the service registration.
     /// </summary>
-    public static readonly TimeSpan CheckTimeout = TimeSpan.FromSeconds(10);
+    public static readonly TimeSpan Timeout = TimeSpan.FromSeconds(10);
 
     /// <summary>
     /// Default DeregisterCriticalServiceAfter for the service health check.

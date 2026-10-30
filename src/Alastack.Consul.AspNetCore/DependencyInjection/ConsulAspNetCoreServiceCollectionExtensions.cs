@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-public static class KestrelServiceCollectionExtensions
+public static class ConsulAspNetCoreServiceCollectionExtensions
 {
     public static IServiceCollection AddConsulAspNetCore(this IServiceCollection services)
     {        

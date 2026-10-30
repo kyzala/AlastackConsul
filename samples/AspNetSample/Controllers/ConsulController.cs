@@ -1,4 +1,5 @@
 ﻿using Alastack.Consul;
+using Alastack.Consul.Registration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Sample.Common;
@@ -33,14 +34,19 @@ public class ConsulController : ControllerBase
 
     // api/Consul/ConsulConfig
     [HttpGet("ConsulConfig")]
-    public ConsulOptions? GetConsulConfig()
+    public ConsulRegistrationOptions? GetConsulConfig()
     {
-        return _configuration.GetSection("Consul").Get<ConsulOptions>();
+        var options = _configuration.GetSection("Consul:Registration").Get<ConsulRegistrationOptions>();
+        if (options != null)
+        {
+            _configuration.GetSection("Consul:Agent").Bind(options.Agent);
+        }
+        return options;
     }
 
     // api/Consul/ConsulOptions
     [HttpGet("ConsulOptions")]
-    public ConsulOptions? GetConfig([FromServices] IOptionsMonitor<ConsulOptions> optionsMonitor)
+    public ConsulRegistrationOptions? GetConfig([FromServices] IOptionsMonitor<ConsulRegistrationOptions> optionsMonitor)
     {
         return optionsMonitor.CurrentValue;
     }

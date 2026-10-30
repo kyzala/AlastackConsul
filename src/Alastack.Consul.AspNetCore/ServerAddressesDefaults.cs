@@ -3,8 +3,8 @@
     public static class ServerAddressesDefaults
     {
         /// <summary>
-        /// Default timeout(milliseconds) for server address read. 
+        /// Default timeout(milliseconds) for server addresses read. 
         /// </summary>
-        public static readonly int ServerAddressTimeout = 5000;
+        public static readonly int ServerAddressesTimeout = 5000;
     }
 }

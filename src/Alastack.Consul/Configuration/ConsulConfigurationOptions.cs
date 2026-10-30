@@ -1,10 +1,15 @@
-﻿namespace Alastack.Consul.Configuration;
+namespace Alastack.Consul.Configuration;
 
 /// <summary>
 /// Options for the application configuration stored in Consul KV.
 /// </summary>
-public sealed class ConfigurationOptions
+public sealed class ConsulConfigurationOptions
 {
+    /// <summary>
+    /// Consul agent options.
+    /// </summary>
+    public AgentOptions Agent { get; set; } = new();
+
     /// <summary>
     /// Base path for the application configuration stored in consul KV.
     /// </summary>

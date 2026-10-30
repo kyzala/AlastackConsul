@@ -21,12 +21,12 @@ public sealed class HealthCheckOptions
     /// If a health check is in the critical state for more than this configured value,
     /// then its associated service (and all of its associated checks) will automatically be deregistered.
     /// </summary>
-    public TimeSpan? DeregisterCriticalServiceAfter { get; set; } = ServiceRegistrationDefaults.DeregisterCriticalServiceAfter;
+    public TimeSpan? DeregisterCriticalServiceAfter { get; set; } = RegistrationDefaults.DeregisterCriticalServiceAfter;
 
     /// <summary>
     /// Service health check interval.
     /// </summary>
-    public TimeSpan? Interval { get; set; } = ServiceRegistrationDefaults.CheckInterval;
+    public TimeSpan? Interval { get; set; } = RegistrationDefaults.Interval;
 
     /// <summary>
     /// Service health check endpoint.
@@ -36,5 +36,5 @@ public sealed class HealthCheckOptions
     /// <summary>
     ///  Service health timeout value.
     /// </summary>
-    public TimeSpan? Timeout { get; set; } = ServiceRegistrationDefaults.CheckTimeout;
+    public TimeSpan? Timeout { get; set; } = RegistrationDefaults.Timeout;
 }

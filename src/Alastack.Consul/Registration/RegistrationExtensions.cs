@@ -8,7 +8,7 @@ namespace Alastack.Consul.Registration;
 public static class RegistrationExtensions
 {
 
-    public static void Configure(this ServiceInstance instance, RegistrationOptions registration) 
+    public static void Configure(this ServiceInstance instance, ConsulRegistrationOptions registration) 
     {
         if (String.IsNullOrWhiteSpace(instance.Id))
         {

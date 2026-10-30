@@ -1,12 +1,17 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 
 namespace Alastack.Consul.Registration;
 
 /// <summary>
 /// Service registration options for service discovery.
 /// </summary>
-public sealed class RegistrationOptions
+public sealed class ConsulRegistrationOptions
 {
+    /// <summary>
+    /// Consul agent options.
+    /// </summary>
+    public AgentOptions Agent { get; set; } = new();
+
     /// <summary>
     /// Configure service name.
     /// </summary>
@@ -15,7 +20,7 @@ public sealed class RegistrationOptions
     /// <summary>
     /// Configure service Version.
     /// </summary>
-    public string Version { get; set; } = ServiceRegistrationDefaults.Version;
+    public string Version { get; set; } = RegistrationDefaults.Version;
 
     /// <summary>
     /// Registration instances
@@ -31,5 +36,4 @@ public sealed class RegistrationOptions
     /// Metadata for the service.
     /// </summary>
     public IDictionary<string, string>? Metadata { get; set; }
-
 }
