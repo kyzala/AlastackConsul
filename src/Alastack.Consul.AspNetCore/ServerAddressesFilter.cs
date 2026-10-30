@@ -1,4 +1,3 @@
-﻿using Alastack.Consul.Registration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
@@ -9,34 +8,25 @@ namespace Alastack.Consul.AspNetCore;
 internal class ServerAddressesFilter : IStartupFilter
 {
     private readonly IServer _server;
-    public readonly IServerAddressesHandler _serverAddressesHandler;
+    private readonly KestrelServerAddressesProvider _addressesProvider;
 
-    public ServerAddressesFilter(IServer server, IEnumerable<IServerAddressesHandler> serverAddressesHandlers)
+    public ServerAddressesFilter(IServer server, KestrelServerAddressesProvider addressesProvider)
     {
         _server = server;
-        var handler = serverAddressesHandlers.FirstOrDefault(handler => handler.GetType() == typeof(KestrelServerAddressesHandler));
-
-        if (handler != null)
-        {
-            _serverAddressesHandler = handler;
-        }
-        else 
-        {
-            throw new InvalidOperationException($"{nameof(KestrelServerAddressesHandler)} not configured.");
-        }
+        _addressesProvider = addressesProvider;
     }
 
     public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
     {
         var serverAddressesFeature = _server.Features.Get<IServerAddressesFeature>();
-        if (serverAddressesFeature?.Addresses != null) 
+        if (serverAddressesFeature?.Addresses != null)
         {
-            foreach (var address in serverAddressesFeature.Addresses) 
+            foreach (var address in serverAddressesFeature.Addresses)
             {
-                _serverAddressesHandler.AddServerAddress(address);
+                _addressesProvider.AddServerAddress(address);
             }
         }
-        _serverAddressesHandler.Configured = true;
+        _addressesProvider.Configured = true;
 
         return next;
     }

@@ -8,6 +8,10 @@
 	
   </PropertyGroup>
 
+  <ItemGroup>
+	<InternalsVisibleTo Include="Alastack.Consul.Tests" />
+  </ItemGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Winton.Extensions.Configuration.Consul" />
 	</ItemGroup>

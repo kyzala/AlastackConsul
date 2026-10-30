@@ -1,17 +1,16 @@
 using Alastack.Consul.Registration;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Alastack.Consul.Tests
 {
     public class ConsulRegistrationOptionsTests
     {
         [Fact]
-        public void Test_Custom_ConfigValues()
+        public async Task Test_Custom_ConfigValues()
         {
             var options = BuildOptions("consul_test.json", "Consul1");
             Assert.NotNull(options);
-
-            new ConsulRegistrationPostConfigureOptions().PostConfigure(null, options!);
 
             // Agent
 
@@ -22,15 +21,18 @@ namespace Alastack.Consul.Tests
 
             // Registration
 
-            foreach (var instance in options.Instances)
+            Assert.Equal("AspNetSample", options.Name);
+            Assert.Equal("1.0.0", options.Version);
+            Assert.Equal(2, options.Metadata!.Count);
+
+            var instances = await ResolveInstancesAsync(options);
+
+            foreach (var instance in instances)
             {
-                Assert.Equal("aspnetsample1", instance!.Id);
-                Assert.Equal("AspNetSample", options.Name);
-                Assert.Equal("1.0.0", options.Version);
+                Assert.Equal("aspnetsample1", instance.Id);
                 Assert.Equal(new Uri("http://localhost:5000"), instance.Address);
                 Assert.Equal(2, instance.Tags!.Length);
                 Assert.True(instance.EnableTagOverride);
-                Assert.Equal(2, options.Metadata!.Count);
 
                 Assert.NotNull(instance.HealthCheck);
                 Assert.Equal("AspNetSample_HealthCheck1", instance.HealthCheck.CheckId);
@@ -43,12 +45,10 @@ namespace Alastack.Consul.Tests
         }
 
         [Fact]
-        public void Test_Default_ConfigValues()
+        public async Task Test_Default_ConfigValues()
         {
             var options = BuildOptions("consul_test.json", "Consul2");
             Assert.NotNull(options);
-
-            new ConsulRegistrationPostConfigureOptions().PostConfigure(null, options!);
 
             // Agent
 
@@ -59,19 +59,22 @@ namespace Alastack.Consul.Tests
 
             // Registration
 
-            foreach (var instance in options.Instances)
+            Assert.Equal("AspNetSample", options.Name);
+            Assert.Equal("1.0.0", options.Version);
+            Assert.Null(options.Metadata);
+
+            var instances = await ResolveInstancesAsync(options);
+
+            foreach (var instance in instances)
             {
                 Assert.Equal("AspNetSample@localhost:5000", instance.Id);
-                Assert.Equal("AspNetSample", options.Name);
-                Assert.Equal("1.0.0", options.Version);
                 Assert.Equal(new Uri("http://localhost:5000"), instance.Address);
                 Assert.Null(instance.Tags);
                 Assert.False(instance.EnableTagOverride);
-                Assert.Null(options.Metadata);
 
                 Assert.NotNull(instance.HealthCheck);
-                Assert.StartsWith("service:AspNetSample@localhost:5000", instance.HealthCheck.CheckId);
-                Assert.Equal($"Service '{instance.Id}' check", instance.HealthCheck.Name);
+                Assert.Equal("service:AspNetSample@localhost:5000", instance.HealthCheck.CheckId);
+                Assert.Equal("Service 'AspNetSample@localhost:5000' check", instance.HealthCheck.Name);
                 Assert.NotNull(instance.HealthCheck.DeregisterCriticalServiceAfter);
                 Assert.Equal(TimeSpan.FromSeconds(15), instance.HealthCheck.Interval);
                 Assert.Equal("http://localhost:5000/health", instance.HealthCheck.Endpoint.ToString());
@@ -107,6 +110,12 @@ namespace Alastack.Consul.Tests
                 root.GetSection("Agent").Bind(options.Agent);
             }
             return options;
+        }
+
+        private static Task<IReadOnlyList<ResolvedServiceInstance>> ResolveInstancesAsync(ConsulRegistrationOptions options)
+        {
+            var store = new ServiceInstanceStore(Options.Create(options), Enumerable.Empty<IServerAddressesProvider>());
+            return store.GetInstancesAsync(CancellationToken.None);
         }
     }
 }

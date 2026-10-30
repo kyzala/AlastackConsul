@@ -69,10 +69,10 @@ public static class ConsulServiceCollectionExtensions
 
     private static IServiceCollection AddConsulRegistrationCore(this IServiceCollection services)
     {
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<ConsulRegistrationOptions>, ConsulRegistrationPostConfigureOptions>());
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IValidateOptions<ConsulRegistrationOptions>, ConsulRegistrationValidateOptions>());
+        services.TryAddSingleton<ServiceInstanceStore>();
         services.AddSingleton<IRegistrationService, RegistrationService>();
-        services.AddHostedService<DynamicRegistrationHostedService>();
+        services.AddHostedService<ConsulRegistrationHostedService>();
 
         return services;
     }

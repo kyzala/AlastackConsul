@@ -6,17 +6,19 @@ namespace Alastack.Consul.Registration;
 internal class RegistrationService : IRegistrationService
 {
     private readonly ConsulRegistrationOptions _registrationOptions;
+    private readonly ServiceInstanceStore _instanceStore;
 
-    public RegistrationService(IOptions<ConsulRegistrationOptions> options)
+    public RegistrationService(IOptions<ConsulRegistrationOptions> options, ServiceInstanceStore instanceStore)
     {
         _registrationOptions = options.Value;
+        _instanceStore = instanceStore;
     }
 
     public async Task RegisterAsync(CancellationToken cancellationToken)
     {
         var consulClient = CreateConsulClient(_registrationOptions.Agent);
 
-        foreach (var instance in _registrationOptions.Instances)
+        foreach (var instance in await _instanceStore.GetInstancesAsync(cancellationToken))
         {
             var reg = new AgentServiceRegistration()
             {
@@ -29,7 +31,7 @@ internal class RegistrationService : IRegistrationService
                 EnableTagOverride = instance.EnableTagOverride,
                 Check = new AgentServiceCheck
                 {
-                    CheckID = instance.HealthCheck!.CheckId,
+                    CheckID = instance.HealthCheck.CheckId,
                     Name = instance.HealthCheck.Name,
                     DeregisterCriticalServiceAfter = instance.HealthCheck.DeregisterCriticalServiceAfter,
                     Interval = instance.HealthCheck.Interval,
@@ -46,7 +48,7 @@ internal class RegistrationService : IRegistrationService
     public async Task DeregisterAsync(CancellationToken cancellationToken)
     {
         var consulClient = CreateConsulClient(_registrationOptions.Agent);
-        foreach (var instance in _registrationOptions.Instances)
+        foreach (var instance in await _instanceStore.GetInstancesAsync(cancellationToken))
         {
             await consulClient.Agent.ServiceDeregister(instance.Id, cancellationToken);
         }

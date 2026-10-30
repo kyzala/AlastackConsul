@@ -179,10 +179,11 @@ Visit the [samples](https://github.com/kyzala/AlastackConsul/tree/main/samples) 
 | `ConsulOptions.IsEnabled` | removed, it was never read |
 | `AddConsul()` | `AddConsulRegistration()` |
 | `AddAspNetCore()` | `AddConsulAspNetCore()` |
-| `IServerAddressesHandler.Configuered` | `IServerAddressesHandler.Configured` |
+| `IServerAddressesHandler` | `IServerAddressesProvider`, read-only; `Configured` / `AddServerAddress` are no longer part of the contract |
+| `RegistrationExtensions`, `ConsulRegistrationPostConfigureOptions` | removed; options are read-only after binding, instance defaults are applied when instances are resolved |
 | AspNetCore `Defaults` | `ServerAddressesDefaults` |
 
-`RegistrationService`, `DynamicRegistrationHostedService`, `KestrelServerAddressesHandler` and `ServerAddressesFilter` are now internal. Resolve `IRegistrationService` and `IServerAddressesHandler` through dependency injection instead of constructing them.
+`RegistrationService`, `ConsulRegistrationHostedService`, `KestrelServerAddressesProvider` and `ServerAddressesFilter` are now internal. Resolve `IRegistrationService` and `IServerAddressesProvider` through dependency injection instead of constructing them.
 
 **Configuration keys**
 
