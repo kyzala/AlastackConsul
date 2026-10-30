@@ -180,9 +180,8 @@ Visit the [samples](https://github.com/kyzala/AlastackConsul/tree/main/samples) 
 | `AddConsul()` | `AddConsulRegistration()` |
 | `AddAspNetCore()` | `AddConsulAspNetCore()` |
 | `IServerAddressesHandler` | `IServerAddressesProvider`, read-only; `Configured` / `AddServerAddress` are no longer part of the contract |
-| `ServerAddressesDefaults` (`Alastack.Consul.AspNetCore` namespace) | moved to the `Alastack.Consul.Registration` namespace in the main project, together with the new public `DefaultServerAddressesProvider` |
 | `RegistrationExtensions`, `ConsulRegistrationPostConfigureOptions` | removed; options are read-only after binding, instance defaults are applied when instances are resolved |
-| AspNetCore `Defaults` | `ServerAddressesDefaults` |
+| AspNetCore `Defaults.ServerAddressTimeout` | `RegistrationDefaults.ServerAddressesTimeout` (main project); the new public `DefaultServerAddressesProvider` lives in `Alastack.Consul.Registration` |
 
 `RegistrationService`, `ConsulRegistrationHostedService` and `ServerAddressesFilter` are now internal. Resolve `IRegistrationService` and `IServerAddressesProvider` through dependency injection instead of constructing them.
 

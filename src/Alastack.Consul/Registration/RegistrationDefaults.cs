@@ -24,4 +24,9 @@ public static class RegistrationDefaults
     /// Default version for the service.
     /// </summary>
     public const string Version = "1.0.0";
+
+    /// <summary>
+    /// The default timeout in milliseconds for waiting server listen addresses to be configured.
+    /// </summary>
+    public static readonly int ServerAddressesTimeout = 5000;
 }

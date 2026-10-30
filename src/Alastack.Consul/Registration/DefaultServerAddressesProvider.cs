@@ -27,7 +27,7 @@ public sealed class DefaultServerAddressesProvider : IServerAddressesProvider
     public async Task<IReadOnlyCollection<string>> GetServerAddressesAsync(CancellationToken cancellationToken)
     {
         int elapsed = 0;
-        while (!Configured && !cancellationToken.IsCancellationRequested && elapsed < ServerAddressesDefaults.ServerAddressesTimeout)
+        while (!Configured && !cancellationToken.IsCancellationRequested && elapsed < RegistrationDefaults.ServerAddressesTimeout)
         {
             await Task.Delay(100, cancellationToken);
             elapsed += 100;
