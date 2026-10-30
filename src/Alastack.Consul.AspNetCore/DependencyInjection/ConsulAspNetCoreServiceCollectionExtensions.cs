@@ -9,8 +9,8 @@ public static class ConsulAspNetCoreServiceCollectionExtensions
 {
     public static IServiceCollection AddConsulAspNetCore(this IServiceCollection services)
     {
-        services.TryAddSingleton<KestrelServerAddressesProvider>();
-        services.TryAddSingleton<IServerAddressesProvider>(sp => sp.GetRequiredService<KestrelServerAddressesProvider>());
+        services.TryAddSingleton<DefaultServerAddressesProvider>();
+        services.TryAddSingleton<IServerAddressesProvider>(sp => sp.GetRequiredService<DefaultServerAddressesProvider>());
         services.TryAddEnumerable(ServiceDescriptor.Transient<IStartupFilter, ServerAddressesFilter>());
 
         return services;

@@ -1,3 +1,4 @@
+using Alastack.Consul.Registration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
@@ -8,9 +9,9 @@ namespace Alastack.Consul.AspNetCore;
 internal class ServerAddressesFilter : IStartupFilter
 {
     private readonly IServer _server;
-    private readonly KestrelServerAddressesProvider _addressesProvider;
+    private readonly DefaultServerAddressesProvider _addressesProvider;
 
-    public ServerAddressesFilter(IServer server, KestrelServerAddressesProvider addressesProvider)
+    public ServerAddressesFilter(IServer server, DefaultServerAddressesProvider addressesProvider)
     {
         _server = server;
         _addressesProvider = addressesProvider;
