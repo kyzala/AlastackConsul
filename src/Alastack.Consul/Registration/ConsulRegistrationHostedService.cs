@@ -2,7 +2,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Alastack.Consul.Registration;
 
-internal sealed class ConsulRegistrationHostedService : IHostedService
+internal sealed class ConsulRegistrationHostedService : BackgroundService
 {
     private readonly IRegistrationService _registrationService;
 
@@ -11,16 +11,27 @@ internal sealed class ConsulRegistrationHostedService : IHostedService
         _registrationService = registrationService;
     }
 
-    /// <inheritdoc />
-    public Task StartAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        return _registrationService.RegisterAsync(cancellationToken);
+        // Register on the background task without blocking host startup: the server listen addresses
+        // pushed by the hosting layer only become available while startup proceeds.
+        if (!stoppingToken.IsCancellationRequested)
+        {
+            await _registrationService.RegisterAsync(stoppingToken);
+        }
     }
 
-    /// <inheritdoc />
-    public Task StopAsync(CancellationToken cancellationToken)
+    public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        // Deregistration is idempotent on the Consul side, invoke it unconditionally.
-        return _registrationService.DeregisterAsync(cancellationToken);
+        try
+        {
+            // Wait for the registration to complete before deregistering.
+            await base.StopAsync(cancellationToken);
+        }
+        finally
+        {
+            // Deregistration is idempotent on the Consul side, invoke it unconditionally.
+            await _registrationService.DeregisterAsync(cancellationToken);
+        }
     }
 }
