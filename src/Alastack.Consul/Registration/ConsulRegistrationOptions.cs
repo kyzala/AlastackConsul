@@ -28,6 +28,12 @@ public sealed class ConsulRegistrationOptions
     public ICollection<ServiceInstance> Instances { get; set; } = new Collection<ServiceInstance>();
 
     /// <summary>
+    /// Gets or sets a value indicating whether the server listen addresses pushed by the hosting
+    /// layer are registered automatically. Defaults to <see langword="true"/>.
+    /// </summary>
+    public bool IncludeServerAddresses { get; set; } = true;
+
+    /// <summary>
     /// Health check default for <see cref="ServiceInstance.HealthCheck"/>.
     /// </summary>
     public HealthCheckOptions DefaultHealthCheck { get; set; } = new HealthCheckOptions();

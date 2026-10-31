@@ -270,6 +270,91 @@ namespace Alastack.Extensions.Configuration.Consul.Tests
         }
 
         [Fact]
+        public async Task Watch_Does_Not_Reload_When_Content_Is_Unchanged()
+        {
+            var calls = 0;
+            var watchPolled = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            var source = new ConsulConfigurationSource
+            {
+                Path = Key,
+                ReloadOnChange = true,
+                PollingWaitTime = TimeSpan.FromSeconds(1)
+            };
+            source.ClientFactory = () => CreateClient(async (key, _, cancellationToken) =>
+            {
+                switch (Interlocked.Increment(ref calls))
+                {
+                    case 1:
+                        return Result(key, """{"Section":{"Name":"first"}}""");
+                    case 2:
+                        // A write with identical content still bumps the Consul modify index.
+                        return Result(key, """{"Section":{"Name":"first"}}""", lastIndex: 2);
+                    default:
+                        watchPolled.TrySetResult();
+                        await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
+                        return Result(key, "{}");
+                }
+            }, out _);
+
+            var provider = new ConsulConfigurationProvider(source, ConsulConfigurationFormat.Json);
+            var reloaded = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            using var registration = provider.GetReloadToken()
+                .RegisterChangeCallback(_ => reloaded.TrySetResult(), null);
+
+            provider.Load();
+
+            // Reaching call 3 proves the loop continued; identical content must not reload.
+            await watchPolled.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+            Assert.False(reloaded.Task.IsCompleted);
+            Assert.True(provider.TryGet("Section:Name", out var value));
+            Assert.Equal("first", value);
+
+            provider.Dispose();
+        }
+
+        [Fact]
+        public async Task Watch_Continues_When_OnLoadException_Callback_Throws()
+        {
+            var calls = 0;
+            var watchRetried = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            var source = new ConsulConfigurationSource
+            {
+                Path = Key,
+                ReloadOnChange = true,
+                PollingWaitTime = TimeSpan.FromMilliseconds(200)
+            };
+            source.OnLoadException = _ => throw new ApplicationException("callback failed");
+            source.ClientFactory = () => CreateClient(async (key, _, cancellationToken) =>
+            {
+                switch (Interlocked.Increment(ref calls))
+                {
+                    case 1:
+                        return Result(key, """{"Section":{"Name":"first"}}""");
+                    case 2:
+                        throw new InvalidOperationException("boom");
+                    default:
+                        watchRetried.TrySetResult();
+                        await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
+                        return Result(key, "{}");
+                }
+            }, out _);
+
+            var provider = new ConsulConfigurationProvider(source, ConsulConfigurationFormat.Json);
+            provider.Load();
+
+            // A failing callback must not terminate the watch loop: reaching call 3 proves it continued.
+            await watchRetried.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+
+            Assert.Equal(3, calls);
+            Assert.True(provider.TryGet("Section:Name", out var value));
+            Assert.Equal("first", value);
+
+            provider.Dispose();
+        }
+
+        [Fact]
         public async Task Watch_Reports_Server_Errors_Instead_Of_Spinning()
         {
             var calls = 0;

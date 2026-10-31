@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Alastack.Consul.Registration;
 
@@ -52,6 +53,14 @@ internal sealed class ConsulRegistrationHostedService : BackgroundService
                 // The host is stopping before the registration completed.
                 return;
             }
+            catch (Exception exception) when (IsPermanentFailure(exception))
+            {
+                // Invalid configuration cannot be fixed by retrying: fail fast with a single error.
+                _logger.LogError(
+                    exception,
+                    "Failed to register the service instances with Consul because the registration configuration is invalid.");
+                return;
+            }
             catch (Exception exception)
             {
                 // Registration is best effort: a Consul outage must not stop the host.
@@ -76,6 +85,13 @@ internal sealed class ConsulRegistrationHostedService : BackgroundService
                 return;
             }
         }
+    }
+
+    private static bool IsPermanentFailure(Exception exception)
+    {
+        // Options validation and the internal consistency checks in ServiceInstanceStore fail
+        // deterministically, so retrying them only repeats the same error.
+        return exception is OptionsValidationException or InvalidOperationException or ArgumentException;
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)

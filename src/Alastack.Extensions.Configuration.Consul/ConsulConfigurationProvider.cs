@@ -123,11 +123,44 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
         }
     }
 
-    private void Apply(byte[] value)
+    /// <summary>
+    /// Parses and applies the specified value.
+    /// </summary>
+    /// <returns><see langword="true"/> when the configuration data actually changed and a reload must be raised.</returns>
+    private bool Apply(byte[] value)
     {
         using var stream = new MemoryStream(value);
-        Data = Parse(_format, stream);
+        var data = Parse(_format, stream);
         _missingNotified = false;
+
+        if (AreEqual(Data, data))
+        {
+            // Writing the same content still bumps the Consul modify index, so avoid reloading
+            // (and re-binding the whole configuration tree) for a no-op change.
+            return false;
+        }
+
+        Data = data;
+        return true;
+    }
+
+    private static bool AreEqual(IDictionary<string, string?> current, IDictionary<string, string?> next)
+    {
+        if (current.Count != next.Count)
+        {
+            return false;
+        }
+
+        foreach (var pair in next)
+        {
+            if (!current.TryGetValue(pair.Key, out var value) ||
+                !string.Equals(value, pair.Value, StringComparison.Ordinal))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private async Task<RequestResult> RequestAsync(QueryOptions options, CancellationToken cancellationToken)
@@ -209,8 +242,10 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
                     continue;
                 }
 
-                Apply(result.Pair!.Value!);
-                OnReload();
+                if (Apply(result.Pair!.Value!))
+                {
+                    OnReload();
+                }
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
@@ -263,7 +298,17 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
     private bool HandleException(Exception exception)
     {
         var context = new ConsulLoadExceptionContext(exception);
-        _onLoadException?.Invoke(context);
+        try
+        {
+            _onLoadException?.Invoke(context);
+        }
+        catch
+        {
+            // A failing callback must never take down its caller. In the watch loop there is no
+            // caller at all, so letting it escape would silently stop configuration reloading.
+            return false;
+        }
+
         return context.Ignore;
     }
 

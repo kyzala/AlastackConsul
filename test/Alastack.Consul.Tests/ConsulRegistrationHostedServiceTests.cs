@@ -1,5 +1,6 @@
 using Alastack.Consul.Registration;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 
 namespace Alastack.Consul.Tests
 {
@@ -21,7 +22,7 @@ namespace Alastack.Consul.Tests
         [Fact]
         public async Task Start_Does_Not_Fault_When_Registration_Fails()
         {
-            var service = new FakeRegistrationService { RegisterException = new InvalidOperationException("Consul is down") };
+            var service = new FakeRegistrationService { RegisterException = new HttpRequestException("Consul is down") };
             var hostedService = CreateHostedService(service);
 
             await hostedService.StartAsync(CancellationToken.None);
@@ -35,7 +36,7 @@ namespace Alastack.Consul.Tests
         [Fact]
         public async Task Start_Stops_Retrying_After_Max_Attempts()
         {
-            var service = new FakeRegistrationService { RegisterException = new InvalidOperationException("Consul is down") };
+            var service = new FakeRegistrationService { RegisterException = new HttpRequestException("Consul is down") };
             var hostedService = CreateHostedService(service);
 
             await hostedService.StartAsync(CancellationToken.None);
@@ -48,6 +49,27 @@ namespace Alastack.Consul.Tests
             }
 
             Assert.Equal(ConsulRegistrationHostedService.MaxRegistrationAttempts, service.RegisterCalls);
+        }
+
+        [Fact]
+        public async Task Start_Does_Not_Retry_Invalid_Configuration()
+        {
+            var service = new FakeRegistrationService
+            {
+                RegisterException = new OptionsValidationException(
+                    "ConsulRegistrationOptions",
+                    typeof(ConsulRegistrationOptions),
+                    new[] { "Name is required." })
+            };
+            var hostedService = CreateHostedService(service);
+
+            await hostedService.StartAsync(CancellationToken.None);
+            await service.RegisterCalled.Task.WaitAsync(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
+
+            // Give a retry a chance to happen before asserting that a permanent failure is not retried.
+            await Task.Delay(TimeSpan.FromMilliseconds(100), TestContext.Current.CancellationToken);
+
+            Assert.Equal(1, service.RegisterCalls);
         }
 
         [Fact]
@@ -80,7 +102,7 @@ namespace Alastack.Consul.Tests
         [Fact]
         public async Task Stop_Deregisters_Even_When_Registration_Failed()
         {
-            var service = new FakeRegistrationService { RegisterException = new InvalidOperationException("Consul is down") };
+            var service = new FakeRegistrationService { RegisterException = new HttpRequestException("Consul is down") };
             var hostedService = CreateHostedService(service);
 
             await hostedService.StartAsync(CancellationToken.None);
@@ -144,7 +166,7 @@ namespace Alastack.Consul.Tests
                 if (FailuresRemaining > 0)
                 {
                     FailuresRemaining--;
-                    return Task.FromException(new InvalidOperationException("Consul is down"));
+                    return Task.FromException(new HttpRequestException("Consul is down"));
                 }
 
                 RegisterSucceeded.TrySetResult();

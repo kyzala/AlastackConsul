@@ -49,6 +49,40 @@ namespace Alastack.Consul.Tests
         }
 
         [Fact]
+        public void AddConsulConfiguration_Throws_When_Sets_Is_Empty_And_Not_Optional()
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["Consul:Agent:Address"] = "http://localhost:8500",
+                    ["Consul:Configuration:PathBase"] = "apps/sample"
+                })
+                .Build();
+
+            var exception = Assert.Throws<InvalidOperationException>(
+                () => new ConfigurationBuilder().AddConsulConfiguration(configuration));
+
+            Assert.Contains("Configuration:Sets", exception.Message);
+        }
+
+        [Fact]
+        public void AddConsulConfiguration_Returns_Builder_When_Sets_Is_Empty_And_Optional()
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["Consul:Agent:Address"] = "http://localhost:8500",
+                    ["Consul:Configuration:PathBase"] = "apps/sample"
+                })
+                .Build();
+            var builder = new ConfigurationBuilder();
+
+            builder.AddConsulConfiguration(configuration, optional: true);
+
+            Assert.Empty(builder.Sources);
+        }
+
+        [Fact]
         public void AddConsulConfiguration_Builds_Expected_Kv_Paths_And_Source_Settings()
         {
             var configuration = new ConfigurationBuilder()

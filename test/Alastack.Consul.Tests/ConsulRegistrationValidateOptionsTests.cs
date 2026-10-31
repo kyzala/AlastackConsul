@@ -82,6 +82,18 @@ namespace Alastack.Consul.Tests
             Assert.True(_validator.Validate(null, options).Succeeded);
         }
 
+        [Fact]
+        public void Validate_Fails_When_HttpClientTimeout_Is_Not_Positive()
+        {
+            var options = CreateValidOptions();
+            options.Agent.HttpClientTimeout = TimeSpan.Zero;
+
+            var result = _validator.Validate(null, options);
+
+            Assert.True(result.Failed);
+            Assert.Equal("Agent.HttpClientTimeout must be greater than zero.", result.FailureMessage);
+        }
+
         private static ConsulRegistrationOptions CreateValidOptions()
         {
             return new ConsulRegistrationOptions

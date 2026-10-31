@@ -26,4 +26,10 @@ public sealed class AgentOptions
     /// </summary>
     public TimeSpan? WaitTime { get; set; }
 
+    /// <summary>
+    /// The maximum time to wait for a Consul request to complete.
+    /// If not provided, the Consul client default is used.
+    /// </summary>
+    public TimeSpan? HttpClientTimeout { get; set; }
+
 }

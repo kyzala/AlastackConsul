@@ -41,8 +41,8 @@ internal sealed class ResolvedServiceInstance
             throw new InvalidOperationException("The service instance address is required.");
         }
 
-        var id = instance.Id;
-        if (string.IsNullOrWhiteSpace(id) && IsDefaultIdPolicy(registration.Metadata))
+        var id = string.IsNullOrWhiteSpace(instance.Id) ? null : instance.Id;
+        if (id == null && IsDefaultIdPolicy(registration.Metadata))
         {
             id = $"{registration.Name}@{instance.Address.Host}:{instance.Address.Port}";
         }
@@ -56,7 +56,8 @@ internal sealed class ResolvedServiceInstance
             DeregisterCriticalServiceAfter = source.DeregisterCriticalServiceAfter,
             Interval = source.Interval,
             Endpoint = source.Endpoint,
-            Timeout = source.Timeout
+            Timeout = source.Timeout,
+            TLSSkipVerify = source.TLSSkipVerify
         };
 
         if (!healthCheck.Enabled)
@@ -73,11 +74,17 @@ internal sealed class ResolvedServiceInstance
 
         if (string.IsNullOrWhiteSpace(healthCheck.Name))
         {
-            healthCheck.Name = $"Service '{id}' check";
+            // When the id is left to Consul there is no id to derive a unique check from, so use the
+            // address: check ids must be unique on the Consul agent, even across multiple instances.
+            healthCheck.Name = id == null
+                ? $"service:{instance.Address.DnsSafeHost}:{instance.Address.Port}"
+                : $"Service '{id}' check";
         }
         if (string.IsNullOrWhiteSpace(healthCheck.CheckId))
         {
-            healthCheck.CheckId = $"service:{id}";
+            healthCheck.CheckId = id == null
+                ? $"service:{instance.Address.DnsSafeHost}:{instance.Address.Port}"
+                : $"service:{id}";
         }
         if (healthCheck.Endpoint == null)
         {

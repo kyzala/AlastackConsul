@@ -44,7 +44,9 @@ internal sealed class ServiceInstanceStore
                 instances.Add(ResolvedServiceInstance.Resolve(instance, _registrationOptions));
             }
 
-            foreach (var provider in _addressesProviders)
+            foreach (var provider in _registrationOptions.IncludeServerAddresses
+                         ? _addressesProviders
+                         : Enumerable.Empty<IServerAddressesProvider>())
             {
                 var addresses = await provider.GetServerAddressesAsync(cancellationToken).ConfigureAwait(false);
                 foreach (var address in addresses)
@@ -60,7 +62,7 @@ internal sealed class ServiceInstanceStore
                         continue;
                     }
 
-                    if (!instances.Any(i => i.Address == uri))
+                    if (!instances.Any(i => IsSameEndpoint(i.Address, uri)))
                     {
                         instances.Add(ResolvedServiceInstance.Resolve(new ServiceInstance { Address = uri }, _registrationOptions));
                     }
@@ -96,5 +98,16 @@ internal sealed class ServiceInstanceStore
     private static bool IsWildcardHost(string host)
     {
         return host is "0.0.0.0" or "::" or "[::]" or "0:0:0:0:0:0:0:0";
+    }
+
+    /// <summary>
+    /// Compares the reachable endpoint of two addresses. The scheme is ignored because the generated
+    /// instance id only contains the host and the port: http and https on the same host and port
+    /// would otherwise produce the same id and be registered twice.
+    /// </summary>
+    private static bool IsSameEndpoint(Uri left, Uri right)
+    {
+        return string.Equals(left.DnsSafeHost, right.DnsSafeHost, StringComparison.OrdinalIgnoreCase)
+               && left.Port == right.Port;
     }
 }

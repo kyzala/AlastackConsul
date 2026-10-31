@@ -42,4 +42,10 @@ public sealed class HealthCheckOptions
     ///  Service health timeout value.
     /// </summary>
     public TimeSpan? Timeout { get; set; } = RegistrationDefaults.Timeout;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the certificate of an HTTPS health check endpoint
+    /// should not be verified. Useful for self-signed certificates in development environments.
+    /// </summary>
+    public bool TLSSkipVerify { get; set; }
 }

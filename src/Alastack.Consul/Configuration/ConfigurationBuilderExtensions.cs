@@ -13,6 +13,12 @@ public static class ConfigurationBuilderExtensions
     /// <summary>
     ///  Adds Consul as a configuration source to the <see cref="IConfigurationBuilder" />.
     /// </summary>
+    /// <remarks>
+    /// The current configuration is built immediately to read the settings, which loads every source
+    /// already added to <paramref name="builder"/>. Prefer the overload that accepts an existing
+    /// <see cref="IConfiguration"/> and call this overload before adding sources that are expensive
+    /// to load (for example Consul itself).
+    /// </remarks>
     /// <param name="builder">The <see cref="IConfigurationBuilder" /> to add to.</param>
     /// <param name="key">The Consul configuration key. Defaults to <c>Consul</c>.</param>
     /// <param name="optional">Whether the configuration is optional.</param>
@@ -75,6 +81,19 @@ public static class ConfigurationBuilderExtensions
             }
         }
         root.GetSection("Agent").Bind(configurationOptions.Agent);
+        if (configurationOptions.Sets is not { Count: > 0 })
+        {
+            // The section exists but configures nothing: reporting success for a required
+            // configuration would hide the misconfiguration until the first missing value shows up.
+            if (optional)
+            {
+                return builder;
+            }
+
+            throw new InvalidOperationException(
+                $"The Consul configuration section '{key}:Configuration:Sets' must contain at least one set unless the configuration is optional.");
+        }
+
         return builder.AddConsulConfiguration(configurationOptions);
     }
 

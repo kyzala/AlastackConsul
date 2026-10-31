@@ -8,7 +8,31 @@ public sealed class DefaultServerAddressesProvider : IServerAddressesProvider
     private readonly object _gate = new();
     private readonly List<string> _addresses = new();
     private readonly TaskCompletionSource _configuredSignal = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private readonly TimeSpan _timeout;
     private bool _configured;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DefaultServerAddressesProvider"/> class
+    /// using the default timeout.
+    /// </summary>
+    public DefaultServerAddressesProvider()
+        : this(RegistrationDefaults.ServerAddressesTimeout)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DefaultServerAddressesProvider"/> class.
+    /// </summary>
+    /// <param name="timeout">The maximum time to wait for the hosting layer to push the server addresses.</param>
+    public DefaultServerAddressesProvider(TimeSpan timeout)
+    {
+        if (timeout <= TimeSpan.Zero)
+        {
+            throw new ArgumentOutOfRangeException(nameof(timeout), timeout, "The server addresses timeout must be greater than zero.");
+        }
+
+        _timeout = timeout;
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether the hosting layer has finished pushing server addresses.
@@ -72,7 +96,7 @@ public sealed class DefaultServerAddressesProvider : IServerAddressesProvider
         try
         {
             await _configuredSignal.Task
-                .WaitAsync(RegistrationDefaults.ServerAddressesTimeout, cancellationToken)
+                .WaitAsync(_timeout, cancellationToken)
                 .ConfigureAwait(false);
         }
         catch (TimeoutException)

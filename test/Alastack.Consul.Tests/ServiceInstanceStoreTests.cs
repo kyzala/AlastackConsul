@@ -72,6 +72,23 @@ namespace Alastack.Consul.Tests
         }
 
         [Fact]
+        public async Task Uses_Address_Based_Check_Id_When_Id_Is_Left_To_Consul()
+        {
+            var options = CreateOptions(new ServiceInstance { Address = new Uri("http://localhost:5000") });
+            options.Metadata = new Dictionary<string, string>
+            {
+                [RegistrationPolicies.RegistrationIdNullPolicy] = RegistrationIdNullPolicy.Consul
+            };
+            var store = new ServiceInstanceStore(Options.Create(options), Array.Empty<IServerAddressesProvider>());
+
+            var instance = Assert.Single(await store.GetInstancesAsync(CancellationToken.None));
+
+            Assert.Null(instance.Id);
+            Assert.Equal("service:localhost:5000", instance.HealthCheck.CheckId);
+            Assert.Equal("service:localhost:5000", instance.HealthCheck.Name);
+        }
+
+        [Fact]
         public async Task Throws_When_A_Provider_Address_Is_Not_Absolute()
         {
             var store = CreateStore(CreateOptions(), "http://");
@@ -93,6 +110,29 @@ namespace Alastack.Consul.Tests
                 () => store.GetInstancesAsync(CancellationToken.None));
 
             Assert.Contains("duplicate", exception.Message);
+        }
+
+        [Fact]
+        public async Task Does_Not_Add_Provider_Addresses_When_Disabled()
+        {
+            var options = CreateOptions(new ServiceInstance { Address = new Uri("http://localhost:5000") });
+            options.IncludeServerAddresses = false;
+            var store = CreateStore(options, "http://localhost:5001");
+
+            var instance = Assert.Single(await store.GetInstancesAsync(CancellationToken.None));
+
+            Assert.Equal(new Uri("http://localhost:5000"), instance.Address);
+        }
+
+        [Fact]
+        public async Task Skips_Provider_Address_With_The_Same_Host_And_Port()
+        {
+            var store = CreateStore(
+                CreateOptions(new ServiceInstance { Address = new Uri("http://localhost:5000") }),
+                "https://localhost:5000");
+
+            // Both addresses would generate the same instance id, so only the configured one is kept.
+            Assert.Single(await store.GetInstancesAsync(CancellationToken.None));
         }
 
         [Fact]

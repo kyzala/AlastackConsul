@@ -25,6 +25,11 @@ public class ConsulRegistrationValidateOptions : IValidateOptions<ConsulRegistra
             return ValidateOptionsResult.Fail("Name is required.");
         }
 
+        if (options.Agent.HttpClientTimeout is { } httpClientTimeout && httpClientTimeout <= TimeSpan.Zero)
+        {
+            return ValidateOptionsResult.Fail("Agent.HttpClientTimeout must be greater than zero.");
+        }
+
         foreach (var instance in options.Instances)
         {
             if (instance.Address == null)

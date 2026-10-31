@@ -40,7 +40,7 @@ internal class RegistrationService : IRegistrationService
             {
                 ID = instance.Id,
                 Name = _registrationOptions.Name,
-                Address = instance.Address.Host,
+                Address = instance.Address.DnsSafeHost,
                 Port = instance.Address.Port,
                 Tags = instance.Tags,
                 Meta = meta,
@@ -53,7 +53,8 @@ internal class RegistrationService : IRegistrationService
                         DeregisterCriticalServiceAfter = instance.HealthCheck.DeregisterCriticalServiceAfter,
                         Interval = instance.HealthCheck.Interval,
                         HTTP = instance.HealthCheck.Endpoint.ToString(),
-                        Timeout = instance.HealthCheck.Timeout
+                        Timeout = instance.HealthCheck.Timeout,
+                        TLSSkipVerify = instance.HealthCheck.TLSSkipVerify
                     }
                     : null
             };
@@ -65,6 +66,7 @@ internal class RegistrationService : IRegistrationService
     {
         using var consulClient = _clientFactory();
 
+        var exceptions = new List<Exception>();
         foreach (var instance in await _instanceStore.GetInstancesAsync(cancellationToken))
         {
             if (string.IsNullOrWhiteSpace(instance.Id))
@@ -74,7 +76,20 @@ internal class RegistrationService : IRegistrationService
                 continue;
             }
 
-            await consulClient.Agent.ServiceDeregister(instance.Id, cancellationToken);
+            try
+            {
+                await consulClient.Agent.ServiceDeregister(instance.Id, cancellationToken);
+            }
+            catch (Exception exception)
+            {
+                // A failing instance must not leave the remaining instances registered as ghosts.
+                exceptions.Add(exception);
+            }
+        }
+
+        if (exceptions.Count > 0)
+        {
+            throw new AggregateException("Failed to deregister one or more service instances from Consul.", exceptions);
         }
     }
 
@@ -98,7 +113,7 @@ internal class RegistrationService : IRegistrationService
     // Create ConsulClient instance.
     internal static IConsulClient CreateConsulClient(AgentOptions consulAgent)
     {
-        return new ConsulClient(config =>
+        void Configure(ConsulClientConfiguration config)
         {
             // Only override the Consul client defaults when the option was actually configured.
             if (!string.IsNullOrWhiteSpace(consulAgent.Datacenter))
@@ -117,6 +132,16 @@ internal class RegistrationService : IRegistrationService
             {
                 config.WaitTime = consulAgent.WaitTime;
             }
-        });
+        }
+
+        if (!consulAgent.HttpClientTimeout.HasValue)
+        {
+            return new ConsulClient(Configure);
+        }
+
+        // ConsulClientConfiguration has no timeout setting, so the timeout is applied to the HttpClient.
+        return new ConsulClient(
+            Configure,
+            httpClient => httpClient.Timeout = consulAgent.HttpClientTimeout.Value);
     }
 }

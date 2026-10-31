@@ -42,6 +42,21 @@ namespace Alastack.Consul.Tests
         }
 
         [Fact]
+        public async Task Uses_The_Configured_Timeout()
+        {
+            var provider = new DefaultServerAddressesProvider(TimeSpan.FromMilliseconds(100));
+
+            await Assert.ThrowsAsync<TimeoutException>(
+                () => provider.GetServerAddressesAsync(CancellationToken.None));
+        }
+
+        [Fact]
+        public void Throws_When_The_Timeout_Is_Not_Positive()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => new DefaultServerAddressesProvider(TimeSpan.Zero));
+        }
+
+        [Fact]
         public async Task Throws_When_Cancelled_Before_Configured()
         {
             var provider = new DefaultServerAddressesProvider();

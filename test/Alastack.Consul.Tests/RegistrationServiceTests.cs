@@ -79,6 +79,30 @@ namespace Alastack.Consul.Tests
         }
 
         [Fact]
+        public async Task RegisterAsync_Uses_DnsSafeHost_And_Maps_TLSSkipVerify()
+        {
+            var registrations = new List<AgentServiceRegistration>();
+            var (client, _) = CreateClient(onRegister: registrations.Add);
+            var options = CreateOptions(new ServiceInstance
+            {
+                Address = new Uri("https://[::1]:5000"),
+                HealthCheck = new HealthCheckOptions
+                {
+                    Endpoint = new Uri("https://[::1]:5000/health"),
+                    TLSSkipVerify = true
+                }
+            });
+            var service = CreateService(options, client);
+
+            await service.RegisterAsync(CancellationToken.None);
+
+            var registration = Assert.Single(registrations);
+            Assert.Equal("::1", registration.Address);
+            Assert.Equal(5000, registration.Port);
+            Assert.True(registration.Check.TLSSkipVerify);
+        }
+
+        [Fact]
         public async Task RegisterAsync_Registers_All_Instances()
         {
             var registrations = new List<AgentServiceRegistration>();
@@ -160,6 +184,31 @@ namespace Alastack.Consul.Tests
 
             // A Consul assigned id cannot be addressed, so the request is skipped instead of failing.
             Assert.Empty(deregisteredIds);
+        }
+
+        [Fact]
+        public async Task DeregisterAsync_Continues_When_An_Instance_Fails()
+        {
+            var deregisteredIds = new List<string>();
+            var (client, _) = CreateClient(onDeregister: id =>
+            {
+                deregisteredIds.Add(id);
+                if (deregisteredIds.Count == 1)
+                {
+                    throw new HttpRequestException("Consul is down");
+                }
+            });
+            var options = CreateOptions(
+                new ServiceInstance { Id = "first", Address = new Uri("http://localhost:5000") },
+                new ServiceInstance { Id = "second", Address = new Uri("http://localhost:5001") });
+            var service = CreateService(options, client);
+
+            var exception = await Assert.ThrowsAsync<AggregateException>(
+                () => service.DeregisterAsync(CancellationToken.None));
+
+            // The second instance must still be deregistered even though the first one failed.
+            Assert.Equal(new[] { "first", "second" }, deregisteredIds);
+            Assert.Single(exception.InnerExceptions);
         }
 
         [Fact]
