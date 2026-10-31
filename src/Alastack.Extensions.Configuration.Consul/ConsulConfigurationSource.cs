@@ -54,6 +54,13 @@ public sealed class ConsulConfigurationSource : IConfigurationSource
             throw new InvalidOperationException("The Consul Configuration Path is required.");
         }
 
+        if (PollingWaitTime <= TimeSpan.Zero)
+        {
+            // A non-positive wait turns the blocking query into a non-blocking one, which makes
+            // the watch loop poll the server as fast as the network allows.
+            throw new InvalidOperationException("The Consul Configuration PollingWaitTime must be greater than zero.");
+        }
+
         var format = Format == ConsulConfigurationFormat.Auto ? ResolveFormat(Path) : Format;
         return new ConsulConfigurationProvider(this, format);
     }

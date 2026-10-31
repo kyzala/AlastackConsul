@@ -13,13 +13,18 @@ namespace Alastack.Extensions.Configuration.Consul;
 /// </summary>
 public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDisposable
 {
-    private readonly ConsulConfigurationSource _source;
     private readonly ConsulConfigurationFormat _format;
     private readonly IConsulClient _client;
     private readonly bool _ownsClient;
     private readonly object _gate = new();
+    private readonly string _path;
+    private readonly TimeSpan _pollingWaitTime;
+    private readonly bool _optional;
+    private readonly bool _reloadOnChange;
+    private readonly Action<ConsulLoadExceptionContext>? _onLoadException;
     private CancellationTokenSource? _watchTokens;
     private ulong _lastIndex;
+    private volatile bool _disposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulConfigurationProvider"/> class.
@@ -28,8 +33,15 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
     /// <param name="format">The resolved format of the KV value.</param>
     public ConsulConfigurationProvider(ConsulConfigurationSource source, ConsulConfigurationFormat format)
     {
-        _source = source ?? throw new ArgumentNullException(nameof(source));
+        ArgumentNullException.ThrowIfNull(source);
+
+        // Snapshot the settings: the source is mutable and must not be read again once the provider is built.
         _format = format;
+        _path = source.Path;
+        _pollingWaitTime = source.PollingWaitTime;
+        _optional = source.Optional;
+        _reloadOnChange = source.ReloadOnChange;
+        _onLoadException = source.OnLoadException;
         _ownsClient = source.ClientFactory == null;
         _client = (source.ClientFactory ?? DefaultClientFactory)();
     }
@@ -37,6 +49,11 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
     /// <inheritdoc />
     public override void Load()
     {
+        if (_disposed)
+        {
+            return;
+        }
+
         try
         {
             LoadAsync(CancellationToken.None).GetAwaiter().GetResult();
@@ -72,9 +89,9 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
     private void HandleMissing()
     {
         Data = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
-        if (!_source.Optional)
+        if (!_optional)
         {
-            throw new InvalidOperationException($"The Consul key '{_source.Path}' was not found.");
+            throw new InvalidOperationException($"The Consul key '{_path}' was not found.");
         }
     }
 
@@ -86,10 +103,19 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
 
     private async Task<RequestResult> RequestAsync(QueryOptions options, CancellationToken cancellationToken)
     {
-        var result = await _client.KV.Get(_source.Path, options, cancellationToken).ConfigureAwait(false);
+        var result = await _client.KV.Get(_path, options, cancellationToken).ConfigureAwait(false);
         if (result.StatusCode == HttpStatusCode.NotFound)
         {
             return new RequestResult(RequestOutcome.Missing, null);
+        }
+
+        var statusCode = (int)result.StatusCode;
+        if (statusCode is < 200 or >= 300)
+        {
+            // Anything but 404 means the lookup itself failed, so surface it through OnLoadException
+            // instead of mistaking it for a missing key.
+            throw new HttpRequestException(
+                $"The Consul KV lookup for '{_path}' failed with {statusCode} ({result.StatusCode}).");
         }
 
         if (options.WaitIndex != 0 && result.LastIndex <= options.WaitIndex)
@@ -111,14 +137,14 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
 
     private void StartWatch()
     {
-        if (!_source.ReloadOnChange)
+        if (!_reloadOnChange)
         {
             return;
         }
 
         lock (_gate)
         {
-            if (_watchTokens != null)
+            if (_disposed || _watchTokens != null)
             {
                 return;
             }
@@ -136,7 +162,7 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
             try
             {
                 var result = await RequestAsync(
-                    new QueryOptions { WaitIndex = _lastIndex, WaitTime = _source.PollingWaitTime },
+                    new QueryOptions { WaitIndex = _lastIndex, WaitTime = _pollingWaitTime },
                     cancellationToken).ConfigureAwait(false);
 
                 if (result.Outcome == RequestOutcome.Unchanged)
@@ -148,7 +174,7 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
                 {
                     // Consul answers a blocking query for a missing key immediately, so wait
                     // before polling again instead of spinning on the network round trip.
-                    await Task.Delay(_source.PollingWaitTime, cancellationToken).ConfigureAwait(false);
+                    await Task.Delay(_pollingWaitTime, cancellationToken).ConfigureAwait(false);
                     continue;
                 }
 
@@ -167,7 +193,7 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
                 }
 
                 // Back off before retrying so a persistent error does not turn into a tight loop.
-                await Task.Delay(_source.PollingWaitTime, cancellationToken).ConfigureAwait(false);
+                await Task.Delay(_pollingWaitTime, cancellationToken).ConfigureAwait(false);
             }
         }
     }
@@ -177,6 +203,12 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
     {
         lock (_gate)
         {
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
             _watchTokens?.Cancel();
             _watchTokens?.Dispose();
             _watchTokens = null;
@@ -193,7 +225,7 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
     private bool HandleException(Exception exception)
     {
         var context = new ConsulLoadExceptionContext(exception);
-        _source.OnLoadException?.Invoke(context);
+        _onLoadException?.Invoke(context);
         return context.Ignore;
     }
 

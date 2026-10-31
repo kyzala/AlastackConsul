@@ -80,6 +80,35 @@ namespace Alastack.Extensions.Configuration.Consul.Tests
         }
 
         [Fact]
+        public void Load_Throws_When_Consul_Returns_A_Server_Error()
+        {
+            var provider = CreateProvider((_, _, _) =>
+                Task.FromResult(new QueryResult<KVPair> { StatusCode = HttpStatusCode.InternalServerError }));
+
+            var exception = Assert.Throws<HttpRequestException>(provider.Load);
+
+            Assert.Contains("500", exception.Message);
+            Assert.Contains(Key, exception.Message);
+        }
+
+        [Fact]
+        public void Load_After_Dispose_Does_Not_Query_Again()
+        {
+            var calls = 0;
+            var provider = CreateProvider((key, _, _) =>
+            {
+                Interlocked.Increment(ref calls);
+                return Task.FromResult(Result(key, """{"Section":{"Name":"value"}}"""));
+            });
+
+            provider.Load();
+            provider.Dispose();
+            provider.Load();
+
+            Assert.Equal(1, calls);
+        }
+
+        [Fact]
         public async Task Watch_Reloads_Value_And_Notifies_Change_Token()
         {
             var calls = 0;
@@ -236,6 +265,43 @@ namespace Alastack.Extensions.Configuration.Consul.Tests
             Assert.False(reloaded.Task.IsCompleted);
             Assert.True(provider.TryGet("Section:Name", out var value));
             Assert.Equal("first", value);
+
+            provider.Dispose();
+        }
+
+        [Fact]
+        public async Task Watch_Reports_Server_Errors_Instead_Of_Spinning()
+        {
+            var calls = 0;
+            var exceptions = 0;
+
+            var source = new ConsulConfigurationSource
+            {
+                Path = Key,
+                ReloadOnChange = true,
+                PollingWaitTime = TimeSpan.FromMilliseconds(300)
+            };
+            source.OnLoadException = context =>
+            {
+                Interlocked.Increment(ref exceptions);
+                context.Ignore = true;
+            };
+            source.ClientFactory = () => CreateClient((key, _, _) =>
+                Interlocked.Increment(ref calls) == 1
+                    ? Task.FromResult(Result(key, """{"Section":{"Name":"value"}}"""))
+                    : Task.FromResult(new QueryResult<KVPair> { StatusCode = HttpStatusCode.InternalServerError }),
+                out _);
+
+            var provider = new ConsulConfigurationProvider(source, ConsulConfigurationFormat.Json);
+            provider.Load();
+
+            await Task.Delay(TimeSpan.FromMilliseconds(150), TestContext.Current.CancellationToken);
+
+            // The 500 must be routed to OnLoadException once, then wait before retrying.
+            Assert.Equal(2, calls);
+            Assert.Equal(1, exceptions);
+            Assert.True(provider.TryGet("Section:Name", out var value));
+            Assert.Equal("value", value);
 
             provider.Dispose();
         }

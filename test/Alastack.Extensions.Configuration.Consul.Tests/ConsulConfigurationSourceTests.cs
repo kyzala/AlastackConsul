@@ -25,6 +25,20 @@ namespace Alastack.Extensions.Configuration.Consul.Tests
             Assert.Throws<InvalidOperationException>(() => ConsulConfigurationSource.ResolveFormat(path));
         }
 
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-100)]
+        public void Build_Throws_When_PollingWaitTime_Is_Not_Positive(int milliseconds)
+        {
+            var source = new ConsulConfigurationSource
+            {
+                Path = "config.json",
+                PollingWaitTime = TimeSpan.FromMilliseconds(milliseconds)
+            };
+
+            Assert.Throws<InvalidOperationException>(() => source.Build(new ConfigurationBuilder()));
+        }
+
         [Fact]
         public void Defaults_Are_Applied()
         {
