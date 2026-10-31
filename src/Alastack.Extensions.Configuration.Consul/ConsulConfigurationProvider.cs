@@ -11,7 +11,6 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
 {
     private readonly ConsulConfigurationFormat _format;
     private readonly IConsulClient _client;
-    private readonly bool _ownsClient;
     private readonly object _gate = new();
     private readonly string _path;
     private readonly TimeSpan _pollingWaitTime;
@@ -39,7 +38,6 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
         _optional = source.Optional;
         _reloadOnChange = source.ReloadOnChange;
         _onLoadException = source.OnLoadException;
-        _ownsClient = source.DisposeClient;
 
         var clientFactory = source.ClientFactory
             ?? throw new InvalidOperationException(
@@ -284,13 +282,6 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
             _watchTokens?.Cancel();
             _watchTokens?.Dispose();
             _watchTokens = null;
-        }
-
-        // Only dispose a client this provider created itself; a client supplied through
-        // ConsulConfigurationSource.ClientFactory may be shared by other providers.
-        if (_ownsClient)
-        {
-            _client.Dispose();
         }
     }
 

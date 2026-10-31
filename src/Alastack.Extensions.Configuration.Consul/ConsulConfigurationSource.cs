@@ -43,13 +43,6 @@ public sealed class ConsulConfigurationSource : IConfigurationSource
     public Func<IConsulClient>? ClientFactory { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the client returned by <see cref="ClientFactory"/>
-    /// is owned by the provider and disposed with it. Defaults to <see langword="false"/>, because
-    /// a factory may return a client that is shared with other configuration sources.
-    /// </summary>
-    public bool DisposeClient { get; set; }
-
-    /// <summary>
     /// Gets or sets the action used to handle exceptions that occur while loading the Consul key.
     /// </summary>
     public Action<ConsulLoadExceptionContext>? OnLoadException { get; set; }
