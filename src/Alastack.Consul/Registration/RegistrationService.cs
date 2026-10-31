@@ -7,16 +7,21 @@ internal class RegistrationService : IRegistrationService
 {
     private readonly ConsulRegistrationOptions _registrationOptions;
     private readonly ServiceInstanceStore _instanceStore;
+    private readonly Func<IConsulClient> _clientFactory;
 
-    public RegistrationService(IOptions<ConsulRegistrationOptions> options, ServiceInstanceStore instanceStore)
+    public RegistrationService(
+        IOptions<ConsulRegistrationOptions> options,
+        ServiceInstanceStore instanceStore,
+        Func<IConsulClient> clientFactory)
     {
         _registrationOptions = options.Value;
         _instanceStore = instanceStore;
+        _clientFactory = clientFactory;
     }
 
     public async Task RegisterAsync(CancellationToken cancellationToken)
     {
-        var consulClient = CreateConsulClient(_registrationOptions.Agent);
+        using var consulClient = _clientFactory();
 
         foreach (var instance in await _instanceStore.GetInstancesAsync(cancellationToken))
         {
@@ -41,23 +46,20 @@ internal class RegistrationService : IRegistrationService
             };
             await consulClient.Agent.ServiceRegister(reg, cancellationToken);
         }
-
-        consulClient.Dispose();
     }
 
     public async Task DeregisterAsync(CancellationToken cancellationToken)
     {
-        var consulClient = CreateConsulClient(_registrationOptions.Agent);
+        using var consulClient = _clientFactory();
+
         foreach (var instance in await _instanceStore.GetInstancesAsync(cancellationToken))
         {
             await consulClient.Agent.ServiceDeregister(instance.Id, cancellationToken);
         }
-
-        consulClient.Dispose();
     }
 
     // Create ConsulClient instance.
-    private static IConsulClient CreateConsulClient(AgentOptions consulAgent)
+    internal static IConsulClient CreateConsulClient(AgentOptions consulAgent)
     {
         return new ConsulClient(config =>
         {
