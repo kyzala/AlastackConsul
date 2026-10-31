@@ -131,6 +131,37 @@ namespace Alastack.Consul.Tests
             Assert.True(proxy.Disposed);
         }
 
+        [Fact]
+        public async Task RegisterAsync_Throws_When_No_Instances_Are_Resolved()
+        {
+            var (client, _) = CreateClient();
+            var options = CreateOptions();
+            var service = CreateService(options, client);
+
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+                () => service.RegisterAsync(CancellationToken.None));
+
+            Assert.Contains("No service instances were resolved", exception.Message);
+        }
+
+        [Fact]
+        public async Task DeregisterAsync_Skips_Instances_Without_Id()
+        {
+            var deregisteredIds = new List<string>();
+            var (client, _) = CreateClient(onDeregister: deregisteredIds.Add);
+            var options = CreateOptions(new ServiceInstance { Address = new Uri("http://localhost:5000") });
+            options.Metadata = new Dictionary<string, string>
+            {
+                [RegistrationPolicies.RegistrationIdNullPolicy] = RegistrationIdNullPolicy.Consul
+            };
+            var service = CreateService(options, client);
+
+            await service.DeregisterAsync(CancellationToken.None);
+
+            // A Consul assigned id cannot be addressed, so the request is skipped instead of failing.
+            Assert.Empty(deregisteredIds);
+        }
+
         private static RegistrationService CreateService(ConsulRegistrationOptions options, IConsulClient client)
         {
             var instanceStore = new ServiceInstanceStore(

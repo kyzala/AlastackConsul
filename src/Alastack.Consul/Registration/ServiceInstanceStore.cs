@@ -61,6 +61,16 @@ internal sealed class ServiceInstanceStore
                 }
             }
 
+            var duplicateId = instances
+                .Where(instance => !string.IsNullOrWhiteSpace(instance.Id))
+                .GroupBy(instance => instance.Id!, StringComparer.Ordinal)
+                .FirstOrDefault(group => group.Count() > 1);
+            if (duplicateId != null)
+            {
+                // Consul silently replaces a service registered with an existing id.
+                throw new InvalidOperationException($"The service instance id '{duplicateId.Key}' is configured more than once.");
+            }
+
             _instances = instances;
             return instances;
         }

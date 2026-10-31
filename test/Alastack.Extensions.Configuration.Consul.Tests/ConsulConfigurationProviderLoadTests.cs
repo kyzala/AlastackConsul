@@ -453,6 +453,112 @@ namespace Alastack.Extensions.Configuration.Consul.Tests
             Assert.False(clientProxy.Disposed);
         }
 
+        [Fact]
+        public async Task Watch_Continues_When_Exception_Is_Not_Ignored()
+        {
+            var calls = 0;
+            var watchRetried = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            var source = new ConsulConfigurationSource
+            {
+                Path = Key,
+                ReloadOnChange = true,
+                PollingWaitTime = TimeSpan.FromMilliseconds(200)
+            };
+            source.ClientFactory = () => CreateClient(async (key, _, cancellationToken) =>
+            {
+                switch (Interlocked.Increment(ref calls))
+                {
+                    case 1:
+                        return Result(key, """{"Section":{"Name":"first"}}""");
+                    case 2:
+                        throw new InvalidOperationException("boom");
+                    default:
+                        watchRetried.TrySetResult();
+                        await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
+                        return Result(key, "{}");
+                }
+            }, out _);
+
+            var provider = new ConsulConfigurationProvider(source, ConsulConfigurationFormat.Json);
+            provider.Load();
+
+            // Without an OnLoadException handler a failure must still not stop the watch loop.
+            await watchRetried.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+
+            Assert.Equal(3, calls);
+            Assert.True(provider.TryGet("Section:Name", out var value));
+            Assert.Equal("first", value);
+
+            provider.Dispose();
+        }
+
+        [Fact]
+        public async Task Watch_Clears_Data_When_Optional_Key_Is_Deleted()
+        {
+            var calls = 0;
+            var source = new ConsulConfigurationSource
+            {
+                Path = Key,
+                Optional = true,
+                ReloadOnChange = true,
+                PollingWaitTime = TimeSpan.FromMilliseconds(200)
+            };
+            source.ClientFactory = () => CreateClient(async (key, _, _) =>
+                Interlocked.Increment(ref calls) == 1
+                    ? Result(key, """{"Section":{"Name":"first"}}""")
+                    : await NotFound(), out _);
+
+            var provider = new ConsulConfigurationProvider(source, ConsulConfigurationFormat.Json);
+            var reloaded = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            using var registration = provider.GetReloadToken()
+                .RegisterChangeCallback(_ => reloaded.TrySetResult(), null);
+
+            provider.Load();
+            Assert.True(provider.TryGet("Section:Name", out _));
+
+            await reloaded.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+
+            Assert.False(provider.TryGet("Section:Name", out _));
+
+            provider.Dispose();
+        }
+
+        [Fact]
+        public async Task Watch_Reports_Deleted_NonOptional_Key_Once()
+        {
+            var calls = 0;
+            var exceptions = 0;
+
+            var source = new ConsulConfigurationSource
+            {
+                Path = Key,
+                ReloadOnChange = true,
+                PollingWaitTime = TimeSpan.FromMilliseconds(200)
+            };
+            source.OnLoadException = context =>
+            {
+                Interlocked.Increment(ref exceptions);
+                context.Ignore = true;
+            };
+            source.ClientFactory = () => CreateClient((key, _, _) =>
+                Interlocked.Increment(ref calls) == 1
+                    ? Task.FromResult(Result(key, """{"Section":{"Name":"value"}}"""))
+                    : NotFound(), out _);
+
+            var provider = new ConsulConfigurationProvider(source, ConsulConfigurationFormat.Json);
+            provider.Load();
+
+            // Two 404 polls: the deletion is reported once and the value of a required key is kept.
+            await Task.Delay(TimeSpan.FromMilliseconds(500), TestContext.Current.CancellationToken);
+
+            Assert.Equal(1, exceptions);
+            Assert.True(provider.TryGet("Section:Name", out var value));
+            Assert.Equal("value", value);
+
+            provider.Dispose();
+        }
+
         private static ConsulConfigurationProvider CreateProvider(
             Func<string, QueryOptions, CancellationToken, Task<QueryResult<KVPair>>> get,
             Action<ConsulConfigurationSource>? configure = null)

@@ -82,6 +82,19 @@ namespace Alastack.Consul.Tests
             Assert.Contains("not a valid absolute URI", exception.Message);
         }
 
+        [Fact]
+        public async Task Throws_When_Instance_Id_Is_Duplicated()
+        {
+            var store = CreateStore(CreateOptions(
+                new ServiceInstance { Id = "duplicate", Address = new Uri("http://localhost:5000") },
+                new ServiceInstance { Id = "duplicate", Address = new Uri("http://localhost:5001") }));
+
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+                () => store.GetInstancesAsync(CancellationToken.None));
+
+            Assert.Contains("duplicate", exception.Message);
+        }
+
         private static ConsulRegistrationOptions CreateOptions(params ServiceInstance[] instances)
         {
             var options = new ConsulRegistrationOptions { Name = "AspNetSample" };

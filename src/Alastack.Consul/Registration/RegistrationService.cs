@@ -23,7 +23,16 @@ internal class RegistrationService : IRegistrationService
     {
         using var consulClient = _clientFactory();
 
-        foreach (var instance in await _instanceStore.GetInstancesAsync(cancellationToken))
+        var instances = await _instanceStore.GetInstancesAsync(cancellationToken);
+        if (instances.Count == 0)
+        {
+            // Registering nothing while reporting success makes a misconfiguration invisible.
+            throw new InvalidOperationException(
+                "No service instances were resolved. Configure Consul:Registration:Instances " +
+                "or add the hosting server addresses provider with AddConsulAspNetCore().");
+        }
+
+        foreach (var instance in instances)
         {
             var reg = new AgentServiceRegistration()
             {
@@ -56,6 +65,13 @@ internal class RegistrationService : IRegistrationService
 
         foreach (var instance in await _instanceStore.GetInstancesAsync(cancellationToken))
         {
+            if (string.IsNullOrWhiteSpace(instance.Id))
+            {
+                // The id was left for Consul to assign (RegistrationIdNullPolicy = Consul), so it
+                // cannot be addressed here. Consul removes the instance through its health check.
+                continue;
+            }
+
             await consulClient.Agent.ServiceDeregister(instance.Id, cancellationToken);
         }
     }

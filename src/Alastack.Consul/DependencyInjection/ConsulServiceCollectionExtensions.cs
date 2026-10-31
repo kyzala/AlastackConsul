@@ -77,7 +77,7 @@ public static class ConsulServiceCollectionExtensions
             var registrationOptions = sp.GetRequiredService<IOptions<ConsulRegistrationOptions>>().Value;
             return () => RegistrationService.CreateConsulClient(registrationOptions.Agent);
         });
-        services.AddSingleton<IRegistrationService, RegistrationService>();
+        services.TryAddSingleton<IRegistrationService, RegistrationService>();
         services.AddHostedService<ConsulRegistrationHostedService>();
 
         return services;

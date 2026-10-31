@@ -221,6 +221,12 @@ Configuration loading moved to a separate package, `Alastack.Extensions.Configur
 | `ConfigurationSet.Id` | required; an unsupported `Id` extension fails while reading the configuration when `Format` is `Auto` |
 | Repeated `AddConsulConfiguration` calls | a KV key is only added once |
 | `ConsulRegistrationOptions` validation | `Name`, `Instances.Address` and `DefaultHealthCheck.Endpoint` are now required |
+| Empty instance set | registration fails with a readable error instead of succeeding silently |
+| Duplicate instance ids | a duplicated `Instances[].Id` is rejected instead of silently overwritten by Consul |
+| `RegistrationIdNullPolicy` = `Consul` | Consul assigns the id, so the instance is skipped on deregistration; Consul removes it through `DeregisterCriticalServiceAfter`. Multiple instances with the same name must set explicit ids |
+| `ReloadOnChange` watch | a failed reload is reported through `OnLoadException` and retried after `PollingWaitTime`; the watch never stops silently |
+| Optional key deleted while watching | the loaded values are cleared and a change notification is raised; a required key reports the deletion once and keeps watching |
+| `AddConsulRegistration` called more than once | `IRegistrationService` is registered only once |
 | `ConsulRegistrationOptions.Version` | reserved, it has no effect on the registration |
 
 If you use the configuration source directly, the low-level API is available as `builder.AddConsul(path, source => ...)`

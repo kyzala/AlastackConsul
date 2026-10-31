@@ -24,6 +24,7 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
     private readonly Action<ConsulLoadExceptionContext>? _onLoadException;
     private CancellationTokenSource? _watchTokens;
     private ulong _lastIndex;
+    private bool _missingNotified;
     private volatile bool _disposed;
 
     /// <summary>
@@ -91,7 +92,34 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
         Data = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
         if (!_optional)
         {
+            // The exception is surfaced by Load, so the watch loop must not report it again.
+            _missingNotified = true;
             throw new InvalidOperationException($"The Consul key '{_path}' was not found.");
+        }
+    }
+
+    /// <summary>
+    /// Handles a key that is missing while watching. Unlike the initial load, the watch loop keeps
+    /// running: the key may be recreated, so a deletion must not disable reloading.
+    /// </summary>
+    private void HandleMissingWhileWatching()
+    {
+        if (_optional)
+        {
+            // Drop stale values so the application observes the deletion.
+            if (Data.Count > 0)
+            {
+                Data = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+                OnReload();
+            }
+
+            return;
+        }
+
+        if (!_missingNotified)
+        {
+            _missingNotified = true;
+            HandleException(new InvalidOperationException($"The Consul key '{_path}' was not found."));
         }
     }
 
@@ -99,6 +127,7 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
     {
         using var stream = new MemoryStream(value);
         Data = Parse(_format, stream);
+        _missingNotified = false;
     }
 
     private async Task<RequestResult> RequestAsync(QueryOptions options, CancellationToken cancellationToken)
@@ -172,6 +201,8 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
 
                 if (result.Outcome == RequestOutcome.Missing)
                 {
+                    HandleMissingWhileWatching();
+
                     // Consul answers a blocking query for a missing key immediately, so wait
                     // before polling again instead of spinning on the network round trip.
                     await Task.Delay(_pollingWaitTime, cancellationToken).ConfigureAwait(false);
@@ -187,13 +218,20 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
             }
             catch (Exception exception)
             {
-                if (!HandleException(exception))
+                // Report the failure to the configured callback but keep watching: since this runs
+                // on a background task the exception has no caller, and stopping the loop here would
+                // silently disable reloading for the rest of the process lifetime.
+                HandleException(exception);
+
+                try
+                {
+                    // Back off before retrying so a persistent error does not turn into a tight loop.
+                    await Task.Delay(_pollingWaitTime, cancellationToken).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
                 {
                     return;
                 }
-
-                // Back off before retrying so a persistent error does not turn into a tight loop.
-                await Task.Delay(_pollingWaitTime, cancellationToken).ConfigureAwait(false);
             }
         }
     }
