@@ -241,6 +241,83 @@ namespace Alastack.Extensions.Configuration.Consul.Tests
         }
 
         [Fact]
+        public async Task Watch_Waits_When_Key_Is_Deleted()
+        {
+            var calls = 0;
+            var deleted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            var source = new ConsulConfigurationSource
+            {
+                Path = Key,
+                ReloadOnChange = true,
+                PollingWaitTime = TimeSpan.FromMilliseconds(500)
+            };
+            source.ClientFactory = () => CreateClient((key, _, _) =>
+            {
+                if (Interlocked.Increment(ref calls) == 1)
+                {
+                    return Task.FromResult(Result(key, """{"Section":{"Name":"value"}}"""));
+                }
+
+                deleted.TrySetResult();
+                return NotFound();
+            }, out _);
+
+            var provider = new ConsulConfigurationProvider(source, ConsulConfigurationFormat.Json);
+            provider.Load();
+            await deleted.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+
+            // Consul answers a 404 blocking query immediately; without the delay the loop would spin.
+            await Task.Delay(TimeSpan.FromMilliseconds(200), TestContext.Current.CancellationToken);
+            Assert.Equal(2, calls);
+
+            Assert.True(provider.TryGet("Section:Name", out var value));
+            Assert.Equal("value", value);
+
+            provider.Dispose();
+        }
+
+        [Fact]
+        public async Task Load_Starts_Watch_When_Initial_Failure_Is_Ignored()
+        {
+            var calls = 0;
+            var source = new ConsulConfigurationSource
+            {
+                Path = Key,
+                ReloadOnChange = true,
+                PollingWaitTime = TimeSpan.FromMilliseconds(200)
+            };
+            source.OnLoadException = context => context.Ignore = true;
+            source.ClientFactory = () => CreateClient(async (key, _, cancellationToken) =>
+            {
+                switch (Interlocked.Increment(ref calls))
+                {
+                    case 1:
+                        throw new InvalidOperationException("boom");
+                    case 2:
+                        return Result(key, """{"Section":{"Name":"recovered"}}""");
+                    default:
+                        await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
+                        return Result(key, "{}");
+                }
+            }, out _);
+
+            var provider = new ConsulConfigurationProvider(source, ConsulConfigurationFormat.Json);
+            var reloaded = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            using var registration = provider.GetReloadToken()
+                .RegisterChangeCallback(_ => reloaded.TrySetResult(), null);
+
+            // The initial load throws, is ignored, and the provider must still start watching.
+            provider.Load();
+
+            await reloaded.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+            Assert.True(provider.TryGet("Section:Name", out var value));
+            Assert.Equal("recovered", value);
+
+            provider.Dispose();
+        }
+
+        [Fact]
         public async Task Watch_Waits_PollingWaitTime_Before_Retrying_An_Ignored_Exception()
         {
             var calls = 0;

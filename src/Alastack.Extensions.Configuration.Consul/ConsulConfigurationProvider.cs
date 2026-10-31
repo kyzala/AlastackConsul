@@ -48,24 +48,25 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
                 throw;
             }
         }
+
+        // Start watching even when the initial load failed and the exception was ignored,
+        // otherwise a Consul outage at startup would permanently disable reloading.
+        StartWatch();
     }
 
     private static IConsulClient DefaultClientFactory() => new ConsulClient();
 
     private async Task LoadAsync(CancellationToken cancellationToken)
     {
-        var pair = await RequestAsync(new QueryOptions(), cancellationToken).ConfigureAwait(false);
-        if (pair?.Value == null)
+        var result = await RequestAsync(new QueryOptions(), cancellationToken).ConfigureAwait(false);
+        if (result.Outcome == RequestOutcome.Loaded)
         {
-            HandleMissing();
+            Apply(result.Pair!.Value!);
         }
         else
         {
-            Apply(pair.Value);
+            HandleMissing();
         }
-
-        // Watch even when the key is missing: an optional key created after the initial load must still be picked up.
-        StartWatch();
     }
 
     private void HandleMissing()
@@ -83,19 +84,19 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
         Data = Parse(_format, stream);
     }
 
-    private async Task<KVPair?> RequestAsync(QueryOptions options, CancellationToken cancellationToken)
+    private async Task<RequestResult> RequestAsync(QueryOptions options, CancellationToken cancellationToken)
     {
         var result = await _client.KV.Get(_source.Path, options, cancellationToken).ConfigureAwait(false);
         if (result.StatusCode == HttpStatusCode.NotFound)
         {
-            return null;
+            return new RequestResult(RequestOutcome.Missing, null);
         }
 
         if (options.WaitIndex != 0 && result.LastIndex <= options.WaitIndex)
         {
             // The blocking query timed out without a change: Consul returns the same data
             // with the same index, so there is nothing to apply or reload.
-            return null;
+            return new RequestResult(RequestOutcome.Unchanged, null);
         }
 
         if (result.LastIndex > 0)
@@ -103,7 +104,9 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
             _lastIndex = result.LastIndex;
         }
 
-        return result.Response;
+        return result.Response?.Value == null
+            ? new RequestResult(RequestOutcome.Missing, null)
+            : new RequestResult(RequestOutcome.Loaded, result.Response);
     }
 
     private void StartWatch()
@@ -120,8 +123,9 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
                 return;
             }
 
-            _watchTokens = new CancellationTokenSource();
-            _ = Task.Run(() => WatchAsync(_watchTokens.Token));
+            var tokens = new CancellationTokenSource();
+            _watchTokens = tokens;
+            _ = Task.Run(() => WatchAsync(tokens.Token));
         }
     }
 
@@ -131,16 +135,24 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
         {
             try
             {
-                var pair = await RequestAsync(
+                var result = await RequestAsync(
                     new QueryOptions { WaitIndex = _lastIndex, WaitTime = _source.PollingWaitTime },
                     cancellationToken).ConfigureAwait(false);
 
-                if (pair?.Value == null)
+                if (result.Outcome == RequestOutcome.Unchanged)
                 {
                     continue;
                 }
 
-                Apply(pair.Value);
+                if (result.Outcome == RequestOutcome.Missing)
+                {
+                    // Consul answers a blocking query for a missing key immediately, so wait
+                    // before polling again instead of spinning on the network round trip.
+                    await Task.Delay(_source.PollingWaitTime, cancellationToken).ConfigureAwait(false);
+                    continue;
+                }
+
+                Apply(result.Pair!.Value!);
                 OnReload();
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -208,4 +220,18 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
             .Where(pair => pair.Value != null)
             .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.OrdinalIgnoreCase);
     }
+
+    private enum RequestOutcome
+    {
+        /// <summary>The key exists and its value must be applied.</summary>
+        Loaded,
+
+        /// <summary>The blocking query timed out without a change.</summary>
+        Unchanged,
+
+        /// <summary>The key does not exist, or the response carried no value.</summary>
+        Missing
+    }
+
+    private readonly record struct RequestResult(RequestOutcome Outcome, KVPair? Pair);
 }
