@@ -40,7 +40,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConsulConfigs", "ConsulConf
 		samples\ConsulConfigs\logging.json = samples\ConsulConfigs\logging.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alastack.Extensions.Configuration.Consul", "Alastack.Extensions.Configuration.Consul\Alastack.Extensions.Configuration.Consul.csproj", "{4CF78469-EA79-4E65-8DC0-8A77FD4A4818}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alastack.Extensions.Configuration.Consul", "src\Alastack.Extensions.Configuration.Consul\Alastack.Extensions.Configuration.Consul.csproj", "{4CF78469-EA79-4E65-8DC0-8A77FD4A4818}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -98,6 +98,7 @@ Global
 		{BADD916B-6B30-469F-84FE-411F277BE585} = {9082AC1A-FD18-4765-B566-5640B12DAD9D}
 		{ED126339-E879-D8FC-0958-DF939891AD37} = {9082AC1A-FD18-4765-B566-5640B12DAD9D}
 		{1B9BF789-91E2-4289-AB91-35CA630BF4B5} = {9082AC1A-FD18-4765-B566-5640B12DAD9D}
+		{4CF78469-EA79-4E65-8DC0-8A77FD4A4818} = {69088A22-70EC-496A-ACDD-0E4FEABA81A2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B4666193-0F92-4DED-A70F-7BF173E5B153}
