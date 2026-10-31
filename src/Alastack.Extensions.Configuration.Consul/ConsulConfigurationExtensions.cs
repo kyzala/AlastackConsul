@@ -19,10 +19,7 @@ public static class ConsulConfigurationExtensions
         string path,
         Action<ConsulConfigurationSource>? configure = null)
     {
-        if (builder == null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
+        ArgumentNullException.ThrowIfNull(builder);
 
         var source = new ConsulConfigurationSource { Path = path };
         configure?.Invoke(source);

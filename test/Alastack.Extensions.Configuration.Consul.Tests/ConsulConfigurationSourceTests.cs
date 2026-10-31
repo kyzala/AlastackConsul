@@ -1,4 +1,5 @@
 using Alastack.Extensions.Configuration.Consul;
+using Consul;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
@@ -55,7 +56,12 @@ namespace Alastack.Extensions.Configuration.Consul.Tests
         [Fact]
         public void Build_Uses_Explicit_Format_Over_Extension()
         {
-            var source = new ConsulConfigurationSource { Path = "config.txt", Format = ConsulConfigurationFormat.Xml };
+            var source = new ConsulConfigurationSource
+            {
+                Path = "config.txt",
+                Format = ConsulConfigurationFormat.Xml,
+                ClientFactory = CreateClient
+            };
 
             Assert.IsType<ConsulConfigurationProvider>(source.Build(new ConfigurationBuilder()));
         }
@@ -66,15 +72,27 @@ namespace Alastack.Extensions.Configuration.Consul.Tests
         [InlineData("config.xml")]
         public void Build_Resolves_Auto_Format_From_Extension(string path)
         {
-            var source = new ConsulConfigurationSource { Path = path };
+            var source = new ConsulConfigurationSource { Path = path, ClientFactory = CreateClient };
 
             Assert.IsType<ConsulConfigurationProvider>(source.Build(new ConfigurationBuilder()));
         }
 
         [Fact]
+        public void Build_Throws_When_ClientFactory_Is_Missing()
+        {
+            var source = new ConsulConfigurationSource { Path = "config.json" };
+
+            var exception = Assert.Throws<InvalidOperationException>(() => source.Build(new ConfigurationBuilder()));
+            Assert.Contains("ClientFactory", exception.Message);
+        }
+
+        private static IConsulClient CreateClient()
+            => ConsulClientFactory.Default.GetClient(new ConsulClientSettings());
+
+        [Fact]
         public void Build_Throws_For_Unknown_Extension_When_Format_Is_Auto()
         {
-            var source = new ConsulConfigurationSource { Path = "config.txt" };
+            var source = new ConsulConfigurationSource { Path = "config.txt", ClientFactory = CreateClient };
 
             Assert.Throws<InvalidOperationException>(() => source.Build(new ConfigurationBuilder()));
         }

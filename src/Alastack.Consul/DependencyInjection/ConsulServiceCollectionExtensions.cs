@@ -1,6 +1,6 @@
 using Alastack.Consul;
 using Alastack.Consul.Registration;
-using Consul;
+using Alastack.Extensions.Configuration.Consul;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -72,11 +72,10 @@ public static class ConsulServiceCollectionExtensions
     {
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IValidateOptions<ConsulRegistrationOptions>, ConsulRegistrationValidateOptions>());
         services.TryAddSingleton<ServiceInstanceStore>();
-        services.TryAddSingleton<Func<IConsulClient>>(sp =>
-        {
-            var registrationOptions = sp.GetRequiredService<IOptions<ConsulRegistrationOptions>>().Value;
-            return () => RegistrationService.CreateConsulClient(registrationOptions.Agent);
-        });
+
+        // Share one client per agent settings with the configuration sources; a custom factory
+        // registered before this call takes precedence.
+        services.TryAddSingleton<IConsulClientFactory>(ConsulClientFactory.Default);
         services.TryAddSingleton<IRegistrationService, RegistrationService>();
         services.AddHostedService<ConsulRegistrationHostedService>();
 

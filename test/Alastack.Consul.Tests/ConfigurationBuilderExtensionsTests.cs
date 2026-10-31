@@ -118,7 +118,8 @@ namespace Alastack.Consul.Tests
             Assert.Equal(TimeSpan.FromSeconds(10), sources[1].PollingWaitTime);
             Assert.Equal(ConsulConfigurationFormat.Ini, sources[1].Format);
             Assert.NotNull(sources[1].ClientFactory);
-            Assert.True(sources[1].DisposeClient);
+            // The client is supplied by a factory and may be shared, so the provider does not own it.
+            Assert.False(sources[1].DisposeClient);
             Assert.NotNull(sources[1].OnLoadException);
         }
 

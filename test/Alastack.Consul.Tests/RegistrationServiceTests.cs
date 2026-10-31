@@ -1,6 +1,7 @@
 using System.Reflection;
 using Alastack.Consul;
 using Alastack.Consul.Registration;
+using Alastack.Extensions.Configuration.Consul;
 using Consul;
 using Microsoft.Extensions.Options;
 
@@ -34,7 +35,8 @@ namespace Alastack.Consul.Tests
             Assert.Equal("http://localhost:5000/health", registration.Check.HTTP);
             Assert.Equal(TimeSpan.FromSeconds(10), registration.Check.Timeout);
 
-            Assert.True(proxy.Disposed);
+            // The client is shared, so the service must not dispose it.
+            Assert.False(proxy.Disposed);
         }
 
         [Fact]
@@ -152,7 +154,8 @@ namespace Alastack.Consul.Tests
             Assert.Equal(
                 new[] { "AspNetSample@localhost:5000", "AspNetSample@localhost:5001" },
                 deregisteredIds);
-            Assert.True(proxy.Disposed);
+            // The client is shared, so the service must not dispose it.
+            Assert.False(proxy.Disposed);
         }
 
         [Fact]
@@ -236,7 +239,12 @@ namespace Alastack.Consul.Tests
             var instanceStore = new ServiceInstanceStore(
                 Options.Create(options),
                 Array.Empty<IServerAddressesProvider>());
-            return new RegistrationService(Options.Create(options), instanceStore, () => client);
+            return new RegistrationService(Options.Create(options), instanceStore, new SingleClientFactory(client));
+        }
+
+        private sealed class SingleClientFactory(IConsulClient client) : IConsulClientFactory
+        {
+            public IConsulClient GetClient(ConsulClientSettings settings) => client;
         }
 
         private static ConsulRegistrationOptions CreateOptions(params ServiceInstance[] instances)

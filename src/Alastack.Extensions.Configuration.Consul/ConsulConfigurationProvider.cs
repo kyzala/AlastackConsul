@@ -1,10 +1,6 @@
-using System.IO;
-using System.Net;
 using Consul;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Ini;
-using Microsoft.Extensions.Configuration.Json;
-using Microsoft.Extensions.Configuration.Xml;
+using System.Net;
 
 namespace Alastack.Extensions.Configuration.Consul;
 
@@ -43,8 +39,13 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
         _optional = source.Optional;
         _reloadOnChange = source.ReloadOnChange;
         _onLoadException = source.OnLoadException;
-        _ownsClient = source.ClientFactory == null || source.DisposeClient;
-        _client = (source.ClientFactory ?? DefaultClientFactory)();
+        _ownsClient = source.DisposeClient;
+
+        var clientFactory = source.ClientFactory
+            ?? throw new InvalidOperationException(
+                "ConsulConfigurationSource.ClientFactory is required; the provider does not create a default Consul client. " +
+                "Assign a factory such as ConsulClientFactory.Default.GetClient or pass one to AddConsulConfiguration.");
+        _client = clientFactory();
     }
 
     /// <inheritdoc />
@@ -71,8 +72,6 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
         // otherwise a Consul outage at startup would permanently disable reloading.
         StartWatch();
     }
-
-    private static IConsulClient DefaultClientFactory() => new ConsulClient();
 
     private async Task LoadAsync(CancellationToken cancellationToken)
     {

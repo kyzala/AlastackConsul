@@ -36,13 +36,14 @@ public sealed class ConsulConfigurationSource : IConfigurationSource
     public TimeSpan PollingWaitTime { get; set; } = TimeSpan.FromSeconds(5);
 
     /// <summary>
-    /// Gets or sets the factory used to create the <see cref="IConsulClient"/>.
-    /// When not set, a client using the Consul default agent is created.
+    /// Gets or sets the factory used to create the <see cref="IConsulClient"/>. Required: the provider
+    /// does not create a default client. <see cref="ConsulClientFactory.Default"/> can be used to share
+    /// one client across all sources with the same <see cref="ConsulClientSettings"/>.
     /// </summary>
     public Func<IConsulClient>? ClientFactory { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the client created by <see cref="ClientFactory"/>
+    /// Gets or sets a value indicating whether the client returned by <see cref="ClientFactory"/>
     /// is owned by the provider and disposed with it. Defaults to <see langword="false"/>, because
     /// a factory may return a client that is shared with other configuration sources.
     /// </summary>
@@ -66,6 +67,12 @@ public sealed class ConsulConfigurationSource : IConfigurationSource
             // A non-positive wait turns the blocking query into a non-blocking one, which makes
             // the watch loop poll the server as fast as the network allows.
             throw new InvalidOperationException("The Consul Configuration PollingWaitTime must be greater than zero.");
+        }
+
+        if (ClientFactory == null)
+        {
+            throw new InvalidOperationException(
+                "The Consul Configuration ClientFactory is required; the provider does not create a default Consul client.");
         }
 
         var format = Format == ConsulConfigurationFormat.Auto ? ResolveFormat(Path) : Format;

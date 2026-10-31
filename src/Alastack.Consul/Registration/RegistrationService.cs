@@ -1,3 +1,4 @@
+using Alastack.Extensions.Configuration.Consul;
 using Consul;
 using Microsoft.Extensions.Options;
 
@@ -7,12 +8,12 @@ internal class RegistrationService : IRegistrationService
 {
     private readonly ConsulRegistrationOptions _registrationOptions;
     private readonly ServiceInstanceStore _instanceStore;
-    private readonly Func<IConsulClient> _clientFactory;
+    private readonly IConsulClientFactory _clientFactory;
 
     public RegistrationService(
         IOptions<ConsulRegistrationOptions> options,
         ServiceInstanceStore instanceStore,
-        Func<IConsulClient> clientFactory)
+        IConsulClientFactory clientFactory)
     {
         _registrationOptions = options.Value;
         _instanceStore = instanceStore;
@@ -21,7 +22,8 @@ internal class RegistrationService : IRegistrationService
 
     public async Task RegisterAsync(CancellationToken cancellationToken)
     {
-        using var consulClient = _clientFactory();
+        // The client is shared by all callers with the same agent settings, so it must not be disposed here.
+        var consulClient = _clientFactory.GetClient(_registrationOptions.Agent.ToConsulClientSettings());
 
         var instances = await _instanceStore.GetInstancesAsync(cancellationToken);
         if (instances.Count == 0)
@@ -64,7 +66,8 @@ internal class RegistrationService : IRegistrationService
 
     public async Task DeregisterAsync(CancellationToken cancellationToken)
     {
-        using var consulClient = _clientFactory();
+        // The client is shared by all callers with the same agent settings, so it must not be disposed here.
+        var consulClient = _clientFactory.GetClient(_registrationOptions.Agent.ToConsulClientSettings());
 
         var exceptions = new List<Exception>();
         foreach (var instance in await _instanceStore.GetInstancesAsync(cancellationToken))
@@ -108,40 +111,5 @@ internal class RegistrationService : IRegistrationService
         serviceMetadata.Remove(RegistrationPolicies.RegistrationIdNullPolicy);
 
         return serviceMetadata.Count == 0 ? null : serviceMetadata;
-    }
-
-    // Create ConsulClient instance.
-    internal static IConsulClient CreateConsulClient(AgentOptions consulAgent)
-    {
-        void Configure(ConsulClientConfiguration config)
-        {
-            // Only override the Consul client defaults when the option was actually configured.
-            if (!string.IsNullOrWhiteSpace(consulAgent.Datacenter))
-            {
-                config.Datacenter = consulAgent.Datacenter;
-            }
-            if (consulAgent.Address != null)
-            {
-                config.Address = consulAgent.Address;
-            }
-            if (!string.IsNullOrWhiteSpace(consulAgent.Token))
-            {
-                config.Token = consulAgent.Token;
-            }
-            if (consulAgent.WaitTime.HasValue)
-            {
-                config.WaitTime = consulAgent.WaitTime;
-            }
-        }
-
-        if (!consulAgent.HttpClientTimeout.HasValue)
-        {
-            return new ConsulClient(Configure);
-        }
-
-        // ConsulClientConfiguration has no timeout setting, so the timeout is applied to the HttpClient.
-        return new ConsulClient(
-            Configure,
-            httpClient => httpClient.Timeout = consulAgent.HttpClientTimeout.Value);
     }
 }

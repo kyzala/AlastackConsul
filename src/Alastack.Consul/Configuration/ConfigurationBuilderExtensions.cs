@@ -1,6 +1,5 @@
 using Alastack.Consul;
 using Alastack.Consul.Configuration;
-using Alastack.Consul.Registration;
 using Alastack.Extensions.Configuration.Consul;
 
 namespace Microsoft.Extensions.Configuration;
@@ -22,8 +21,15 @@ public static class ConfigurationBuilderExtensions
     /// <param name="builder">The <see cref="IConfigurationBuilder" /> to add to.</param>
     /// <param name="key">The Consul configuration key. Defaults to <c>Consul</c>.</param>
     /// <param name="optional">Whether the configuration is optional.</param>
+    /// <param name="clientFactory">
+    /// The factory used to create Consul clients. When not provided, <see cref="ConsulClientFactory.Default"/> is used.
+    /// </param>
     /// <returns>The <see cref="IConfigurationBuilder" />.</returns>
-    public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder builder, string key = "Consul", bool optional = false)
+    public static IConfigurationBuilder AddConsulConfiguration(
+        this IConfigurationBuilder builder,
+        string key = "Consul",
+        bool optional = false,
+        IConsulClientFactory? clientFactory = null)
     {
         if (builder == null)
         {
@@ -34,7 +40,7 @@ public static class ConfigurationBuilderExtensions
         var configuration = builder.Build();
         try
         {
-            return builder.AddConsulConfiguration(configuration, key, optional);
+            return builder.AddConsulConfiguration(configuration, key, optional, clientFactory);
         }
         finally
         {
@@ -51,8 +57,16 @@ public static class ConfigurationBuilderExtensions
     /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
     /// <param name="key">The Consul configuration key. Defaults to <c>Consul</c>.</param>
     /// <param name="optional">Whether the configuration is optional.</param>
+    /// <param name="clientFactory">
+    /// The factory used to create Consul clients. When not provided, <see cref="ConsulClientFactory.Default"/> is used.
+    /// </param>
     /// <returns>The <see cref="IConfigurationBuilder" />.</returns>
-    public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder builder, IConfiguration configuration, string key = "Consul", bool optional = false)
+    public static IConfigurationBuilder AddConsulConfiguration(
+        this IConfigurationBuilder builder,
+        IConfiguration configuration,
+        string key = "Consul",
+        bool optional = false,
+        IConsulClientFactory? clientFactory = null)
     {
         if (builder == null)
         {
@@ -94,7 +108,7 @@ public static class ConfigurationBuilderExtensions
                 $"The Consul configuration section '{key}:Configuration:Sets' must contain at least one set unless the configuration is optional.");
         }
 
-        return builder.AddConsulConfiguration(configurationOptions);
+        return builder.AddConsulConfiguration(configurationOptions, clientFactory);
     }
 
     /// <summary>
@@ -102,8 +116,15 @@ public static class ConfigurationBuilderExtensions
     /// </summary>
     /// <param name="builder">The <see cref="IConfigurationBuilder" /> to add to.</param>
     /// <param name="configurationOptions">The <see cref="ConsulConfigurationOptions" />.</param>
+    /// <param name="clientFactory">
+    /// The factory used to create Consul clients. When not provided, <see cref="ConsulClientFactory.Default"/> is used,
+    /// which shares one client across all sources with the same agent settings.
+    /// </param>
     /// <returns>The <see cref="IConfigurationBuilder" />.</returns>
-    public static IConfigurationBuilder AddConsulConfiguration(this IConfigurationBuilder builder, ConsulConfigurationOptions configurationOptions)
+    public static IConfigurationBuilder AddConsulConfiguration(
+        this IConfigurationBuilder builder,
+        ConsulConfigurationOptions configurationOptions,
+        IConsulClientFactory? clientFactory = null)
     {
         if (configurationOptions == null)
         {
@@ -123,6 +144,9 @@ public static class ConfigurationBuilderExtensions
         {
             throw new InvalidOperationException("The Consul Agent configuration is required when Configuration.Sets is specified.");
         }
+
+        var factory = clientFactory ?? ConsulClientFactory.Default;
+        var clientSettings = configurationOptions.Agent.ToConsulClientSettings();
 
         var pathPrefix = BuildKey(
             configurationOptions.PathBase,
@@ -167,10 +191,7 @@ public static class ConfigurationBuilderExtensions
                 source.ReloadOnChange = configurationSet.ReloadOnChange;
                 source.PollingWaitTime = configurationSet.PollingWaitTime;
                 source.Format = configurationSet.Format;
-                source.ClientFactory = () => RegistrationService.CreateConsulClient(configurationOptions.Agent);
-
-                // Each provider owns the client it creates, so it is released with the configuration root.
-                source.DisposeClient = true;
+                source.ClientFactory = () => factory.GetClient(clientSettings);
                 source.OnLoadException = exceptionContext => { exceptionContext.Ignore = configurationSet.IgnoreException; };
             });
         }

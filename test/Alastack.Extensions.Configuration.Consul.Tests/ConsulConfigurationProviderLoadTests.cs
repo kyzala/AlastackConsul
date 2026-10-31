@@ -12,6 +12,18 @@ namespace Alastack.Extensions.Configuration.Consul.Tests
         private const string Key = "apps/sample.json";
 
         [Fact]
+        public void Constructor_Throws_When_ClientFactory_Is_Missing()
+        {
+            // The provider never creates a default client; the source must supply the factory.
+            var source = new ConsulConfigurationSource { Path = Key };
+
+            var exception = Assert.Throws<InvalidOperationException>(
+                () => new ConsulConfigurationProvider(source, ConsulConfigurationFormat.Json));
+
+            Assert.Contains("ClientFactory", exception.Message);
+        }
+
+        [Fact]
         public void Load_Applies_Value()
         {
             var provider = CreateProvider((_, _, _) => Result("""{"Section":{"Name":"value"}}"""));
