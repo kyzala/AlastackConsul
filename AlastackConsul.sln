@@ -40,6 +40,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConsulConfigs", "ConsulConf
 		samples\ConsulConfigs\logging.json = samples\ConsulConfigs\logging.json
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alastack.Extensions.Configuration.Consul", "Alastack.Extensions.Configuration.Consul\Alastack.Extensions.Configuration.Consul.csproj", "{4CF78469-EA79-4E65-8DC0-8A77FD4A4818}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +80,10 @@ Global
 		{ED126339-E879-D8FC-0958-DF939891AD37}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED126339-E879-D8FC-0958-DF939891AD37}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED126339-E879-D8FC-0958-DF939891AD37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CF78469-EA79-4E65-8DC0-8A77FD4A4818}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CF78469-EA79-4E65-8DC0-8A77FD4A4818}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CF78469-EA79-4E65-8DC0-8A77FD4A4818}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CF78469-EA79-4E65-8DC0-8A77FD4A4818}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
