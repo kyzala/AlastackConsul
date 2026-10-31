@@ -33,6 +33,23 @@ namespace Alastack.Extensions.Configuration.Consul.Tests
         }
 
         [Fact]
+        public void Parse_Json_Flattens_Arrays()
+        {
+            var data = Parse(ConsulConfigurationFormat.Json, """{"Items":["first","second"]}""");
+
+            Assert.Equal("first", data["Items:0"]);
+            Assert.Equal("second", data["Items:1"]);
+        }
+
+        [Fact]
+        public void Parse_Keys_Are_Case_Insensitive()
+        {
+            var data = Parse(ConsulConfigurationFormat.Json, """{"Section":{"Name":"value"}}""");
+
+            Assert.Equal("value", data["SECTION:NAME"]);
+        }
+
+        [Fact]
         public void Parse_Unsupported_Format_Throws()
         {
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes("{}"));
