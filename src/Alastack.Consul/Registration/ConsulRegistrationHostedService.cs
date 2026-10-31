@@ -6,16 +6,29 @@ namespace Alastack.Consul.Registration;
 internal sealed class ConsulRegistrationHostedService : BackgroundService
 {
     private static readonly TimeSpan DeregistrationTimeout = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan DefaultRetryDelay = TimeSpan.FromSeconds(5);
+    internal const int MaxRegistrationAttempts = 3;
 
     private readonly IRegistrationService _registrationService;
     private readonly ILogger<ConsulRegistrationHostedService> _logger;
+    private readonly TimeSpan _retryDelay;
 
     public ConsulRegistrationHostedService(
         IRegistrationService registrationService,
         ILogger<ConsulRegistrationHostedService> logger)
+        : this(registrationService, logger, DefaultRetryDelay)
+    {
+    }
+
+    // Used by tests to shorten the retry interval.
+    internal ConsulRegistrationHostedService(
+        IRegistrationService registrationService,
+        ILogger<ConsulRegistrationHostedService> logger,
+        TimeSpan retryDelay)
     {
         _registrationService = registrationService;
         _logger = logger;
+        _retryDelay = retryDelay;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -27,18 +40,41 @@ internal sealed class ConsulRegistrationHostedService : BackgroundService
             return;
         }
 
-        try
+        for (var attempt = 1; ; attempt++)
         {
-            await _registrationService.RegisterAsync(stoppingToken);
-        }
-        catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
-        {
-            // The host is stopping before the registration completed.
-        }
-        catch (Exception exception)
-        {
-            // Registration is best effort: a Consul outage must not stop the host.
-            _logger.LogError(exception, "Failed to register the service instances with Consul.");
+            try
+            {
+                await _registrationService.RegisterAsync(stoppingToken);
+                return;
+            }
+            catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+            {
+                // The host is stopping before the registration completed.
+                return;
+            }
+            catch (Exception exception)
+            {
+                // Registration is best effort: a Consul outage must not stop the host.
+                _logger.LogError(
+                    exception,
+                    "Failed to register the service instances with Consul (attempt {Attempt} of {Attempts}).",
+                    attempt,
+                    MaxRegistrationAttempts);
+
+                if (attempt >= MaxRegistrationAttempts)
+                {
+                    return;
+                }
+            }
+
+            try
+            {
+                await Task.Delay(_retryDelay, stoppingToken);
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
         }
     }
 

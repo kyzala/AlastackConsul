@@ -65,10 +65,23 @@ internal class RegistrationService : IRegistrationService
     {
         return new ConsulClient(config =>
         {
-            config.Datacenter = consulAgent.Datacenter;
-            config.Address = consulAgent.Address;
-            config.Token = consulAgent.Token;
-            config.WaitTime = consulAgent.WaitTime;
+            // Only override the Consul client defaults when the option was actually configured.
+            if (!string.IsNullOrWhiteSpace(consulAgent.Datacenter))
+            {
+                config.Datacenter = consulAgent.Datacenter;
+            }
+            if (consulAgent.Address != null)
+            {
+                config.Address = consulAgent.Address;
+            }
+            if (!string.IsNullOrWhiteSpace(consulAgent.Token))
+            {
+                config.Token = consulAgent.Token;
+            }
+            if (consulAgent.WaitTime.HasValue)
+            {
+                config.WaitTime = consulAgent.WaitTime;
+            }
         });
     }
 }

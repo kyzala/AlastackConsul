@@ -108,5 +108,84 @@ namespace Alastack.Consul.Tests
 
             Assert.True(context.Ignore);
         }
+
+        [Fact]
+        public void AddConsulConfiguration_Normalizes_Path_Segments()
+        {
+            var options = CreateOptions();
+            options.PathBase = "/apps/sample/";
+            options.Namespace = "/ns1/";
+            options.Sets = new List<ConfigurationSet>
+            {
+                new() { Id = "/appsettings.json", Group = "default/" }
+            };
+
+            var builder = new ConfigurationBuilder().AddConsulConfiguration(options);
+            var source = Assert.Single(builder.Sources.OfType<ConsulConfigurationSource>());
+
+            Assert.Equal("apps/sample/ns1/default/appsettings.json", source.Path);
+        }
+
+        [Fact]
+        public void AddConsulConfiguration_Throws_When_PathBase_Is_Missing()
+        {
+            var options = CreateOptions();
+            options.PathBase = " ";
+            options.Sets = new List<ConfigurationSet> { new() { Id = "appsettings.json" } };
+
+            Assert.Throws<InvalidOperationException>(() => new ConfigurationBuilder().AddConsulConfiguration(options));
+        }
+
+        [Fact]
+        public void AddConsulConfiguration_Throws_When_Agent_Is_Missing()
+        {
+            var options = CreateOptions();
+            options.Agent = new AgentOptions();
+            options.Sets = new List<ConfigurationSet> { new() { Id = "appsettings.json" } };
+
+            Assert.Throws<InvalidOperationException>(() => new ConfigurationBuilder().AddConsulConfiguration(options));
+        }
+
+        [Fact]
+        public void AddConsulConfiguration_Throws_When_Set_Id_Is_Missing()
+        {
+            var options = CreateOptions();
+            options.Sets = new List<ConfigurationSet> { new() { Id = " " } };
+
+            Assert.Throws<InvalidOperationException>(() => new ConfigurationBuilder().AddConsulConfiguration(options));
+        }
+
+        [Fact]
+        public void AddConsulConfiguration_Throws_On_Unsupported_Extension_When_Format_Is_Auto()
+        {
+            var options = CreateOptions();
+            options.Sets = new List<ConfigurationSet> { new() { Id = "config.yaml" } };
+
+            // The format is resolved while reading the configuration instead of when the root is built.
+            Assert.Throws<InvalidOperationException>(() => new ConfigurationBuilder().AddConsulConfiguration(options));
+        }
+
+        [Fact]
+        public void AddConsulConfiguration_Does_Not_Add_Duplicate_Sources()
+        {
+            var options = CreateOptions();
+            options.Sets = new List<ConfigurationSet> { new() { Id = "appsettings.json" } };
+            var builder = new ConfigurationBuilder();
+
+            builder.AddConsulConfiguration(options);
+            builder.AddConsulConfiguration(options);
+
+            Assert.Single(builder.Sources.OfType<ConsulConfigurationSource>());
+        }
+
+        private static ConsulConfigurationOptions CreateOptions()
+        {
+            return new ConsulConfigurationOptions
+            {
+                Agent = new AgentOptions { Address = new Uri("http://localhost:8500") },
+                PathBase = "apps/sample",
+                Sets = new List<ConfigurationSet>()
+            };
+        }
     }
 }

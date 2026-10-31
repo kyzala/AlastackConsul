@@ -33,6 +33,37 @@ namespace Alastack.Consul.Tests
         }
 
         [Fact]
+        public async Task Start_Stops_Retrying_After_Max_Attempts()
+        {
+            var service = new FakeRegistrationService { RegisterException = new InvalidOperationException("Consul is down") };
+            var hostedService = CreateHostedService(service);
+
+            await hostedService.StartAsync(CancellationToken.None);
+
+            var cancellationToken = TestContext.Current.CancellationToken;
+            var deadline = DateTime.UtcNow + TimeSpan.FromSeconds(1);
+            while (service.RegisterCalls < ConsulRegistrationHostedService.MaxRegistrationAttempts && DateTime.UtcNow < deadline)
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(10), cancellationToken);
+            }
+
+            Assert.Equal(ConsulRegistrationHostedService.MaxRegistrationAttempts, service.RegisterCalls);
+        }
+
+        [Fact]
+        public async Task Start_Retries_Registration_When_It_Fails()
+        {
+            var service = new FakeRegistrationService { FailuresRemaining = 2 };
+            var hostedService = CreateHostedService(service);
+
+            await hostedService.StartAsync(CancellationToken.None);
+            await service.RegisterSucceeded.Task.WaitAsync(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken);
+
+            Assert.Equal(3, service.RegisterCalls);
+            Assert.Equal(0, service.DeregisterCalls);
+        }
+
+        [Fact]
         public async Task Start_Skips_Registration_When_Already_Stopping()
         {
             var service = new FakeRegistrationService();
@@ -78,12 +109,15 @@ namespace Alastack.Consul.Tests
         {
             return new ConsulRegistrationHostedService(
                 registrationService,
-                NullLogger<ConsulRegistrationHostedService>.Instance);
+                NullLogger<ConsulRegistrationHostedService>.Instance,
+                TimeSpan.FromMilliseconds(10));
         }
 
         private sealed class FakeRegistrationService : IRegistrationService
         {
             public TaskCompletionSource RegisterCalled { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            public TaskCompletionSource RegisterSucceeded { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
             public int RegisterCalls { get; private set; }
 
@@ -93,11 +127,28 @@ namespace Alastack.Consul.Tests
 
             public Exception? DeregisterException { get; init; }
 
+            /// <summary>
+            /// The number of initial registration attempts that fail before one succeeds.
+            /// </summary>
+            public int FailuresRemaining { get; set; }
+
             public Task RegisterAsync(CancellationToken cancellationToken)
             {
                 RegisterCalls++;
                 RegisterCalled.TrySetResult();
-                return RegisterException == null ? Task.CompletedTask : Task.FromException(RegisterException);
+
+                if (RegisterException != null)
+                {
+                    return Task.FromException(RegisterException);
+                }
+                if (FailuresRemaining > 0)
+                {
+                    FailuresRemaining--;
+                    return Task.FromException(new InvalidOperationException("Consul is down"));
+                }
+
+                RegisterSucceeded.TrySetResult();
+                return Task.CompletedTask;
             }
 
             public Task DeregisterAsync(CancellationToken cancellationToken)

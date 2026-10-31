@@ -216,7 +216,10 @@ Configuration loading moved to a separate package, `Alastack.Extensions.Configur
 | `RegistrationDefaults.ServerAddressesTimeout` (`int` milliseconds) | `TimeSpan`, defaults to 5 seconds |
 | `ServerAddressesFilter` (`IStartupFilter`) | replaced by the internal `ServerAddressesInitializer` (`IHostedService`); server addresses are read on `ApplicationStarted`, after the server has bound them |
 | `HealthCheckOptions` | new `Enabled` property; when `false` no health check is registered |
-| Registration failures | logged instead of faulting the host; deregistration uses its own 5 second budget |
+| Registration failures | retried up to 3 times, 5 seconds apart, and logged instead of faulting the host; deregistration uses its own 5 second budget |
+| `ConsulConfigurationOptions.PathBase` | required when `Sets` is specified; path segments are trimmed of surrounding slashes and empty segments are dropped |
+| `ConfigurationSet.Id` | required; an unsupported `Id` extension fails while reading the configuration when `Format` is `Auto` |
+| Repeated `AddConsulConfiguration` calls | a KV key is only added once |
 | `ConsulRegistrationOptions` validation | `Name`, `Instances.Address` and `DefaultHealthCheck.Endpoint` are now required |
 | `ConsulRegistrationOptions.Version` | reserved, it has no effect on the registration |
 

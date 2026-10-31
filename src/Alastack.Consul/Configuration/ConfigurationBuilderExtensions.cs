@@ -1,6 +1,7 @@
 using Alastack.Consul;
 using Alastack.Consul.Configuration;
-using Consul;
+using Alastack.Consul.Registration;
+using Alastack.Extensions.Configuration.Consul;
 
 namespace Microsoft.Extensions.Configuration;
 
@@ -23,8 +24,16 @@ public static class ConfigurationBuilderExtensions
             throw new ArgumentNullException(nameof(builder));
         }
 
-        builder.AddConsulConfiguration(builder.Build(), key, optional);
-        return builder;
+        // The current configuration is only read, so release the snapshot root instead of keeping it alive.
+        var configuration = builder.Build();
+        try
+        {
+            return builder.AddConsulConfiguration(configuration, key, optional);
+        }
+        finally
+        {
+            (configuration as IDisposable)?.Dispose();
+        }
     }
 
     /// <summary>
@@ -81,41 +90,66 @@ public static class ConfigurationBuilderExtensions
         {
             throw new ArgumentNullException(nameof(configurationOptions));
         }
-        if (configurationOptions.Sets is { Count: > 0 })
+
+        if (configurationOptions.Sets is not { Count: > 0 })
         {
-            if (string.IsNullOrWhiteSpace(configurationOptions.PathBase))
+            return builder;
+        }
+
+        if (string.IsNullOrWhiteSpace(configurationOptions.PathBase))
+        {
+            throw new InvalidOperationException("The Consul Configuration.PathBase is required when Configuration.Sets is specified.");
+        }
+        if (configurationOptions.Agent?.Address == null)
+        {
+            throw new InvalidOperationException("The Consul Agent configuration is required when Configuration.Sets is specified.");
+        }
+
+        var client = RegistrationService.CreateConsulClient(configurationOptions.Agent);
+        var pathPrefix = BuildKey(configurationOptions.PathBase, configurationOptions.Namespace);
+
+        foreach (var configurationSet in configurationOptions.Sets)
+        {
+            if (string.IsNullOrWhiteSpace(configurationSet.Id))
             {
-                throw new InvalidOperationException("The Consul Configuration.PathBase is required when Configuration.Sets is specified.");
-            }
-            if (configurationOptions.Agent?.Address == null)
-            {
-                throw new InvalidOperationException("The Consul Agent configuration is required when Configuration.Sets is specified.");
+                throw new InvalidOperationException("The Consul Configuration.Sets[].Id is required when Configuration.Sets is specified.");
             }
 
-            var client = new ConsulClient(config =>
+            var pathKey = BuildKey(pathPrefix, configurationSet.Group, configurationSet.Id);
+
+            if (configurationSet.Format == ConsulConfigurationFormat.Auto)
             {
-                config.Address = configurationOptions.Agent.Address;
-                config.Token = configurationOptions.Agent.Token;
-                config.Datacenter = configurationOptions.Agent.Datacenter;
-                config.WaitTime = configurationOptions.Agent.WaitTime;
+                // Resolve the format while reading the configuration, so an unsupported Id extension
+                // fails here instead of later when the configuration root is built.
+                ConsulConfigurationSource.ResolveFormat(pathKey);
+            }
+
+            // Calling this method twice with the same key must not add a second provider (and watch).
+            if (builder.Sources.OfType<ConsulConfigurationSource>().Any(source => source.Path == pathKey))
+            {
+                continue;
+            }
+
+            builder.AddConsul(pathKey, source =>
+            {
+                source.Optional = configurationSet.Optional;
+                source.ReloadOnChange = configurationSet.ReloadOnChange;
+                source.PollingWaitTime = configurationSet.PollingWaitTime;
+                source.Format = configurationSet.Format;
+                source.ClientFactory = () => client;
+                source.OnLoadException = exceptionContext => { exceptionContext.Ignore = configurationSet.IgnoreException; };
             });
-
-            var pathPrefix = $"{configurationOptions.PathBase.TrimStart('/')}/{configurationOptions.Namespace}";
-            foreach (var configurationSet in configurationOptions.Sets)
-            {
-                var pathKey = $"{pathPrefix}/{configurationSet.Group}/{configurationSet.Id}";
-                builder.AddConsul(pathKey, source =>
-                {
-                    source.Optional = configurationSet.Optional;
-                    source.ReloadOnChange = configurationSet.ReloadOnChange;
-                    source.PollingWaitTime = configurationSet.PollingWaitTime;
-                    source.Format = configurationSet.Format;
-                    source.ClientFactory = () => client;
-                    source.OnLoadException = exceptionContext => { exceptionContext.Ignore = configurationSet.IgnoreException; };
-                });
-            }
         }
 
         return builder;
+    }
+
+    private static string BuildKey(params string?[] segments)
+    {
+        return string.Join(
+            '/',
+            segments
+                .Select(segment => segment?.Trim().Trim('/'))
+                .Where(segment => !string.IsNullOrEmpty(segment)));
     }
 }

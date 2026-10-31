@@ -65,7 +65,13 @@ public sealed class ConsulConfigurationSource : IConfigurationSource
         return new ConsulConfigurationProvider(this, format);
     }
 
-    internal static ConsulConfigurationFormat ResolveFormat(string path)
+    /// <summary>
+    /// Resolves the configuration format from the file extension of the specified Consul KV key.
+    /// </summary>
+    /// <param name="path">The Consul KV key.</param>
+    /// <returns>The resolved <see cref="ConsulConfigurationFormat"/>.</returns>
+    /// <exception cref="InvalidOperationException">The extension is not supported.</exception>
+    public static ConsulConfigurationFormat ResolveFormat(string path)
     {
         return System.IO.Path.GetExtension(path).ToLowerInvariant() switch
         {
