@@ -11,11 +11,12 @@ namespace Alastack.Extensions.Configuration.Consul;
 /// <summary>
 /// Loads a single Consul KV value and exposes it as configuration.
 /// </summary>
-public sealed class ConsulConfigurationProvider : ConfigurationProvider
+public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDisposable
 {
     private readonly ConsulConfigurationSource _source;
     private readonly ConsulConfigurationFormat _format;
     private readonly IConsulClient _client;
+    private readonly bool _ownsClient;
     private readonly object _gate = new();
     private CancellationTokenSource? _watchTokens;
     private ulong _lastIndex;
@@ -29,6 +30,7 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider
     {
         _source = source ?? throw new ArgumentNullException(nameof(source));
         _format = format;
+        _ownsClient = source.ClientFactory == null;
         _client = (source.ClientFactory ?? DefaultClientFactory)();
     }
 
@@ -56,10 +58,13 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider
         if (pair?.Value == null)
         {
             HandleMissing();
-            return;
+        }
+        else
+        {
+            Apply(pair.Value);
         }
 
-        Apply(pair.Value);
+        // Watch even when the key is missing: an optional key created after the initial load must still be picked up.
         StartWatch();
     }
 
@@ -141,7 +146,28 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider
                 {
                     return;
                 }
+
+                // Back off before retrying so a persistent error does not turn into a tight loop.
+                await Task.Delay(_source.PollingWaitTime, cancellationToken).ConfigureAwait(false);
             }
+        }
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        lock (_gate)
+        {
+            _watchTokens?.Cancel();
+            _watchTokens?.Dispose();
+            _watchTokens = null;
+        }
+
+        // Only dispose a client this provider created itself; a client supplied through
+        // ConsulConfigurationSource.ClientFactory may be shared by other providers.
+        if (_ownsClient)
+        {
+            _client.Dispose();
         }
     }
 
