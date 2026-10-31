@@ -8,6 +8,11 @@ namespace Alastack.Consul.Registration;
 public sealed class HealthCheckOptions
 {
     /// <summary>
+    /// Gets or sets a value indicating whether a health check is registered for the service instance.
+    /// </summary>
+    public bool Enabled { get; set; } = true;
+
+    /// <summary>
     /// Service health check id.
     /// </summary>
     public string? CheckId { get; set; }

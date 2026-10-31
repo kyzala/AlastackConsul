@@ -213,6 +213,12 @@ Configuration loading moved to a separate package, `Alastack.Extensions.Configur
 | --- | --- |
 | Configuration loading via `Winton.Extensions.Configuration.Consul` | `Alastack.Extensions.Configuration.Consul` (transitive dependency of `Alastack.Consul`) |
 | `ConfigurationSet.Format` | added; `Auto` (default) resolves the format from `Id` |
+| `RegistrationDefaults.ServerAddressesTimeout` (`int` milliseconds) | `TimeSpan`, defaults to 5 seconds |
+| `ServerAddressesFilter` (`IStartupFilter`) | replaced by the internal `ServerAddressesInitializer` (`IHostedService`); server addresses are read on `ApplicationStarted`, after the server has bound them |
+| `HealthCheckOptions` | new `Enabled` property; when `false` no health check is registered |
+| Registration failures | logged instead of faulting the host; deregistration uses its own 5 second budget |
+| `ConsulRegistrationOptions` validation | `Name`, `Instances.Address` and `DefaultHealthCheck.Endpoint` are now required |
+| `ConsulRegistrationOptions.Version` | reserved, it has no effect on the registration |
 
 If you use the configuration source directly, the low-level API is available as `builder.AddConsul(path, source => ...)`
 with the public `ConsulConfigurationSource` / `ConsulConfigurationProvider` types.

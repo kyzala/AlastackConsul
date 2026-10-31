@@ -34,15 +34,17 @@ internal class RegistrationService : IRegistrationService
                 Tags = instance.Tags,
                 Meta = _registrationOptions.Metadata,
                 EnableTagOverride = instance.EnableTagOverride,
-                Check = new AgentServiceCheck
-                {
-                    CheckID = instance.HealthCheck.CheckId,
-                    Name = instance.HealthCheck.Name,
-                    DeregisterCriticalServiceAfter = instance.HealthCheck.DeregisterCriticalServiceAfter,
-                    Interval = instance.HealthCheck.Interval,
-                    HTTP = instance.HealthCheck.Endpoint.ToString(),
-                    Timeout = instance.HealthCheck.Timeout
-                }
+                Check = instance.HealthCheck.Enabled
+                    ? new AgentServiceCheck
+                    {
+                        CheckID = instance.HealthCheck.CheckId,
+                        Name = instance.HealthCheck.Name,
+                        DeregisterCriticalServiceAfter = instance.HealthCheck.DeregisterCriticalServiceAfter,
+                        Interval = instance.HealthCheck.Interval,
+                        HTTP = instance.HealthCheck.Endpoint.ToString(),
+                        Timeout = instance.HealthCheck.Timeout
+                    }
+                    : null
             };
             await consulClient.Agent.ServiceRegister(reg, cancellationToken);
         }

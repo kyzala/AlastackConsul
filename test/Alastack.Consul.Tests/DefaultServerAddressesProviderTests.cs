@@ -48,7 +48,7 @@ namespace Alastack.Consul.Tests
             using var cancellationTokenSource = new CancellationTokenSource();
             cancellationTokenSource.Cancel();
 
-            await Assert.ThrowsAsync<OperationCanceledException>(
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(
                 () => provider.GetServerAddressesAsync(cancellationTokenSource.Token));
         }
     }

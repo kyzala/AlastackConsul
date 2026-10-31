@@ -35,6 +35,12 @@ internal sealed class ResolvedServiceInstance
     /// </summary>
     public static ResolvedServiceInstance Resolve(ServiceInstance instance, ConsulRegistrationOptions registration)
     {
+        ArgumentNullException.ThrowIfNull(instance);
+        if (instance.Address == null)
+        {
+            throw new InvalidOperationException("The service instance address is required.");
+        }
+
         var id = instance.Id;
         if (string.IsNullOrWhiteSpace(id) && IsDefaultIdPolicy(registration.Metadata))
         {
@@ -44,6 +50,7 @@ internal sealed class ResolvedServiceInstance
         var source = instance.HealthCheck ?? registration.DefaultHealthCheck;
         var healthCheck = new HealthCheckOptions
         {
+            Enabled = source.Enabled,
             CheckId = source.CheckId,
             Name = source.Name,
             DeregisterCriticalServiceAfter = source.DeregisterCriticalServiceAfter,
@@ -51,6 +58,19 @@ internal sealed class ResolvedServiceInstance
             Endpoint = source.Endpoint,
             Timeout = source.Timeout
         };
+
+        if (!healthCheck.Enabled)
+        {
+            return new ResolvedServiceInstance
+            {
+                Id = id,
+                Address = instance.Address,
+                Tags = instance.Tags,
+                EnableTagOverride = instance.EnableTagOverride,
+                HealthCheck = healthCheck
+            };
+        }
+
         if (string.IsNullOrWhiteSpace(healthCheck.Name))
         {
             healthCheck.Name = $"Service '{id}' check";
@@ -59,9 +79,22 @@ internal sealed class ResolvedServiceInstance
         {
             healthCheck.CheckId = $"service:{id}";
         }
+        if (healthCheck.Endpoint == null)
+        {
+            throw new InvalidOperationException($"The health check endpoint for the service instance '{id}' is required.");
+        }
         if (!healthCheck.Endpoint.IsAbsoluteUri)
         {
-            healthCheck.Endpoint = new Uri(instance.Address, healthCheck.Endpoint);
+            try
+            {
+                healthCheck.Endpoint = new Uri(instance.Address, healthCheck.Endpoint);
+            }
+            catch (UriFormatException exception)
+            {
+                throw new InvalidOperationException(
+                    $"The health check endpoint '{healthCheck.Endpoint}' of the service instance '{id}' is not a valid URI.",
+                    exception);
+            }
         }
 
         return new ResolvedServiceInstance

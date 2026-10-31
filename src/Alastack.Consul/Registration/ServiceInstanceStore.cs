@@ -10,6 +10,7 @@ internal sealed class ServiceInstanceStore
 {
     private readonly ConsulRegistrationOptions _registrationOptions;
     private readonly IEnumerable<IServerAddressesProvider> _addressesProviders;
+    private readonly SemaphoreSlim _mutex = new(1, 1);
     private IReadOnlyList<ResolvedServiceInstance>? _instances;
 
     public ServiceInstanceStore(IOptions<ConsulRegistrationOptions> options, IEnumerable<IServerAddressesProvider> addressesProviders)
@@ -29,26 +30,43 @@ internal sealed class ServiceInstanceStore
             return _instances;
         }
 
-        var instances = new List<ResolvedServiceInstance>();
-        foreach (var instance in _registrationOptions.Instances)
+        await _mutex.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
         {
-            instances.Add(ResolvedServiceInstance.Resolve(instance, _registrationOptions));
-        }
-
-        foreach (var provider in _addressesProviders)
-        {
-            var addresses = await provider.GetServerAddressesAsync(cancellationToken);
-            foreach (var address in addresses)
+            if (_instances != null)
             {
-                var uri = new Uri(address);
-                if (!instances.Any(i => i.Address == uri))
+                return _instances;
+            }
+
+            var instances = new List<ResolvedServiceInstance>();
+            foreach (var instance in _registrationOptions.Instances)
+            {
+                instances.Add(ResolvedServiceInstance.Resolve(instance, _registrationOptions));
+            }
+
+            foreach (var provider in _addressesProviders)
+            {
+                var addresses = await provider.GetServerAddressesAsync(cancellationToken).ConfigureAwait(false);
+                foreach (var address in addresses)
                 {
-                    instances.Add(ResolvedServiceInstance.Resolve(new ServiceInstance { Address = uri }, _registrationOptions));
+                    if (!Uri.TryCreate(address, UriKind.Absolute, out var uri))
+                    {
+                        throw new InvalidOperationException($"The server address '{address}' is not a valid absolute URI.");
+                    }
+
+                    if (!instances.Any(i => i.Address == uri))
+                    {
+                        instances.Add(ResolvedServiceInstance.Resolve(new ServiceInstance { Address = uri }, _registrationOptions));
+                    }
                 }
             }
-        }
 
-        _instances = instances;
-        return instances;
+            _instances = instances;
+            return instances;
+        }
+        finally
+        {
+            _mutex.Release();
+        }
     }
 }

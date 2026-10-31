@@ -97,6 +97,23 @@ namespace Alastack.Consul.Tests
         }
 
         [Fact]
+        public async Task RegisterAsync_Omits_Check_When_Health_Check_Is_Disabled()
+        {
+            var registrations = new List<AgentServiceRegistration>();
+            var (client, _) = CreateClient(onRegister: registrations.Add);
+            var options = CreateOptions(new ServiceInstance
+            {
+                Address = new Uri("http://localhost:5000"),
+                HealthCheck = new HealthCheckOptions { Enabled = false }
+            });
+            var service = CreateService(options, client);
+
+            await service.RegisterAsync(CancellationToken.None);
+
+            Assert.Null(Assert.Single(registrations).Check);
+        }
+
+        [Fact]
         public async Task DeregisterAsync_Deregisters_All_Instance_Ids()
         {
             var deregisteredIds = new List<string>();

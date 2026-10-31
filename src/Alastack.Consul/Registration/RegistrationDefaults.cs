@@ -26,7 +26,7 @@ public static class RegistrationDefaults
     public const string Version = "1.0.0";
 
     /// <summary>
-    /// The default timeout in milliseconds for waiting server listen addresses to be configured.
+    /// The default timeout for waiting server listen addresses to be configured.
     /// </summary>
-    public static readonly int ServerAddressesTimeout = 5000;
+    public static readonly TimeSpan ServerAddressesTimeout = TimeSpan.FromSeconds(5);
 }

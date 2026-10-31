@@ -71,6 +71,17 @@ namespace Alastack.Consul.Tests
             Assert.Null(instance.Id);
         }
 
+        [Fact]
+        public async Task Throws_When_A_Provider_Address_Is_Not_Absolute()
+        {
+            var store = CreateStore(CreateOptions(), "http://");
+
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+                () => store.GetInstancesAsync(CancellationToken.None));
+
+            Assert.Contains("not a valid absolute URI", exception.Message);
+        }
+
         private static ConsulRegistrationOptions CreateOptions(params ServiceInstance[] instances)
         {
             var options = new ConsulRegistrationOptions { Name = "AspNetSample" };

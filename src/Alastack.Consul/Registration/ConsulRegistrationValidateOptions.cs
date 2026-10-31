@@ -20,6 +20,24 @@ public class ConsulRegistrationValidateOptions : IValidateOptions<ConsulRegistra
             return ValidateOptionsResult.Fail("Agent.Address is required.");
         }
 
+        if (string.IsNullOrWhiteSpace(options.Name))
+        {
+            return ValidateOptionsResult.Fail("Name is required.");
+        }
+
+        foreach (var instance in options.Instances)
+        {
+            if (instance.Address == null)
+            {
+                return ValidateOptionsResult.Fail("Instances.Address is required.");
+            }
+        }
+
+        if (options.DefaultHealthCheck?.Enabled == true && options.DefaultHealthCheck.Endpoint == null)
+        {
+            return ValidateOptionsResult.Fail("DefaultHealthCheck.Endpoint is required when the health check is enabled.");
+        }
+
         return ValidateOptionsResult.Success;
     }
 }
