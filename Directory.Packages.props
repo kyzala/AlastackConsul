@@ -4,13 +4,11 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Consul" Version="1.8.0" />
-    <PackageVersion Include="Winton.Extensions.Configuration.Consul" Version="3.4.0" />
     <PackageVersion Include="xunit.v3" Version="3.2.2" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4">
     <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     <PrivateAssets>all</PrivateAssets>
     </PackageVersion>
-    <PackageVersion Include="YamlDotNet" Version="18.1.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net10.0'">
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />

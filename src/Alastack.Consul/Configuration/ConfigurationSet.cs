@@ -1,4 +1,6 @@
-﻿namespace Alastack.Consul.Configuration;
+using Alastack.Extensions.Configuration.Consul;
+
+namespace Alastack.Consul.Configuration;
 
 /// <summary>
 /// Application configuration set definition.
@@ -19,6 +21,12 @@ public sealed class ConfigurationSet
     /// The configuration set description.
     /// </summary>
     public string? Description { get; set; }
+
+    /// <summary>
+    /// The format of the configuration set. Defaults to <see cref="ConsulConfigurationFormat.Auto"/>,
+    /// which determines the format from the <see cref="Id"/> extension.
+    /// </summary>
+    public ConsulConfigurationFormat Format { get; set; } = ConfigurationDefaults.Format;
 
     /// <summary>
     /// Whether the configuration set is optional. Defaults to <c>false</c>.

@@ -16,7 +16,8 @@
         },
         {
           "Id": "config.json",
-          "Group": "group1" // Default to "default"
+          "Group": "group1", // Default to "default"
+          "Format": "Json" // Default to "Auto"; resolved from the Id extension when not set
         },
         {
           "Id": "config_other.json",

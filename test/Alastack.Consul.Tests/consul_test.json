@@ -16,6 +16,7 @@
         {
           "Id": "config.json",
           "Group": "group1",
+          "Format": "Json",
           "Optional": true,
           "ReloadOnChange": true,
           "PollingWaitTime": "00:00:10",
@@ -74,11 +75,7 @@
         //  "Id": "appsettings.json",
         //  "Group": "gp.default"
         //}
-      ]//,
-      //"Metadata": {
-      //  "aa": "value1",
-      //  "bb": "value2"
-      //}
+      ]
     },
     "Registration": {
       "Name": "AspNetSample",

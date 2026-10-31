@@ -1,4 +1,5 @@
 using Alastack.Consul.Configuration;
+using Alastack.Extensions.Configuration.Consul;
 using Microsoft.Extensions.Configuration;
 
 namespace Alastack.Consul.Tests
@@ -31,6 +32,7 @@ namespace Alastack.Consul.Tests
             Assert.False(options.Sets[0].IgnoreException);
             Assert.Equal(TimeSpan.FromSeconds(5), options.Sets[0].PollingWaitTime);
             Assert.Null(options.Sets[0].Description);
+            Assert.Equal(ConsulConfigurationFormat.Auto, options.Sets[0].Format);
 
             Assert.Equal("config.json", options.Sets[1].Id);
             Assert.Equal("group1", options.Sets[1].Group);
@@ -39,6 +41,7 @@ namespace Alastack.Consul.Tests
             Assert.True(options.Sets[1].IgnoreException);
             Assert.Equal(TimeSpan.FromSeconds(10), options.Sets[1].PollingWaitTime);
             Assert.Equal("some description", options.Sets[1].Description);
+            Assert.Equal(ConsulConfigurationFormat.Json, options.Sets[1].Format);
 
             Assert.Equal(2, options.Metadata!.Count);
             Assert.Equal("MyValue1", options.Metadata["MyKey1"]);

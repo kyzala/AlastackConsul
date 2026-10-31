@@ -2,9 +2,14 @@
 
   <PropertyGroup>
     <TargetFrameworks>net10.0;net8.0</TargetFrameworks>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Version>1.0.0</Version>
+    <PackageTags>Alastack;Consul;Configuration</PackageTags>
+    <Description>Alastack.Extensions.Configuration.Consul loads Hashicorp Consul KV values as configuration.</Description>
   </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Alastack.Extensions.Configuration.Consul.Tests" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Consul" />
@@ -12,7 +17,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Ini" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Xml" />
-    <PackageReference Include="YamlDotNet" />
   </ItemGroup>
 
 </Project>

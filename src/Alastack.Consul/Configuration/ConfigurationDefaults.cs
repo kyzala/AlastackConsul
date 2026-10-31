@@ -1,3 +1,5 @@
+using Alastack.Extensions.Configuration.Consul;
+
 namespace Alastack.Consul.Configuration;
 
 /// <summary>
@@ -14,6 +16,11 @@ public static class ConfigurationDefaults
     /// Default Group for the application configuration.
     /// </summary>
     public const string Group = "default";
+
+    /// <summary>
+    /// Default format for the application configuration.
+    /// </summary>
+    public const ConsulConfigurationFormat Format = ConsulConfigurationFormat.Auto;
 
     /// <summary>
     /// Default PollingWaitTime for the application configuration.

@@ -1,6 +1,6 @@
 using Alastack.Consul;
 using Alastack.Consul.Configuration;
-using Winton.Extensions.Configuration.Consul;
+using Consul;
 
 namespace Microsoft.Extensions.Configuration;
 
@@ -92,24 +92,26 @@ public static class ConfigurationBuilderExtensions
                 throw new InvalidOperationException("The Consul Agent configuration is required when Configuration.Sets is specified.");
             }
 
+            var client = new ConsulClient(config =>
+            {
+                config.Address = configurationOptions.Agent.Address;
+                config.Token = configurationOptions.Agent.Token;
+                config.Datacenter = configurationOptions.Agent.Datacenter;
+                config.WaitTime = configurationOptions.Agent.WaitTime;
+            });
+
             var pathPrefix = $"{configurationOptions.PathBase.TrimStart('/')}/{configurationOptions.Namespace}";
             foreach (var configurationSet in configurationOptions.Sets)
             {
                 var pathKey = $"{pathPrefix}/{configurationSet.Group}/{configurationSet.Id}";
-                builder.AddConsul(pathKey, options =>
+                builder.AddConsul(pathKey, source =>
                 {
-                    options.Optional = configurationSet.Optional;
-                    options.ReloadOnChange = configurationSet.ReloadOnChange;
-                    options.PollWaitTime = configurationSet.PollingWaitTime;
-                    options.ConsulConfigurationOptions =
-                        config =>
-                        {
-                            config.Address = configurationOptions.Agent.Address;
-                            config.Token = configurationOptions.Agent.Token;
-                            config.Datacenter = configurationOptions.Agent.Datacenter;
-                            config.WaitTime = configurationOptions.Agent.WaitTime;
-                        };
-                    options.OnLoadException = exceptionContext => { exceptionContext.Ignore = configurationSet.IgnoreException; };
+                    source.Optional = configurationSet.Optional;
+                    source.ReloadOnChange = configurationSet.ReloadOnChange;
+                    source.PollingWaitTime = configurationSet.PollingWaitTime;
+                    source.Format = configurationSet.Format;
+                    source.ClientFactory = () => client;
+                    source.OnLoadException = exceptionContext => { exceptionContext.Ignore = configurationSet.IgnoreException; };
                 });
             }
         }

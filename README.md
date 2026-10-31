@@ -89,7 +89,8 @@ builder.Services.AddConsulRegistration(builder.Configuration).AddConsulAspNetCor
         },
         {
           "Id": "config.json",
-          "Group": "group1" // Default to "default"
+          "Group": "group1", // Default to "default"
+          "Format": "Json" // Default to "Auto"; resolved from the Id extension when not set
         },
         {
           "Id": "config_other.json",
@@ -146,10 +147,18 @@ builder.Services.AddConsulRegistration(builder.Configuration).AddConsulAspNetCor
 
 ### Configuration in Consul Key/Value store
 
-Using [Winton.Extensions.Configuration.Consul](https://github.com/wintoncode/Winton.Extensions.Configuration.Consul) to provide Consul Configuration source.
+Configuration values are loaded by [Alastack.Extensions.Configuration.Consul](https://www.nuget.org/packages/Alastack.Extensions.Configuration.Consul), a low-level configuration source that maps a single Consul KV key to one configuration document (JSON, INI or XML). `Alastack.Consul` builds on it and only adds the application-level path convention.
 
 **Path key:** 
 `{Configuration.PathBase} / {Configuration.Namespace} / {Set.Group} / {Set.Id}`
+
+**Format** is resolved in this order:
+
+1. `Set.Format` when set explicitly;
+2. otherwise the `Set.Id` extension (`.json`, `.ini`, `.xml`);
+3. otherwise an `InvalidOperationException` is thrown.
+
+YAML is not supported yet.
 
 ![](docs/configuration.png)
 
@@ -192,3 +201,18 @@ Visit the [samples](https://github.com/kyzala/AlastackConsul/tree/main/samples) 
 | `"HealthCheckDefault"` | `"DefaultHealthCheck"` |
 | `HealthCheck."Health"` | `HealthCheck."Endpoint"` |
 | `"IsEnabled"` | removed |
+
+## Migrating from 1.3.1 to 1.4.0
+
+Configuration loading moved to a separate package, `Alastack.Extensions.Configuration.Consul`, which replaces the
+`Winton.Extensions.Configuration.Consul` dependency. No configuration file changes are required.
+
+**Code**
+
+| 1.3.1 | 1.4.0 |
+| --- | --- |
+| Configuration loading via `Winton.Extensions.Configuration.Consul` | `Alastack.Extensions.Configuration.Consul` (transitive dependency of `Alastack.Consul`) |
+| `ConfigurationSet.Format` | added; `Auto` (default) resolves the format from `Id` |
+
+If you use the configuration source directly, the low-level API is available as `builder.AddConsul(path, source => ...)`
+with the public `ConsulConfigurationSource` / `ConsulConfigurationProvider` types.
