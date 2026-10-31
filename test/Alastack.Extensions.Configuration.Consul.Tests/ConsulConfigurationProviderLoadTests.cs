@@ -196,6 +196,51 @@ namespace Alastack.Extensions.Configuration.Consul.Tests
         }
 
         [Fact]
+        public async Task Watch_Skips_Refresh_When_Index_Is_Unchanged()
+        {
+            var calls = 0;
+            var watchPolled = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            var source = new ConsulConfigurationSource
+            {
+                Path = Key,
+                ReloadOnChange = true,
+                PollingWaitTime = TimeSpan.FromSeconds(1)
+            };
+            source.ClientFactory = () => CreateClient(async (key, _, cancellationToken) =>
+            {
+                switch (Interlocked.Increment(ref calls))
+                {
+                    case 1:
+                        return Result(key, """{"Section":{"Name":"first"}}""");
+                    case 2:
+                        // Simulates a blocking query that timed out with no change:
+                        // same data, same LastIndex (Result defaults to lastIndex 1).
+                        return Result(key, """{"Section":{"Name":"first"}}""");
+                    default:
+                        watchPolled.TrySetResult();
+                        await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
+                        return Result(key, "{}");
+                }
+            }, out _);
+
+            var provider = new ConsulConfigurationProvider(source, ConsulConfigurationFormat.Json);
+            var reloaded = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            using var registration = provider.GetReloadToken()
+                .RegisterChangeCallback(_ => reloaded.TrySetResult(), null);
+
+            provider.Load();
+
+            // Reaching call 3 proves the loop continued; the unchanged response must not reload.
+            await watchPolled.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+            Assert.False(reloaded.Task.IsCompleted);
+            Assert.True(provider.TryGet("Section:Name", out var value));
+            Assert.Equal("first", value);
+
+            provider.Dispose();
+        }
+
+        [Fact]
         public async Task Watch_Waits_PollingWaitTime_Before_Retrying_An_Ignored_Exception()
         {
             var calls = 0;

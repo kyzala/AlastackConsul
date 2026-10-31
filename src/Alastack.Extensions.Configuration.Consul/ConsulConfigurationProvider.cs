@@ -91,6 +91,13 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
             return null;
         }
 
+        if (options.WaitIndex != 0 && result.LastIndex <= options.WaitIndex)
+        {
+            // The blocking query timed out without a change: Consul returns the same data
+            // with the same index, so there is nothing to apply or reload.
+            return null;
+        }
+
         if (result.LastIndex > 0)
         {
             _lastIndex = result.LastIndex;
