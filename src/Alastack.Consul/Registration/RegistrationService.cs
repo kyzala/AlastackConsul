@@ -32,6 +32,8 @@ internal class RegistrationService : IRegistrationService
                 "or add the hosting server addresses provider with AddConsulAspNetCore().");
         }
 
+        var meta = BuildServiceMetadata(_registrationOptions.Metadata);
+
         foreach (var instance in instances)
         {
             var reg = new AgentServiceRegistration()
@@ -41,7 +43,7 @@ internal class RegistrationService : IRegistrationService
                 Address = instance.Address.Host,
                 Port = instance.Address.Port,
                 Tags = instance.Tags,
-                Meta = _registrationOptions.Metadata,
+                Meta = meta,
                 EnableTagOverride = instance.EnableTagOverride,
                 Check = instance.HealthCheck.Enabled
                     ? new AgentServiceCheck
@@ -74,6 +76,23 @@ internal class RegistrationService : IRegistrationService
 
             await consulClient.Agent.ServiceDeregister(instance.Id, cancellationToken);
         }
+    }
+
+    /// <summary>
+    /// Copies the configured metadata without the keys that only drive registration behavior,
+    /// so internal policies are not published as service metadata in Consul.
+    /// </summary>
+    private static Dictionary<string, string>? BuildServiceMetadata(IDictionary<string, string>? metadata)
+    {
+        if (metadata == null || metadata.Count == 0)
+        {
+            return null;
+        }
+
+        var serviceMetadata = new Dictionary<string, string>(metadata, StringComparer.OrdinalIgnoreCase);
+        serviceMetadata.Remove(RegistrationPolicies.RegistrationIdNullPolicy);
+
+        return serviceMetadata.Count == 0 ? null : serviceMetadata;
     }
 
     // Create ConsulClient instance.

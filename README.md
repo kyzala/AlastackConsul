@@ -227,6 +227,9 @@ Configuration loading moved to a separate package, `Alastack.Extensions.Configur
 | `ReloadOnChange` watch | a failed reload is reported through `OnLoadException` and retried after `PollingWaitTime`; the watch never stops silently |
 | Optional key deleted while watching | the loaded values are cleared and a change notification is raised; a required key reports the deletion once and keeps watching |
 | `AddConsulRegistration` called more than once | `IRegistrationService` is registered only once |
+| Wildcard listen addresses | addresses such as `0.0.0.0` and `[::]` are not registered as service instances; configure explicit `Instances` or listen on a concrete address |
+| Reserved registration metadata | the `RegistrationIdNullPolicy` entry is not published as Consul service metadata |
+| Configuration defaults | a blank `Configuration.Namespace` or `Sets[].Group` falls back to `public` / `default` instead of dropping the KV path segment |
 | `ConsulRegistrationOptions.Version` | reserved, it has no effect on the registration |
 
 If you use the configuration source directly, the low-level API is available as `builder.AddConsul(path, source => ...)`

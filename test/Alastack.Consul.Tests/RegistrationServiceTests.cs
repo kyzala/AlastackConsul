@@ -162,6 +162,26 @@ namespace Alastack.Consul.Tests
             Assert.Empty(deregisteredIds);
         }
 
+        [Fact]
+        public async Task RegisterAsync_Does_Not_Publish_The_Id_Policy_As_Metadata()
+        {
+            var registrations = new List<AgentServiceRegistration>();
+            var (client, _) = CreateClient(onRegister: registrations.Add);
+            var options = CreateOptions(new ServiceInstance { Address = new Uri("http://localhost:5000") });
+            options.Metadata = new Dictionary<string, string>
+            {
+                ["env"] = "test",
+                [RegistrationPolicies.RegistrationIdNullPolicy] = RegistrationIdNullPolicy.Default
+            };
+            var service = CreateService(options, client);
+
+            await service.RegisterAsync(CancellationToken.None);
+
+            var registration = Assert.Single(registrations);
+            Assert.Equal("test", registration.Meta!["env"]);
+            Assert.False(registration.Meta!.ContainsKey(RegistrationPolicies.RegistrationIdNullPolicy));
+        }
+
         private static RegistrationService CreateService(ConsulRegistrationOptions options, IConsulClient client)
         {
             var instanceStore = new ServiceInstanceStore(

@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Alastack.Consul\Alastack.Consul.csproj" />
+    <ProjectReference Include="..\..\src\Alastack.Consul.AspNetCore\Alastack.Consul.AspNetCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

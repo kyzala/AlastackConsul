@@ -84,7 +84,45 @@ namespace Alastack.Consul.Tests
             Assert.Equal(TimeSpan.FromSeconds(10), sources[1].PollingWaitTime);
             Assert.Equal(ConsulConfigurationFormat.Ini, sources[1].Format);
             Assert.NotNull(sources[1].ClientFactory);
+            Assert.True(sources[1].DisposeClient);
             Assert.NotNull(sources[1].OnLoadException);
+        }
+
+        [Fact]
+        public void AddConsulConfiguration_Falls_Back_To_Default_Namespace_And_Group()
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["Consul:Agent:Address"] = "http://localhost:8500",
+                    ["Consul:Configuration:PathBase"] = "/apps/sample",
+                    ["Consul:Configuration:Namespace"] = "",
+                    ["Consul:Configuration:Sets:0:Id"] = "appsettings.json",
+                    ["Consul:Configuration:Sets:0:Group"] = ""
+                })
+                .Build();
+
+            var builder = new ConfigurationBuilder().AddConsulConfiguration(configuration);
+            var source = Assert.Single(builder.Sources.OfType<ConsulConfigurationSource>());
+
+            Assert.Equal("apps/sample/public/default/appsettings.json", source.Path);
+        }
+
+        [Fact]
+        public void AddConsulConfiguration_Throws_When_PollingWaitTime_Is_Not_Positive()
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["Consul:Agent:Address"] = "http://localhost:8500",
+                    ["Consul:Configuration:PathBase"] = "apps/sample",
+                    ["Consul:Configuration:Sets:0:Id"] = "config.json",
+                    ["Consul:Configuration:Sets:0:PollingWaitTime"] = "00:00:00"
+                })
+                .Build();
+
+            Assert.Throws<InvalidOperationException>(
+                () => new ConfigurationBuilder().AddConsulConfiguration(configuration));
         }
 
         [Fact]

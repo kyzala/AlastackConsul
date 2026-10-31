@@ -95,6 +95,28 @@ namespace Alastack.Consul.Tests
             Assert.Contains("duplicate", exception.Message);
         }
 
+        [Fact]
+        public async Task Skips_Wildcard_Provider_Addresses()
+        {
+            var store = CreateStore(CreateOptions(), "http://0.0.0.0:5000", "http://localhost:5000");
+
+            var instance = Assert.Single(await store.GetInstancesAsync(CancellationToken.None));
+
+            Assert.Equal("localhost", instance.Address.Host);
+            Assert.Equal(5000, instance.Address.Port);
+        }
+
+        [Fact]
+        public async Task Throws_When_Only_Wildcard_Provider_Addresses_Are_Available()
+        {
+            var store = CreateStore(CreateOptions(), "http://0.0.0.0:5000");
+
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+                () => store.GetInstancesAsync(CancellationToken.None));
+
+            Assert.Contains("wildcard", exception.Message);
+        }
+
         private static ConsulRegistrationOptions CreateOptions(params ServiceInstance[] instances)
         {
             var options = new ConsulRegistrationOptions { Name = "AspNetSample" };

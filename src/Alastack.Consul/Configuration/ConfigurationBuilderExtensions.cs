@@ -105,8 +105,11 @@ public static class ConfigurationBuilderExtensions
             throw new InvalidOperationException("The Consul Agent configuration is required when Configuration.Sets is specified.");
         }
 
-        var client = RegistrationService.CreateConsulClient(configurationOptions.Agent);
-        var pathPrefix = BuildKey(configurationOptions.PathBase, configurationOptions.Namespace);
+        var pathPrefix = BuildKey(
+            configurationOptions.PathBase,
+            string.IsNullOrWhiteSpace(configurationOptions.Namespace)
+                ? ConfigurationDefaults.Namespace
+                : configurationOptions.Namespace);
 
         foreach (var configurationSet in configurationOptions.Sets)
         {
@@ -115,7 +118,16 @@ public static class ConfigurationBuilderExtensions
                 throw new InvalidOperationException("The Consul Configuration.Sets[].Id is required when Configuration.Sets is specified.");
             }
 
-            var pathKey = BuildKey(pathPrefix, configurationSet.Group, configurationSet.Id);
+            if (configurationSet.PollingWaitTime <= TimeSpan.Zero)
+            {
+                // A non-positive wait turns the blocking query into a non-blocking one.
+                throw new InvalidOperationException("The Consul Configuration.Sets[].PollingWaitTime must be greater than zero.");
+            }
+
+            var group = string.IsNullOrWhiteSpace(configurationSet.Group)
+                ? ConfigurationDefaults.Group
+                : configurationSet.Group;
+            var pathKey = BuildKey(pathPrefix, group, configurationSet.Id);
 
             if (configurationSet.Format == ConsulConfigurationFormat.Auto)
             {
@@ -136,7 +148,10 @@ public static class ConfigurationBuilderExtensions
                 source.ReloadOnChange = configurationSet.ReloadOnChange;
                 source.PollingWaitTime = configurationSet.PollingWaitTime;
                 source.Format = configurationSet.Format;
-                source.ClientFactory = () => client;
+                source.ClientFactory = () => RegistrationService.CreateConsulClient(configurationOptions.Agent);
+
+                // Each provider owns the client it creates, so it is released with the configuration root.
+                source.DisposeClient = true;
                 source.OnLoadException = exceptionContext => { exceptionContext.Ignore = configurationSet.IgnoreException; };
             });
         }

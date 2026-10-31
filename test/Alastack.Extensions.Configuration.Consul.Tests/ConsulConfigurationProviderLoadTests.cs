@@ -541,16 +541,29 @@ namespace Alastack.Extensions.Configuration.Consul.Tests
                 Interlocked.Increment(ref exceptions);
                 context.Ignore = true;
             };
+            var watchDeletedTwice = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
             source.ClientFactory = () => CreateClient((key, _, _) =>
-                Interlocked.Increment(ref calls) == 1
-                    ? Task.FromResult(Result(key, """{"Section":{"Name":"value"}}"""))
-                    : NotFound(), out _);
+            {
+                var call = Interlocked.Increment(ref calls);
+                if (call == 1)
+                {
+                    return Task.FromResult(Result(key, """{"Section":{"Name":"value"}}"""));
+                }
+
+                if (call == 3)
+                {
+                    watchDeletedTwice.TrySetResult();
+                }
+
+                return NotFound();
+            }, out _);
 
             var provider = new ConsulConfigurationProvider(source, ConsulConfigurationFormat.Json);
             provider.Load();
 
-            // Two 404 polls: the deletion is reported once and the value of a required key is kept.
-            await Task.Delay(TimeSpan.FromMilliseconds(500), TestContext.Current.CancellationToken);
+            // The third poll only runs after the deletion seen by the second poll has been handled.
+            await watchDeletedTwice.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
 
             Assert.Equal(1, exceptions);
             Assert.True(provider.TryGet("Section:Name", out var value));

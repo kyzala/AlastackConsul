@@ -43,7 +43,7 @@ public sealed class ConsulConfigurationProvider : ConfigurationProvider, IDispos
         _optional = source.Optional;
         _reloadOnChange = source.ReloadOnChange;
         _onLoadException = source.OnLoadException;
-        _ownsClient = source.ClientFactory == null;
+        _ownsClient = source.ClientFactory == null || source.DisposeClient;
         _client = (source.ClientFactory ?? DefaultClientFactory)();
     }
 

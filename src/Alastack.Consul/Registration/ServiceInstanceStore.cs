@@ -54,11 +54,24 @@ internal sealed class ServiceInstanceStore
                         throw new InvalidOperationException($"The server address '{address}' is not a valid absolute URI.");
                     }
 
+                    // A wildcard listen address cannot be reached by consumers, so it is not registered.
+                    if (IsWildcardHost(uri.Host))
+                    {
+                        continue;
+                    }
+
                     if (!instances.Any(i => i.Address == uri))
                     {
                         instances.Add(ResolvedServiceInstance.Resolve(new ServiceInstance { Address = uri }, _registrationOptions));
                     }
                 }
+            }
+
+            if (instances.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    "No service instances were resolved. Configure Consul:Registration:Instances or listen on a " +
+                    "concrete address; wildcard addresses such as 0.0.0.0 and [::] cannot be registered.");
             }
 
             var duplicateId = instances
@@ -78,5 +91,10 @@ internal sealed class ServiceInstanceStore
         {
             _mutex.Release();
         }
+    }
+
+    private static bool IsWildcardHost(string host)
+    {
+        return host is "0.0.0.0" or "::" or "[::]" or "0:0:0:0:0:0:0:0";
     }
 }
